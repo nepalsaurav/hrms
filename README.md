@@ -30,8 +30,8 @@ Feel free to suggest improvements or changes to the tech stack as we move forwar
 
 We've included a general business logic flowchart and tech stack chart to provide an overview of how the HRMS software will function. Your contributions and feedback on refining this flowchart are highly encouraged.
 
-[![Business Logic Flowchart](https://github.com/nepalsaurav/hrms/business-logic.png)](link-to-full-size-image)
-[![Tech Stack Chart](https://github.com/nepalsaurav/hrms/tech-stack.png)](link-to-full-size-image)
+[![Business Logic Flowchart](https://raw.githubusercontent.com/nepalsaurav/hrms/main/business-logic.png)](link-to-full-size-image)
+[![Tech Stack Chart](https://raw.githubusercontent.com/nepalsaurav/hrms/main/tech-stack.png)](link-to-full-size-image)
 
 ## How to Contribute
 
