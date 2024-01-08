@@ -1,5 +1,6 @@
 <nav class="navbar navbar-expand-lg bg-body-tertiary sticky-top">
     <div class="container-fluid">
+        <!-- svelte-ignore a11y-invalid-attribute -->
         <a class="navbar-brand" href="#">Navbar</a>
         <button
             class="navbar-toggler"
@@ -15,11 +16,13 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item">
+                    <!-- svelte-ignore a11y-invalid-attribute -->
                     <a class="nav-link active" aria-current="page" href="#"
                         >Home</a
                     >
                 </li>
                 <li class="nav-item">
+                    <!-- svelte-ignore a11y-invalid-attribute -->
                     <a class="nav-link" href="#">Link</a>
                 </li>
                 <li class="nav-item dropdown">
@@ -28,7 +31,6 @@
                     <!-- svelte-ignore a11y-missing-attribute -->
                     <a
                         class="nav-link dropdown-toggle"
-                        on:click={showDropDown()}
                         role="button"
                         data-bs-toggle="dropdown"
                         aria-expanded="false"
@@ -36,12 +38,15 @@
                         Dropdown
                     </a>
                     <ul class="dropdown-menu">
+                        <!-- svelte-ignore a11y-invalid-attribute -->
                         <li><a class="dropdown-item" href="#">Action</a></li>
                         <li>
+                            <!-- svelte-ignore a11y-invalid-attribute -->
                             <a class="dropdown-item" href="#">Another action</a>
                         </li>
                         <li><hr class="dropdown-divider" /></li>
                         <li>
+                            <!-- svelte-ignore a11y-invalid-attribute -->
                             <a class="dropdown-item" href="#"
                                 >Something else here</a
                             >

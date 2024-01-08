@@ -1,9 +1,11 @@
 <aside class="sticky__sidebar">
     <ul class="nav flex-column">
         <li class="nav-item">
+            <!-- svelte-ignore a11y-invalid-attribute -->
             <a class="nav-link active" aria-current="page" href="#">Active</a>
         </li>
         <li class="nav-item">
+            <!-- svelte-ignore a11y-invalid-attribute -->
             <a class="nav-link" href="#">Link</a>
         </li>
         <li class="nav-item">
@@ -13,120 +15,6 @@
         <li class="nav-item">
             <!-- svelte-ignore a11y-missing-attribute -->
             <a class="nav-link disabled" aria-disabled="true">Disabled</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="#">Active</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="#">Link</a>
-        </li>
-        <li class="nav-item">
-            <!-- svelte-ignore a11y-invalid-attribute -->
-            <a class="nav-link" href="#">Link</a>
-        </li>
-        <li class="nav-item">
-            <!-- svelte-ignore a11y-missing-attribute -->
-            <a class="nav-link disabled" aria-disabled="true">Disabled</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="#">Active</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="#">Link</a>
-        </li>
-        <li class="nav-item">
-            <!-- svelte-ignore a11y-invalid-attribute -->
-            <a class="nav-link" href="#">Link</a>
-        </li>
-        <li class="nav-item">
-            <!-- svelte-ignore a11y-missing-attribute -->
-            <a class="nav-link disabled" aria-disabled="true">Disabled</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="#">Active</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="#">Link</a>
-        </li>
-        <li class="nav-item">
-            <!-- svelte-ignore a11y-invalid-attribute -->
-            <a class="nav-link" href="#">Link</a>
-        </li>
-        <li class="nav-item">
-            <!-- svelte-ignore a11y-missing-attribute -->
-            <a class="nav-link disabled" aria-disabled="true">Disabled</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="#">Active</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="#">Link</a>
-        </li>
-        <li class="nav-item">
-            <!-- svelte-ignore a11y-invalid-attribute -->
-            <a class="nav-link" href="#">Link</a>
-        </li>
-        <li class="nav-item">
-            <!-- svelte-ignore a11y-missing-attribute -->
-            <a class="nav-link disabled" aria-disabled="true">Disabled</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="#">Active</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="#">Link</a>
-        </li>
-        <li class="nav-item">
-            <!-- svelte-ignore a11y-invalid-attribute -->
-            <a class="nav-link" href="#">Link</a>
-        </li>
-        <li class="nav-item">
-            <!-- svelte-ignore a11y-missing-attribute -->
-            <a class="nav-link disabled" aria-disabled="true">Disabled</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="#">Active</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="#">Link</a>
-        </li>
-        <li class="nav-item">
-            <!-- svelte-ignore a11y-invalid-attribute -->
-            <a class="nav-link" href="#">Link</a>
-        </li>
-        <li class="nav-item">
-            <!-- svelte-ignore a11y-missing-attribute -->
-            <a class="nav-link disabled" aria-disabled="true">Disabled</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="#">Active</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="#">Link</a>
-        </li>
-        <li class="nav-item">
-            <!-- svelte-ignore a11y-invalid-attribute -->
-            <a class="nav-link" href="#">Link</a>
-        </li>
-        <li class="nav-item">
-            <!-- svelte-ignore a11y-missing-attribute -->
-            <a class="nav-link disabled" aria-disabled="true">Disabled</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="#">Active</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="#">Link</a>
-        </li>
-        <li class="nav-item">
-            <!-- svelte-ignore a11y-invalid-attribute -->
-            <a class="nav-link" href="#">Link</a>
-        </li>
-        <li class="nav-item">
-            <!-- svelte-ignore a11y-missing-attribute -->
-            <a class="nav-link disabled" aria-disabled="true"
-                >Disabled tsdfds fsfs dsfsdf dfs</a
-            >
         </li>
     </ul>
 </aside>
