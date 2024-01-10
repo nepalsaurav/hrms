@@ -9,8 +9,8 @@ Welcome to the Human Resource Management System (HRMS) software project! This re
 ## Tech Stack
 
 ### Frontend:
-- [SvelteKit](https://kit.svelte.dev/)
-- [Bootstrap](https://getbootstrap.com/) for UI components
+- React, React Router
+- Daisy UI for UI components
 
 ### Backend:
 - [Golang](https://golang.org/)
