@@ -1,15 +1,7 @@
-import { sveltekit } from '@sveltejs/kit/vite';
-import { defineConfig } from 'vite';
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
 
-const pocketbase_url = "http://localhost:8090"; // localhost-to-localhost
-
+// https://vitejs.dev/config/
 export default defineConfig({
-	plugins: [sveltekit()],
-	server: {
-		proxy: {
-			// proxy "/api" and "/_" to pocketbase_url
-			"/api": pocketbase_url,
-			"/_": pocketbase_url,
-		},
-	},
-});
+  plugins: [react()],
+})
