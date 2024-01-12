@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Get the base directory of the script
+BASE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
 if [ $# -eq 0 ]; then
     echo "Usage: $0 <arg1> [arg2] [arg3] ..."
     exit 1
@@ -19,22 +22,22 @@ if [ "$1" == "dev" ]; then
     trap cleanup INT
 
     # Run the first program in the background and capture its PID
-    (cd front-end && npm run dev) & pid1=$!
+    (cd "$BASE_DIR/front-end" && npm run dev) & pid1=$!
 
     # Run the second program in the background and capture its PID
-    (cd back-end && air serve) & pid2=$!
+    (cd "$BASE_DIR/back-end" && air serve) & pid2=$!
 
     # Wait for both programs to finish
     wait
 
 elif [ "$1" == "build" ]; then
     # Run the build command for front-end
-    cd front-end && npm run build
+    cd "$BASE_DIR/front-end" && npm run build
     # After completion, copy files from front-end/build to back-end/pb_public
-    rm -rf /home/acer/hrms/back-end/pb_public/*
-    cp -r /home/acer/hrms/front-end/dist/* /home/acer/hrms/back-end/pb_public
+    rm -rf "$BASE_DIR/back-end/pb_public"/*
+    cp -r "$BASE_DIR/front-end/dist"/* "$BASE_DIR/back-end/pb_public"
 
-    (cd .. && cd back-end && go build)
+    (cd "$BASE_DIR/back-end" && go build)
 else
     echo "Valid command should be provided"
 fi
