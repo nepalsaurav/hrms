@@ -32,7 +32,7 @@ elif [ "$1" == "build" ]; then
     cd front-end && npm run build
     # After completion, copy files from front-end/build to back-end/pb_public
     rm -rf /home/acer/hrms/back-end/pb_public/*
-    cp -r /home/acer/hrms/front-end/build/* /home/acer/hrms/back-end/pb_public
+    cp -r /home/acer/hrms/front-end/dist/* /home/acer/hrms/back-end/pb_public
 
     (cd .. && cd back-end && go build)
 else

@@ -22,6 +22,23 @@ func main() {
 
 			return c.JSON(http.StatusOK, map[string]string{"message": "Hello " + name})
 		} /* optional middlewares */)
+
+		e.Router.GET("api/get-collection-schema", func(c echo.Context) error {
+			message := map[string]string{
+				"message": "failed",
+			}
+			name := c.QueryParam("name")
+			if name == "" {
+				message["message"] = "collection name is required"
+				return c.JSON(http.StatusBadRequest, message)
+			}
+			collection, err := app.Dao().FindCollectionByNameOrId(name)
+			if err != nil {
+				message["message"] = "something error occured"
+				return c.JSON(http.StatusBadRequest, message)
+			}
+			return c.JSON(http.StatusOK, collection)
+		}, apis.RequireAdminOrRecordAuth())
 		return nil
 	})
 

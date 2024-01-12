@@ -10,7 +10,7 @@ export default function RequireAuth() {
         return true
     }
     return (
-        checkUserAuthCondition() ? <Outlet /> : <Navigate to="/login" replace={true} />
+        checkUserAuthCondition() ? <Outlet /> : <Navigate to="/login" replace />
     )
 
 }

@@ -4,6 +4,7 @@ import { useEffect } from 'react'
 import { pb } from './store/pb'
 import { useAuthStore } from './store/auth'
 
+import { QueryClient, QueryClientProvider } from 'react-query'
 function App() {
 
   const setCurrentUser = useAuthStore((state: any) => state.setCurrentUser)
@@ -14,8 +15,12 @@ function App() {
     })
   }, [])
 
+  const queryClient = new QueryClient()
+
   return (
-    <RouterProvider router={router} />
+    <QueryClientProvider client={queryClient}>
+      <RouterProvider router={router} />
+    </QueryClientProvider>
   )
 }
 

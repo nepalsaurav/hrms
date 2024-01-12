@@ -11,7 +11,7 @@ export default function AlreadyLoggedInRedirector() {
         return false
     }
     return (
-        checkUserAuthCondition() ? <Navigate to="/" replace={true} /> : <Outlet />
+        checkUserAuthCondition() ? <Navigate to="/" replace /> : <Outlet />
     )
 
 }
