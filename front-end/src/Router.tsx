@@ -28,20 +28,20 @@ const router = createHashRouter(
             <Route path="logout" loader={Logout}></Route>
             {/* protected route */}
             <Route path="/" element={<Root />}>
-                <Route element={<RequireAuth />}>
-                    <Route index={true} element={<Home />}></Route>
+                {/* <Route element={<RequireAuth />}> */}
+                <Route index={true} element={<Home />}></Route>
 
-                    {/* AdminRoute */}
-                    <Route element={<AdminRoot />}>
-                        <Route path="admin/employee" element={<Employee />}></Route>
-                    </Route>
-
-                    {/* Leave Route */}
-                    <Route path="leave">
-                        <Route index={true} element={<LeaveModule />}></Route>
-                        <Route path="add" element={<AddLeaveRequet />}></Route>
-                    </Route>
+                {/* AdminRoute */}
+                <Route element={<AdminRoot />}>
+                    <Route path="admin/employee" element={<Employee />}></Route>
                 </Route>
+
+                {/* Leave Route */}
+                <Route path="leave">
+                    <Route index={true} element={<LeaveModule />}></Route>
+                    <Route path="add" element={<AddLeaveRequet />}></Route>
+                </Route>
+                {/* </Route> */}
             </Route>
         </>
     )
