@@ -1,0 +1,66 @@
+{% extends "_base.html" %} {% load crispy_forms_tags %} {% block content %}
+
+<div class="container" style="margin-top: 50px" x-data="addForm">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{% url 'home' %}">Dashboard</a></li>
+      <li class="breadcrumb-item">
+        <a href="{% url 'leave_home' %}">Leave</a>
+      </li>
+      <li class="breadcrumb-item active" aria-current="page">Add</li>
+    </ol>
+  </nav>
+
+  <div class="card card-outline card-primary">
+    <div class="card-body">
+      <form
+        action="{% url 'leave_add' %}"
+        method="post"
+        novalidate
+        x-trap="true"
+      >
+        <fieldset :disabled="loading">
+          <legend>Add Leave</legend>
+          {% csrf_token %} {% crispy form %}
+        </fieldset>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  function addForm() {
+    return {
+      loading: false,
+      init() {
+        document.querySelectorAll("input").forEach((e) => {
+          e.addEventListener("click", () => {
+            e.classList.remove("is-invalid");
+            e.parentElement.querySelector(".invalid-feedback").style.display =
+              "none";
+          });
+        });
+        document.querySelectorAll("select").forEach((e) => {
+          e.addEventListener("click", () => {
+            e.classList.remove("is-invalid");
+            e.parentElement.querySelector(".invalid-feedback").style.display =
+              "none";
+          });
+        });
+        document.querySelectorAll("textarea").forEach((e) => {
+          e.addEventListener("click", () => {
+            e.classList.remove("is-invalid");
+            e.parentElement.querySelector(".invalid-feedback").style.display =
+              "none";
+          });
+        });
+      },
+      handleSubmit() {
+        this.loading = true;
+        return;
+      },
+    };
+  }
+</script>
+
+{% endblock content %}

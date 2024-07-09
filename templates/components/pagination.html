@@ -1,0 +1,91 @@
+<nav aria-label="Page navigation example" x-data="pagination">
+  <ul class="pagination">
+    {% if page_obj.has_previous %}
+    <li class="page-item">
+      <a
+        class="page-link"
+        @click.prevent="onPageChange({{ page_obj.previous_page_number }})"
+        >Previous</a
+      >
+    </li>
+    {% else %}
+    <li class="page-item">
+      <a class="page-link disabled">Previous</a>
+    </li>
+    {% endif %}
+
+    <template x-if="currentPage > pageRange + 1">
+      <li class="page-item">
+        <a class="page-link" href="#" @click.prevent="onPageChange(1)">1</a>
+      </li>
+      <template x-if="currentPage > pageRange + 2">
+        <li class="page-item disabled">
+          <span class="page-link">...</span>
+        </li>
+      </template>
+    </template>
+
+    <template x-for="page in getPages()">
+      <li class="page-item">
+        <a
+          class="page-link"
+          :class="{'active': currentPage === page}"
+          x-text="page"
+          @click.prevent="onPageChange(page)"
+        ></a>
+      </li>
+    </template>
+
+    {% if page_obj.has_next %}
+    <li class="page-item">
+      <a
+        class="page-link"
+        @click.prevent="onPageChange({{ page_obj.next_page_number }})"
+        >Next</a
+      >
+    </li>
+    {% else %}
+    <li class="page-item">
+      <a class="page-link disabled">Next</a>
+    </li>
+    {% endif %}
+  </ul>
+</nav>
+
+<script>
+  function pagination() {
+    return {
+      page: 1,
+      pageRange: 2,
+      currentPage: parseInt("{{ page_obj.number }}"),
+      totalPages: parseInt("{{ page_obj.paginator.num_pages }}"),
+      totalItems: parseInt("{{ page_obj.paginator.count }}"),
+      init() {
+        console.log(this.getPages());
+      },
+      onPageChange(page) {
+        this.page = page;
+        const params = new URLSearchParams(window.location.search);
+        params.set("page", this.page);
+        const url = `${location.pathname}?${params.toString()}`;
+        htmx.ajax("GET", url, {
+          target: "#main-table-data",
+          indicator: "#spinner",
+          transition: true,
+        });
+        window.history.pushState(null, "", url);
+      },
+      getPages() {
+        const pages = [];
+        for (
+          let i = Math.max(1, this.currentPage - this.pageRange);
+          i <= Math.min(this.totalPages, this.currentPage + this.pageRange);
+          i++
+        ) {
+          pages.push(i);
+        }
+        return pages;
+      },
+    };
+  }
+</script>

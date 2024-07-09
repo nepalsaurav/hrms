@@ -1,0 +1,77 @@
+<div id="main-table-data" x-data="dataTable">
+  {% if page_obj.object_list|length == 0 %}
+  <h1>No data found</h1>
+  {% else %}
+  <table class="table mt-4">
+    <thead>
+      <tr>
+        <th>S.N</th>
+        <th @click="orderColumn('user')">
+          Employee
+          <span x-text="setOrderIcon('user')"></span>
+        </th>
+        <th @click="orderColumn('start_date')">
+          Start Date
+          <span x-text="setOrderIcon('start_date')"></span>
+        </th>
+        <th @click="orderColumn('end_date')">
+          End Date
+          <span x-text="setOrderIcon('end_date')"></span>
+        </th>
+        <th @click="orderColumn('status')">
+          Status
+          <span x-text="setOrderIcon('status')"></span>
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for leave in page_obj.object_list %}
+      <tr>
+        <td>{{ forloop.counter }}</td>
+        <td>{{ leave.user }}</td>
+        <td>{{ leave.start_date }}</td>
+        <td>{{ leave.end_date }}</td>
+        <td>{{ leave.status }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% endif %} {% include 'components/pagination.html' %}
+</div>
+
+<script>
+  function dataTable() {
+    return {
+      orderBy: "{{ request.GET.order_by }}",
+      lastOrderedColumn: "",
+      setOrderIcon(columnName) {
+        if (this.orderBy === "") {
+          return "";
+        }
+        if (this.orderBy === columnName) {
+          return "⯅";
+        }
+        if (this.orderBy === `-${columnName}`) {
+          return "⏷";
+        }
+      },
+      orderColumn(columnName) {
+        const params = new URLSearchParams(window.location.search);
+
+        if (this.orderBy === columnName) {
+          params.set("order_by", `-${columnName}`);
+          this.orderBy = `-${columnName}`;
+        } else if (this.orderBy === `-${columnName}`) {
+          params.delete("order_by");
+          this.orderBy = "";
+        } else {
+          params.set("order_by", columnName);
+          this.orderBy = columnName;
+        }
+
+        const url = `${location.pathname}?${params.toString()}`;
+        location.href = url;
+      },
+    };
+  }
+</script>

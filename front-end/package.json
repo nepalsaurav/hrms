@@ -1,0 +1,26 @@
+{
+  "name": "front-end",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build --emptyOutDir",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "@sveltejs/vite-plugin-svelte": "^3.1.1",
+    "sass": "^1.77.6",
+    "svelte": "^4.2.18",
+    "vite": "^5.3.1"
+  },
+  "dependencies": {
+    "@picocss/pico": "^2.0.6",
+    "flatpickr": "^4.6.13",
+    "flexboxgrid": "^6.3.1",
+    "pikaday": "^1.8.2",
+    "svelte-spa-router": "^4.0.1",
+    "tinymce": "^7",
+    "trix": "^2.1.2"
+  }
+}

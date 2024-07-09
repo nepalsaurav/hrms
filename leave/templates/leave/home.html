@@ -1,0 +1,59 @@
+{% extends "_base.html" %} {% block content %} {% load crispy_forms_tags %}
+
+<style>
+  .htmx-indicator {
+    display: none;
+  }
+
+  .htmx-request.htmx-indicator {
+    display: block;
+  }
+</style>
+
+<div class="container" style="margin-top: 50px">
+  <div class="card">
+    <div class="card-body">
+      <form action="{% url 'leave_home' %}">{% crispy filter_form.form %}</form>
+    </div>
+  </div>
+
+  <div class="d-flex justify-content-end mt-4">
+    <a class="btn btn-primary" href="{% url 'leave_add' %}">Add Leave</a>
+  </div>
+
+  <div
+    class="d-flex"
+    x-data="{
+      rowPerPage: '{{ request.GET.per_page }}',
+  }"
+  >
+    <div class="d-flex">
+      <label for="row-per-page">items per page</label>
+      <select
+        class="form-select ms-2"
+        id="row-per-page"
+        style="width: 80px"
+        aria-label="Default select example"
+      >
+        <option value="10" :selected="rowPerPage==='10'">10</option>
+        <option value="20" :selected="rowPerPage==='20'">20</option>
+        <option value="50" :selected="rowPerPage==='50'">50</option>
+      </select>
+    </div>
+  </div>
+
+  {% include 'leave/table.html' %}
+</div>
+
+<script>
+  document.querySelector("#row-per-page").addEventListener("change", (e) => {
+    const params = new URLSearchParams(window.location.search);
+    params.set("per_page", e.target.value);
+    const url = `${location.pathname}?${params.toString()}`;
+    location.href = url;
+  });
+
+  InitAwesomeComplete(".user-autocomplete", "/api/user-autocomplete");
+</script>
+
+{% endblock content %}

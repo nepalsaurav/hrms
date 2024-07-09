@@ -1,0 +1,1 @@
+import{S as o,i,s as r,e as c,a as l,n as s,d as m}from"./entry-3CXcqGdA.js";function p(a){let e;return{c(){e=c("h1"),e.textContent="this is home page"},m(t,n){l(t,e,n)},p:s,i:s,o:s,d(t){t&&m(e)}}}class f extends o{constructor(e){super(),i(this,e,null,p,r,{})}}export{f as default};
