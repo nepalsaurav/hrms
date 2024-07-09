@@ -1,13 +1,24 @@
 {% extends '_base.html' %}
-{% load crispy_forms_tags %}
-
-{% block title %}Log in{% endblock %}
-
+{% load static %}
 {% block content %}
-<h2>Log in</h2>
-<form method="post">
-  {% csrf_token %}
-  {{ form|crispy }}
-  <button class="btn btn-success" type="submit">Log in</button>
-</form>
+
+<main class="container">
+
+   <div class="grid">
+       <div>
+           <img src="{% static 'image/login.jpg' %}" alt="login-image">
+       </div>
+       <div>
+         <article>
+            <header>Log in</header>
+            <form method="post">
+              {% csrf_token %}
+              {{ form.as_p }}
+              <button class="btn btn-success" type="submit">Log in</button>
+            </form>
+         </article>
+       </div>
+   </div>
+ 
+</main>
 {% endblock content %}

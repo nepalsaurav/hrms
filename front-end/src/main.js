@@ -4,8 +4,8 @@ import "vite/modulepreload-polyfill";
 import Trix from "trix";
 import "../node_modules/trix/dist/trix.css";
 import "../node_modules/flatpickr/dist/flatpickr.min.css";
-import "./scss/main.scss";
-import "../node_modules/flexboxgrid/css/flexboxgrid.min.css";
+
+// @ts-ignore
 import App from "./App.svelte";
 
 const app = new App({
