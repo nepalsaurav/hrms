@@ -1,0 +1,111 @@
+.top-nav {
+  background-color: aqua;
+  /* position: fixed;
+  top: 0;
+  width: 100%; */
+}
+
+nav ul li {
+  padding-top: 5px !important;
+  padding-bottom: 5px !important;
+}
+
+body > header {
+  padding-block: 0;
+}
+
+.has-table-of-contents {
+  display: flex;
+  height: calc(100% - 60px); /* Adjust according to the height of your header */
+}
+
+#sidebar-menu {
+  width: 220px; /* Adjust the width as needed */
+  height: 100%;
+  position: fixed;
+  top: 40px; /* Adjust according to the height of your header */
+  left: 0;
+  padding: 20px;
+  border-right: var(--pico-border-width) solid var(--pico-muted-border-color);
+}
+
+.main-content {
+  margin-left: 200px; /* Adjust to the width of the sidebar */
+  padding: 20px;
+  flex: 1;
+  height: 100%;
+  overflow-y: hidden;
+  overflow-x: hidden;
+}
+
+.is-fixed-above-lg {
+  width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000; /* Ensure the header is on top */
+}
+
+#sidebar-menu nav details ul {
+  border-left: var(--pico-border-width) solid var(--pico-muted-border-color);
+}
+
+.filter-menu nav details ul {
+  border-left: var(--pico-border-width) solid var(--pico-muted-border-color);
+}
+
+.filter-menu {
+  --pico-font-size: 16px;
+  font-size: var(--pico-font-size);
+}
+
+.filter-menu nav details ul:first-of-type {
+  margin: 0;
+  padding: 0;
+}
+
+#sidebar-menu {
+  --pico-font-size: 16px;
+  font-size: var(--pico-font-size);
+}
+
+#sidebar-menu nav details ul:first-of-type {
+  margin: 0;
+  padding: 0;
+}
+
+nav[aria-label="breadcrumb"] {
+  margin-top: 30px;
+  margin-bottom: 5px;
+}
+
+.form-errors ul li {
+  color: red;
+}
+
+.submit-row input[type="submit"] {
+  font-size: 18px;
+}
+
+.full-size-content {
+  width: 100vw;
+}
+
+.delete-button {
+  --pico-border-color: var(--pico-color-red-500);
+}
+
+.delete-button:hover {
+  --pico-border-color: var(--pico-color-red-500);
+}
+
+/* input[type="search"] {
+  width: fit-content !important;
+}
+
+input:not([type="checkbox"], [type="radio"]),
+button[type="submit"],
+select,
+textarea {
+  width: fit-content;
+} */

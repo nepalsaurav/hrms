@@ -5,51 +5,34 @@
 <title>{% block title %}{% endblock %}</title>
 
 {% comment %} changed css from bootstrap to pico {% endcomment %}
-<link rel="stylesheet" href="{% block stylesheet %}{% static "css/scss.css" %}{% endblock %}">
+{% block stylesheet %}
+<link rel="stylesheet" href="{% static "css/scss.css" %}">
+<link rel="stylesheet" href="{% static "css/custom_admin.css" %}">
+{% endblock %}
 {% block dark-mode-vars %}
   <link rel="stylesheet" href="{% static "admin/css/dark_mode.css" %}">
   <script src="{% static "admin/js/theme.js" %}"></script>
 {% endblock %}
 {% if not is_popup and is_nav_sidebar_enabled %}
-  <link rel="stylesheet" href="{% static "admin/css/nav_sidebar.css" %}">
   <script src="{% static 'admin/js/nav_sidebar.js' %}" defer></script>
 {% endif %}
 {% block extrastyle %}{% endblock %}
-{% if LANGUAGE_BIDI %}<link rel="stylesheet" href="{% block stylesheet_rtl %}{% static "admin/css/rtl.css" %}{% endblock %}">{% endif %}
-{% block extrahead %}{% endblock %}
+{% block extrahead %}
+   <script src="{% static 'js/alpine.js' %}" defer></script>
+{% endblock %}
 {% block responsive %}
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{% static "admin/css/responsive.css" %}">
-    {% if LANGUAGE_BIDI %}<link rel="stylesheet" href="{% static "admin/css/responsive_rtl.css" %}">{% endif %}
 {% endblock %}
 {% block blockbots %}<meta name="robots" content="NONE,NOARCHIVE">{% endblock %}
 </head>
 
-<body class="{% if is_popup %}popup {% endif %}{% block bodyclass %}{% endblock %}"
-  data-admin-utc-offset="{% now "Z" %}">
-<!-- Container -->
-<div id="container">
 
+<body data-new-gr-c-s-check-loaded="14.1075.0" data-admin-utc-offset="{% now "Z" %}">
+<!-- Container -->
     {% if not is_popup %}
     <!-- Header -->
     {% block header %}
-
-     <style>
-          .top-nav {
-            background-color: aqua;
-            position: fixed;
-            top: 0;
-            width: 100%;
-          }
-          nav ul li {
-            padding-top: 5px !important;
-            padding-bottom: 5px !important;
-          }
-
-          .main-content {
-            margin-top: 50px;
-          }
-     </style>
+     <header class="is-fixed-above-lg">
      <nav class="top-nav">
       <ul>
         <li style="margin-left: 20px;"><strong>{% block branding %}{% endblock %}</strong></li>
@@ -86,59 +69,62 @@
         {% block nav-global %}{% endblock %}
       </ul>
     </nav>
+    </header>
     {% endblock %}
     <!-- END Header -->
 
-    {% block nav-breadcrumbs %}
-      <nav aria-label="{% translate 'Breadcrumbs' %}">
-        {% block breadcrumbs %}
-          <div class="breadcrumbs">
-            <a href="{% url 'admin:index' %}">{% translate 'Home' %}</a>
-            {% if title %} &rsaquo; {{ title }}{% endif %}
-          </div>
-        {% endblock %}
-      </nav>
-    {% endblock %}
-    {% endif %}
 
-    <div class="main" id="main">
-
-      <div class="row">
+    <main class="container-fluid has-table-of-contents page-index">     
+        
               {% if not is_popup and is_nav_sidebar_enabled %}
               {% block nav-sidebar %}
-              <div class="col-xs-4">
-                {% include "admin/nav_sidebar.html" %}
-               </div>
+              
+              {% include "admin/nav_sidebar.html" %}
+              
               {% endblock %}
-            {% endif %}
-         <div class="col-xs-8">
-          <main id="content-start" class="content container main-content" tabindex="-1">
-            {% block messages %}
-              {% if messages %}
-                <ul class="messagelist">{% for message in messages %}
-                  <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message|capfirst }}</li>
-                {% endfor %}</ul>
               {% endif %}
-            {% endblock messages %}
-            <!-- Content -->
-            <div id="content" class="{% block coltype %}colM{% endblock %}">
-              {% block pretitle %}{% endblock %}
-              {% block content_title %}{% if title %}<h1>{{ title }}</h1>{% endif %}{% endblock %}
-              {% block content_subtitle %}{% if subtitle %}<h2>{{ subtitle }}</h2>{% endif %}{% endblock %}
-              {% block content %}
-                {% block object-tools %}{% endblock %}
-                {{ content }}
-              {% endblock %}
-              {% block sidebar %}{% endblock %}
-              <br class="clear">
-            </div>
-            <!-- END Content -->
-          </main>
-         </div>
-      </div>
-    </div>
-    <footer id="footer">{% block footer %}{% endblock %}</footer>
-</div>
+           
+                <div id="content content-start" role="document" class="content main-content" tabindex="-1">
+                  {% block messages %}
+                  {% if messages %}
+                  <ul class="messagelist">{% for message in messages %}
+                    <li{% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message|capfirst }}</li>
+                      {% endfor %}
+                  </ul>
+                  {% endif %}
+                  {% endblock messages %}
+                
+                
+                  {% block nav-breadcrumbs %}
+                  <nav aria-label="breadcrumb">
+                    {% block breadcrumbs %}
+                    <li class="breadcrumbs">
+                      <a href="{% url 'admin:index' %}">{% translate 'Home' %}</a>
+                      {% if title %} &rsaquo; {{ title }}{% endif %}
+                    </li>
+                    {% endblock %}
+                  </nav>
+                  {% endblock %}
+                  {% endif %}
+                
+                  <!-- Content -->
+                  <div class="{% block coltype %}colM{% endblock %}">
+                    {% block pretitle %}{% endblock %}
+                    {% block content_title %}{% if title %}<h1>{{ title }}</h1>{% endif %}{% endblock %}
+                    {% block content_subtitle %}{% if subtitle %}<h2>{{ subtitle }}</h2>{% endif %}{% endblock %}
+                    {% block content %}
+                    {% block object-tools %}{% endblock %}
+                    {{ content }}
+                    {% endblock %}
+                    {% block sidebar %}{% endblock %}
+                    <br class="clear">
+                  </div>
+                  <!-- END Content -->
+                  <footer id="footer">{% block footer %}{% endblock %}</footer>
+                </div>
+                
+    </main>
+   
 <!-- END Container -->
 
 <!-- SVGs -->

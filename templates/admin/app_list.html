@@ -1,46 +1,53 @@
 {% load i18n %}
-
+<div x-data="appList">
 {% if app_list %}
-  {% for app in app_list %}
-    <article>
-    <div class="app-{{ app.app_label }} module{% if app.app_url in request.path|urlencode %} current-app{% endif %}">
-      <header>
-        <a href="{{ app.app_url }}" class="section contrast" title="{% blocktranslate with name=app.name %}Models in the {{ name }} application{% endblocktranslate %}">{{ app.name }}</a>
-      </header>
-      <table>
-        {% for model in app.models %}
-          {% with model_name=model.object_name|lower %}
-            <tr class="model-{{ model_name }}{% if model.admin_url in request.path|urlencode %} current-model{% endif %}">
-              <th scope="row" id="{{ app.app_label }}-{{ model_name }}">
-                {% if model.admin_url %}
-                  <a class="contrast" href="{{ model.admin_url }}"{% if model.admin_url in request.path|urlencode %} aria-current="page"{% endif %}>{{ model.name }}</a>
-                {% else %}
-                  {{ model.name }}
-                {% endif %}
-              </th>
-
-              {% if model.add_url %}
-                <td><a class="contrast" href="{{ model.add_url }}" class="addlink" aria-describedby="{{ app.app_label }}-{{ model_name }}">{% translate 'Add' %}</a></td>
-              {% else %}
-                <td></td>
-              {% endif %}
-
-              {% if model.admin_url and show_changelinks %}
-                {% if model.view_only %}
-                  <td><a class="contrast" href="{{ model.admin_url }}" class="viewlink" aria-describedby="{{ app.app_label }}-{{ model_name }}">{% translate 'View' %}</a></td>
-                {% else %}
-                  <td><a class="contrast" href="{{ model.admin_url }}" class="changelink" aria-describedby="{{ app.app_label }}-{{ model_name }}">{% translate 'Change' %}</a></td>
-                {% endif %}
-              {% elif show_changelinks %}
-                <td></td>
-              {% endif %}
-            </tr>
-          {% endwith %}
-        {% endfor %}
-      </table>
-    </div>
-  </article>
-  {% endfor %}
+  <template x-for="[key, value] in Object.entries(appNames)" :key="key">
+    <details>
+      <summary x-text="key"></summary>
+      <ul>
+        <template x-for="item in value" :key="item.name">
+          <li>
+            <a :href="item.url" class="contrast" x-text="item.name"></a>
+          </li>
+        </template>
+      </ul>
+    </details>
+  </template>
 {% else %}
   <p>{% translate 'You don’t have permission to view or edit anything.' %}</p>
 {% endif %}
+</div>
+
+
+  <script>
+
+    function appList() {
+      return {
+        appNames: {},
+        init() {
+          {% for app in app_list %}
+          this.appNames['{{ app.name }}'] = [];
+          {% endfor %}
+
+          // Populate app names with model names
+          {% for app in app_list %}
+          {% for model in app.models %}
+          this.appNames['{{ app.name }}'].push(
+            {
+              name: '{{ model.name }}',
+              url: '{{ model.admin_url }}',
+              appLabel: '{{ app_label }}',
+              viewOnly: '{{ model.view_only }}'
+            }
+          );
+          {% endfor %}
+          {% endfor %}
+          console.log(this.appNames)
+        }
+      }
+    }
+
+
+
+
+  </script>

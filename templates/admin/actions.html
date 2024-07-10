@@ -1,12 +1,18 @@
 {% load i18n %}
-<div class="actions">
+<article class="actions">
   {% block actions %}
-    {% block actions-form %}
-    {% for field in action_form %}{% if field.label %}<label>{{ field.label }} {{ field }}</label>{% else %}{{ field }}{% endif %}{% endfor %}
-    {% endblock %}
-    {% block actions-submit %}
-    <button type="submit" class="button" title="{% translate "Run the selected action" %}" name="index" value="{{ action_index|default:0 }}">{% translate "Go" %}</button>
-    {% endblock %}
+    <div class="grid">
+       <div>
+          {% block actions-form %}
+          {% for field in action_form %}{% if field.label %}<label>{{ field.label }} {{ field }}</label>{% else %}{{ field }}{% endif %}{% endfor %}
+          {% endblock %}
+       </div>
+       <div>
+          {% block actions-submit %}
+          <button style="margin-top: 35px;" type="submit" class="button" title="{% translate " Run the selected action" %}" name="index" value="{{ action_index|default:0 }}">{% translate "Go" %}</button>
+          {% endblock %}
+       </div>
+    </div>
     {% block actions-counter %}
     {% if actions_selection_counter %}
         <span class="action-counter" data-actions-icnt="{{ cl.result_list|length }}">{{ selection_note }}</span>
@@ -20,4 +26,4 @@
     {% endif %}
     {% endblock %}
   {% endblock %}
-</div>
+</article>
