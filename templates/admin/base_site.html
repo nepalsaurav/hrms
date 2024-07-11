@@ -1,4 +1,5 @@
 {% extends "admin/base.html" %}
+{% load static %}
 
 {% block title %}{% if subtitle %}{{ subtitle }} | {% endif %}{{ title }} | {{ site_title|default:_('Django site admin') }}{% endblock %}
 
@@ -7,6 +8,11 @@
 {% if user.is_anonymous %}
   {% include "admin/color_theme_toggle.html" %}
 {% endif %}
+{% endblock %}
+
+{% block extrahead %}
+<script src="{% static 'js/alpine.js' %}" defer></script>
+<script src="{% static 'js/bootstrap.js' %}" defer></script>
 {% endblock %}
 
 {% block nav-global %}{% endblock %}

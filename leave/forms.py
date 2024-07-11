@@ -3,8 +3,9 @@ from crispy_forms.helper import FormHelper # type: ignore
 from crispy_forms.layout import Layout, Field, Submit, Div, Reset # type: ignore
 from tinymce.widgets import TinyMCE # type: ignore
 from .models import Leave
-from accounts.models import CustomUser
 from widgets.trix import TrixEditor
+from crispy_forms.helper import FormHelper # type: ignore
+
 
 
 
@@ -12,6 +13,10 @@ from widgets.trix import TrixEditor
 
 class LeaveForm(forms.ModelForm):
     reasons = forms.CharField(widget=TrixEditor)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+
     class Meta:
         model = Leave
         fields = ['user', 'start_date', 'end_date', 'reasons', 'leave_type']

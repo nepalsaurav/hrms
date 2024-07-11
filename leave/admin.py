@@ -1,6 +1,7 @@
 from django.contrib import admin
 from .models import Leave
 from import_export.admin import ImportExportModelAdmin
+from .forms import LeaveForm
 
 # Register your models here.
 
