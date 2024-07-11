@@ -11,17 +11,14 @@
 
 {% block nav-sidebar %}{% endblock %}
 
-
-
-
 {% block content %}
-        <div class="row">
-        <div class="col-xs-8" id="content-main">
-        {% include "admin/app_list.html" with app_list=app_list show_changelinks=True %}
-        </div>
-        {% endblock %}
-        {% block sidebar %}
-<div id="content-related" class="col-xs-4">
+<div id="content-main">
+  {% include "admin/app_list.html" with app_list=app_list show_changelinks=True %}
+</div>
+{% endblock %}
+
+{% block sidebar %}
+<div id="content-related">
     <div class="module" id="recent-actions-module">
         <h2>{% translate 'Recent actions' %}</h2>
         <h3>{% translate 'My actions' %}</h3>
@@ -51,10 +48,4 @@
             {% endif %}
     </div>
 </div>
-</div>
 {% endblock %}
-
-
-
-
-

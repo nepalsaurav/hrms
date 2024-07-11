@@ -1,0 +1,43 @@
+{
+  "src/main.js": {
+    "file": "assets/entry-3CXcqGdA.js",
+    "name": "entry",
+    "src": "src/main.js",
+    "isEntry": true,
+    "dynamicImports": [
+      "src/routes/home.svelte",
+      "src/routes/leave/List.svelte",
+      "src/routes/leave/Add.svelte"
+    ],
+    "css": [
+      "assets/entry-CTTX4QBl.css"
+    ]
+  },
+  "src/routes/home.svelte": {
+    "file": "assets/home-Cb79xOds.js",
+    "name": "home",
+    "src": "src/routes/home.svelte",
+    "isDynamicEntry": true,
+    "imports": [
+      "src/main.js"
+    ]
+  },
+  "src/routes/leave/Add.svelte": {
+    "file": "assets/Add-BvXpT1tm.js",
+    "name": "Add",
+    "src": "src/routes/leave/Add.svelte",
+    "isDynamicEntry": true,
+    "imports": [
+      "src/main.js"
+    ]
+  },
+  "src/routes/leave/List.svelte": {
+    "file": "assets/List-1viAPt_S.js",
+    "name": "List",
+    "src": "src/routes/leave/List.svelte",
+    "isDynamicEntry": true,
+    "imports": [
+      "src/main.js"
+    ]
+  }
+}

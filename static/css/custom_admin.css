@@ -14,10 +14,6 @@ body > header {
   padding-block: 0;
 }
 
-.has-table-of-contents {
-  display: flex;
-  height: calc(100% - 60px); /* Adjust according to the height of your header */
-}
 
 #sidebar-menu {
   width: 220px; /* Adjust the width as needed */
@@ -27,15 +23,23 @@ body > header {
   left: 0;
   padding: 20px;
   border-right: var(--pico-border-width) solid var(--pico-muted-border-color);
+  transition: all 0.5s ease;
 }
 
-.main-content {
-  margin-left: 200px; /* Adjust to the width of the sidebar */
+/* .main-content {
+  margin-left: 200px; 
   padding: 20px;
-  flex: 1;
+  flex: 2;
   height: 100%;
+  min-width: 100vw;
   overflow-y: hidden;
   overflow-x: hidden;
+} */
+
+.main-content {
+  width: calc(100% - 220px);
+  margin-left: 220px;
+  transition: all 0.5s ease;
 }
 
 .is-fixed-above-lg {
@@ -98,6 +102,9 @@ nav[aria-label="breadcrumb"] {
 .delete-button:hover {
   --pico-border-color: var(--pico-color-red-500);
 }
+
+
+
 
 /* input[type="search"] {
   width: fit-content !important;

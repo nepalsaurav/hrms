@@ -38,6 +38,8 @@ INSTALLED_APPS = [
     "crispy_bootstrap5",
     "debug_toolbar",
     "django_vite",
+    "import_export",
+    "crispy_forms",
     # Local
     "accounts",
     "pages",
@@ -57,6 +59,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "allauth.account.middleware.AccountMiddleware",  # django-allauth
+    "hrms.middleware.TurboMiddleware"
 ]
 
 # https://docs.djangoproject.com/en/dev/ref/settings/#root-urlconf
@@ -218,3 +221,6 @@ DJANGO_VITE["default"]["manifest_path"] = BASE_DIR / "static/build/manifest.json
 
 
 
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+
+CRISPY_TEMPLATE_PACK = "bootstrap5"
