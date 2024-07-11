@@ -5,4 +5,18 @@
  * namespace (i.e. this preserves pre-existing values for both window.$ and
  * window.jQuery).
  */
+
 window.django = {jQuery: jQuery.noConflict(true)};
+
+const originalReady = django.jQuery.fn.ready;
+
+django.jQuery.fn.ready = function(fn) {
+  if (typeof fn === 'function') {
+    originalReady.call(this, function() {
+      fn.apply(this, arguments);
+    });
+    window.addEventListener('turbo:render', fn);
+  } else {
+    originalReady.apply(this, arguments);
+  }
+};

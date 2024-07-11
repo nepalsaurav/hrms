@@ -11,6 +11,8 @@
 {% endblock %}
 
 {% block extrahead %}
+{{ block.super }}
+<script type="module" src="{% static 'js/turbo.js' %}"></script>
 <script src="{% static 'js/alpine.js' %}" defer></script>
 <script src="{% static 'js/bootstrap.js' %}" defer></script>
 {% endblock %}

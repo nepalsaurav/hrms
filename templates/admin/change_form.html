@@ -56,7 +56,7 @@
 
 <div class="row">
    <div class="col-8">
-       <div class="card" style="overflow: scroll;">
+       <div class="card">
           <div class="card-body">
             {% if is_popup %}<input type="hidden" name="{{ is_popup_var }}" value="1">{% endif %}
             {% if to_field %}<input type="hidden" name="{{ to_field_var }}" value="{{ to_field }}">{% endif %}
@@ -71,15 +71,6 @@
 
             {% crispy adminform.form  %}
             
-            {% block after_field_sets %}{% endblock %}
-            
-            {% block inline_field_sets %}
-            {% for inline_admin_formset in inline_admin_formsets %}
-                {% include inline_admin_formset.opts.template %}
-            {% endfor %}
-            {% endblock %}
-            
-            {% block after_related_objects %}{% endblock %}
           </div>
        </div>
    </div>

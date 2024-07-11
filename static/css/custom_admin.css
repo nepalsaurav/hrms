@@ -46,3 +46,26 @@
 [x-cloak] {
   display: none !important;
 }
+
+textarea {
+  max-width: 32rem;
+}
+
+.datetimeshortcuts:first-of-type {
+  display: none;
+}
+
+
+.object-tools {
+  display: flex;
+  list-style-type: none; /* Remove default bullets */
+  padding: 0;            /* Remove default padding */
+  margin: 0;
+  margin-bottom: 20px;
+  margin-right: 50px;
+  flex-direction: row-reverse;
+}
+
+.object-tools li {
+  margin-left: 10px;
+}
