@@ -2,23 +2,10 @@
 {% load i18n admin_urls static admin_modify %}
 {% load crispy_forms_tags %}
 
-
-
-{% block extrahead %}{{ block.super }}
-<script src="{% url 'admin:jsi18n' %}"></script>
-{{ media }}
-{% endblock %}
-
 {% block coltype %}colM{% endblock %}
-
-{% block extrastyle %}{{ block.super }}
-<link rel="stylesheet" href="{% static "admin/css/forms.css" %}">{% endblock %}
-
 {% block bodyclass %}{{ block.super }} app-{{ opts.app_label }} model-{{ opts.model_name }} change-form{% endblock %}
-
 {% if not is_popup %}
 {% block breadcrumbs %}
-
 <nav aria-label="breadcrumb">
   <ol class="breadcrumb">
     <li class="breadcrumb-item">
@@ -39,7 +26,9 @@
 {% endblock %}
 {% endif %}
 
-{% block content %}<div id="content-main">
+{% block content %}
+
+<div id="content-main" x-data="changeForm" x-cloak>
 {% block object-tools %}
 {% if change and not is_popup %}
   <ul class="object-tools">
@@ -50,10 +39,7 @@
 {% endif %}
 {% endblock %}
 
-
 <form {% if has_file_field %}enctype="multipart/form-data" {% endif %}{% if form_url %}action="{{ form_url }}" {% endif %}method="post" id="{{ opts.model_name }}_form" novalidate>{% csrf_token %}{% block form_top %}{% endblock %}
-
-
 <div class="row">
    <div class="col-8">
        <div class="card">
@@ -67,10 +53,9 @@
                 </p>
                 {{ adminform.form.non_field_errors }}
             {% endif %}
-            
-
+          
             {% crispy adminform.form  %}
-            
+            {% block after_related_objects %}{% endblock %}
           </div>
        </div>
    </div>
@@ -85,21 +70,37 @@
        </div>
    </div>
 </div>
-
-
-
-{% block admin_change_form_document_ready %}
-    <script id="django-admin-form-add-constants"
-            src="{% static 'admin/js/change_form.js' %}"
-            {% if adminform and add %}
-                data-model-name="{{ opts.model_name }}"
-            {% endif %}
-            async>
-    </script>
-{% endblock %}
-
-{# JavaScript for prepopulated fields #}
-{% prepopulated_fields_js %}
 </form>
 </div>
+
+<script>
+   function changeForm() {
+    return {
+      init() {
+          try {
+              document.querySelectorAll('.related-widget-wrapper-link').forEach((e) => {
+                 e.addEventListener('click', (clickEvent) => {
+                    clickEvent.preventDefault()
+                    const url = e.getAttribute('href')
+                    if (url != null) {
+                        window.open(url, '_blank', 'location=yes,height=570,width=900,scrollbars=yes,status=yes')
+                    }
+                 })
+              })
+          } catch {}
+          this.initFlatPicker()
+      },
+     initFlatPicker() {
+        try {
+           document.querySelectorAll(".vDateField").forEach((e) => {
+            e.setAttribute("placeholder", "yyyy-mm-dd")
+            flatpickr(e, {});
+          });
+        } catch {}
+     }
+    }
+   }
+</script>
+
+
 {% endblock %}

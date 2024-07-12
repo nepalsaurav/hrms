@@ -1,19 +1,16 @@
 {% load i18n static %}<!DOCTYPE html>
 {% get_current_language as LANGUAGE_CODE %}{% get_current_language_bidi as LANGUAGE_BIDI %}
-<html lang="{{ LANGUAGE_CODE|default:"en-us" }}" dir="{{ LANGUAGE_BIDI|yesno:'rtl,ltr,auto' }}">
+<html lang="{{ LANGUAGE_CODE|default:'en-us' }}" dir="{{ LANGUAGE_BIDI|yesno:'rtl,ltr,auto' }}">
 <head>
 <title>{% block title %}{% endblock %}</title>
 <link href="{% static 'css/scss.css' %}" rel="stylesheet">
 <link href="{% static 'css/custom_admin.css' %}" rel="stylesheet">
 
 {% block dark-mode-vars %}
-  <script src="{% static "js/fixedEventListener.js" %}"></script>
+  <script src="{% static 'js/fixedEventListener.js' %}"></script>
   {{ block.super }}
 {% endblock %}
 
-{% if not is_popup and is_nav_sidebar_enabled %}
-  <script src="{% static 'admin/js/nav_sidebar.js' %}" defer></script>
-{% endif %}
 {% block extrastyle %}{% endblock %}
 {% if LANGUAGE_BIDI %}<link rel="stylesheet" href="{% block stylesheet_rtl %}{% static "admin/css/rtl.css" %}{% endblock %}">{% endif %}
 {% block extrahead %}{% endblock %}
@@ -23,33 +20,36 @@
 {% block blockbots %}<meta name="robots" content="NONE,NOARCHIVE">{% endblock %}
 </head>
 
-<body class="{% if is_popup %}popup {% endif %}{% block bodyclass %}{% endblock %}"
-  data-admin-utc-offset="{% now "Z" %}">
+<style>
+</style>
 
-
+<body class="{% if is_popup %}popup container {% endif %}{% block bodyclass %}{% endblock %}"
+  data-admin-utc-offset="{% now 'Z' %}">
     {% if not is_popup %}
     <!-- Header -->
     {% block header %}
-
       {% include 'admin/top_nav.html' %}
     {% endblock %}
-    <!-- END Header -->
-    
+    <!-- END Header --> 
   <div class="container-fluid">
       <div class="row flex-nowrap">
-        <aside class="col-auto h-100" id="sidebar">
+        <div class="col-auto h-100" id="sidebar">
           {% block nav-sidebar %}
-          {% include "admin/nav_sidebar.html" %}
+           <aside>
+              {% include "admin/nav_sidebar.html" %}
+           </aside>
           {% endblock %}
-        </aside>
+        </div>
         <div class="col-auto main-content">
           <main id="content-start" class="content" tabindex="-1">
             {% block messages %}
             {% if messages %}
-            <ul class="messagelist">{% for message in messages %}
-              <li{% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message|capfirst }}</li>
-                {% endfor %}
-            </ul>
+            <div class="alert alert-primary" role="alert">
+              <ul class="messagelist list-unstyled">{% for message in messages %}
+                <li{% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message|capfirst }}</li>
+                  {% endfor %}
+              </ul>
+            </div>
             {% endif %}
             {% endblock messages %}
 

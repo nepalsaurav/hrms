@@ -55,11 +55,10 @@ textarea {
   display: none;
 }
 
-
 .object-tools {
   display: flex;
   list-style-type: none; /* Remove default bullets */
-  padding: 0;            /* Remove default padding */
+  padding: 0; /* Remove default padding */
   margin: 0;
   margin-bottom: 20px;
   margin-right: 50px;
@@ -68,4 +67,8 @@ textarea {
 
 .object-tools li {
   margin-left: 10px;
+}
+
+.related-widget-wrapper-link {
+  padding: 5px;
 }

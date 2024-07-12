@@ -1,24 +1,26 @@
 {% extends '_base.html' %}
 {% load static %}
 {% block content %}
-
-<main class="container">
-
-   <div class="grid">
-       <div>
-           <img src="{% static 'image/login.jpg' %}" alt="login-image">
-       </div>
-       <div>
-         <article>
-            <header>Log in</header>
-            <form method="post">
-              {% csrf_token %}
-              {{ form.as_p }}
-              <button class="btn btn-success" type="submit">Log in</button>
-            </form>
-         </article>
-       </div>
-   </div>
- 
-</main>
+{% load crispy_forms_tags %}
+<section class="vh-100">
+  <div class="container h-custom">
+    <div class="row d-flex justify-content-center align-items-center h-100">
+      <div class="col-md-9 col-lg-6 col-xl-5">
+        <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/draw2.webp" class="img-fluid" alt="Sample image">
+      </div>
+      <div class="col-md-8 col-lg-6 col-xl-4 offset-xl-1" style="margin-top: 150px;">
+        <form method="post" novalidate>
+          {% csrf_token %}
+          <div class="card">
+              <div class="card-body">
+                  {{ form|crispy }}
+                  <input class="btn btn-success" value="Log in" type="submit">
+              </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
 {% endblock content %}
+
