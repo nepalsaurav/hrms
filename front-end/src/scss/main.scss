@@ -1,1 +1,12 @@
 @import "../../node_modules/bootstrap/scss/bootstrap.scss";
+
+
+
+#id_format {
+    @extend .form-select;
+    width: 20rem;
+}
+
+#id_resource {
+    @extend #id_format;
+}

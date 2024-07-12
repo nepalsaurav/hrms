@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     "django_vite",
     "import_export",
     "crispy_forms",
+    "widget_tweaks",
     # Local
     "accounts",
     "pages",
@@ -59,7 +60,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "allauth.account.middleware.AccountMiddleware",  # django-allauth
-    "hrms.middleware.TurboMiddleware"
+    # "hrms.middleware.TurboMiddleware"
 ]
 
 # https://docs.djangoproject.com/en/dev/ref/settings/#root-urlconf
