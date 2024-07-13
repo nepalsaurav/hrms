@@ -1,4 +1,5 @@
 {% load i18n %} {% if app_list %}
+{% comment %}
 <ul class="list-unstyled ps-0" x-data="appList">
   <template x-for="[key, value] in Object.entries(appNames)" :key="key">
     <li class="nav-item mb-1">
@@ -16,31 +17,6 @@
     </li>
   </template>
 </ul>
+{% end comment %}
 
-<script>
-    function appList() {
-      return {
-         appNames: {},
-         icons: {
-             "Email addresses" : '<i class="fa fa-envelope" aria-hidden="true"></i>',
-              "Users":  '<i class="fa fa-user" aria-hidden="true"></i>' 
-         },
-         init() {
-           // Construct app names and initialize with empty arrays
-           {% for app in app_list %}
-           this.appNames['{{ app.name }}'] = [];
-           {% endfor %}
-
-           // Populate app names with model names
-           {% for app in app_list %}
-           {% for model in app.models %}
-           this.appNames['{{ app.name }}'].push({ name: '{{ model.name }}', url: '{{ model.admin_url }}', currentUrl: "{{ request.path }}" });
-           {% endfor %}
-           {% endfor %}
-
-           console.log(this.appNames)
-         }
-      }
-    }
-</script>
-{% endif %}
+<h1>side nave</h1>

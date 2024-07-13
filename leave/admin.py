@@ -9,6 +9,9 @@ from import_export import resources
 
 class LeaveResource(resources.ModelResource):
      class Meta:
+         fields = ('user__username', 'leave_type', 'start_date', 'end_date', 'reasons', 'status',)
+         import_id_fields = []
+        #  exclude  = ('id',)
          model = Leave
 
 

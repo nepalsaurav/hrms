@@ -15,7 +15,6 @@ admin.site.logout = LogoutView.as_view()
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("accounts/", include("allauth.urls")),
-    path('tinymce/', include('tinymce.urls')),
     path("", include("pages.urls")),
     path("", include("leave.urls")),
     path("", include("accounts.urls")),

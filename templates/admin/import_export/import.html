@@ -4,7 +4,6 @@
 {% load import_export_tags %}
 {% load static %}
 
-{% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{% static "import_export/import.css" %}" />{% endblock %}
 
 {% block extrahead %}{{ block.super }}
   <script type="text/javascript" src="{% url 'admin:jsi18n' %}"></script>
@@ -30,7 +29,7 @@
         {% translate "Below is a preview of data to be imported. If you are satisfied with the results, click 'Confirm import'" %}
       </p>
       <div class="submit-row">
-        <input type="submit" class="default" name="confirm" value="{% translate "Confirm import" %}">
+        <input type="submit" class="default btn btn-primary" name="confirm" value="{% translate "Confirm import" %}">
       </div>
     </form>
     {% endblock %}
@@ -67,7 +66,7 @@
 
       {% block form_submit_button %}
         <div class="submit-row">
-          <input type="submit" class="default" value="{% translate "Submit" %}">
+          <input type="submit" class="default btn btn-primary" value="{% translate "Submit" %}">
         </div>
       {% endblock %}
     </form>

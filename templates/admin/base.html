@@ -28,63 +28,52 @@
     {% if not is_popup %}
     <!-- Header -->
     {% block header %}
-      {% include 'admin/top_nav.html' %}
+      {% include 'admin/top_nav.html' with app_list=available_apps show_changelinks=False %}
     {% endblock %}
     <!-- END Header --> 
-  <div class="container-fluid">
-      <div class="row flex-nowrap">
-        <div class="col-auto h-100" id="sidebar">
-          {% block nav-sidebar %}
-           <aside>
-              {% include "admin/nav_sidebar.html" %}
-           </aside>
-          {% endblock %}
-        </div>
-        <div class="col-auto main-content">
-          <main id="content-start" class="content" tabindex="-1">
-            {% block messages %}
-            {% if messages %}
-            <div class="alert alert-primary" role="alert">
-              <ul class="messagelist list-unstyled">{% for message in messages %}
-                <li{% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message|capfirst }}</li>
-                  {% endfor %}
-              </ul>
-            </div>
-            {% endif %}
-            {% endblock messages %}
-
-            {% block nav-breadcrumbs %}
-            <nav aria-label="breadcrumb">
-              {% block breadcrumbs %}
-              <ol class="breadcrumb">
-                 <li class="breadcrumb-item">
-                    <a href="{% url 'admin:index' %}">{% translate 'Home' %}</a>
-                 </li>
-                {% if title %} &rsaquo; {{ title }}{% endif %}
-              </ol>
-              {% endblock %}
-            </nav>
-            {% endblock %}
-            {% endif %}
-            <!-- Content -->
-            <div id="content" class="{% block coltype %}colM{% endblock %}">
-              {% block pretitle %}{% endblock %}
-              <br>
-              {% block content_title %}{% if title %}<h5 class="text-muted text-uppercase">{{ title }}</h5>{% endif %}{% endblock %}
-              <br>
-              {% block content_subtitle %}{% if subtitle %}<h6 class="text-muted">{{ subtitle }}</h6>{% endif %}{% endblock %}
-              {% block content %}
-              {% block object-tools %}{% endblock %}
-              {{ content }}
-              {% endblock %}
-              {% block sidebar %}{% endblock %}
-              <br class="clear">
-            </div>
-            <!-- END Content -->
-          </main>
-          <footer id="footer">{% block footer %}{% endblock %}</footer>
-        </div>
+  <div class="container" style="margin-top: 120px;">
+    <main id="content-start" class="content" tabindex="-1">
+      {% block messages %}
+      {% if messages %}
+      <div class="alert alert-primary" role="alert">
+        <ul class="messagelist list-unstyled">{% for message in messages %}
+          <li{% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message|capfirst }}</li>
+            {% endfor %}
+        </ul>
       </div>
+      {% endif %}
+      {% endblock messages %}
+
+      {% block nav-breadcrumbs %}
+      <nav aria-label="breadcrumb">
+        {% block breadcrumbs %}
+        <ol class="breadcrumb">
+           <li class="breadcrumb-item">
+              <a href="{% url 'admin:index' %}">{% translate 'Home' %}</a>
+           </li>
+          {% if title %} &rsaquo; {{ title }}{% endif %}
+        </ol>
+        {% endblock %}
+      </nav>
+      {% endblock %}
+      {% endif %}
+      <!-- Content -->
+      <div id="content" class="{% block coltype %}colM{% endblock %}">
+        {% block pretitle %}{% endblock %}
+        <br>
+        {% block content_title %}{% if title %}<h5 class="text-muted text-uppercase">{{ title }}</h5>{% endif %}{% endblock %}
+        <br>
+        {% block content_subtitle %}{% if subtitle %}<h6 class="text-muted">{{ subtitle }}</h6>{% endif %}{% endblock %}
+        {% block content %}
+        {% block object-tools %}{% endblock %}
+        {{ content }}
+        {% endblock %}
+        {% block sidebar %}{% endblock %}
+        <br class="clear">
+      </div>
+      <!-- END Content -->
+    </main>
+    <footer id="footer">{% block footer %}{% endblock %}</footer>  
   </div>
 
 

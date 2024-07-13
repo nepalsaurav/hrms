@@ -42,72 +42,77 @@
 {% block coltype %}{% endblock %}
 
 {% block content %}
-  <div id="content-main" x-data="changeList" x-cloak>
-    {% block object-tools %}
-        <ul class="object-tools">
-          {% block object-tools-items %}
-            {% change_list_object_tools %}
-          {% endblock %}
-        </ul>
-    {% endblock %}
-    {% if cl.formset and cl.formset.errors %}
-        <p class="errornote">
-        {% blocktranslate count counter=cl.formset.total_error_count %}Please correct the error below.{% plural %}Please correct the errors below.{% endblocktranslate %}
-        </p>
-        {{ cl.formset.non_form_errors }}
-    {% endif %}
-    <div class="module{% if cl.has_filters %} filtered{% endif %}" id="changelist">
+  
+<div id="content-main" x-data="changeList" x-cloak>
+  {% block object-tools %}
+      <ul class="object-tools">
+        {% block object-tools-items %}
+          {% change_list_object_tools %}
+        {% endblock %}
+      </ul>
+  {% endblock %}
+  {% if cl.formset and cl.formset.errors %}
+      <p class="errornote">
+      {% blocktranslate count counter=cl.formset.total_error_count %}Please correct the error below.{% plural %}Please correct the errors below.{% endblocktranslate %}
+      </p>
+      {{ cl.formset.non_form_errors }}
+  {% endif %}
+  <div class="module{% if cl.has_filters %} filtered{% endif %}" id="changelist">
 
-        <div class="row">
-          <div class="{% if cl.has_filters %}col-9{% else %}col-12{% endif %}">
-              <div class="changelist-form-container">
-                {% block search %}{% search_form cl %}{% endblock %}
-                {% block date_hierarchy %}{% if cl.date_hierarchy %}{% date_hierarchy cl %}{% endif %}{% endblock %}
-              
-                <form id="changelist-form" method="post" {% if cl.formset and cl.formset.is_multipart %} enctype="multipart/form-data" {% endif %} novalidate>{% csrf_token %}
-                  {% if cl.formset %}
-                  <div>{{ cl.formset.management_form }}</div>
-                  {% endif %}
-                  {% block result_list %}
-                  {% if action_form and actions_on_top and cl.show_admin_actions %}{% admin_actions %}{% endif %}
-                  {% result_list cl %}
-                  {% if action_form and actions_on_bottom and cl.show_admin_actions %}{% admin_actions %}{% endif %}
-                  {% endblock %}
-                  {% block pagination %}{% pagination cl %}{% endblock %}
-                </form>
-              </div>
-          </div>
-          {% block filters %}
-          {% if cl.has_filters %}
-          <div class="col-3">
-                <div class="card">
-                  <div class="card-header">{% translate 'Filter' %}</div>
-                    <div class="card-body">
-                        <nav id="changelist-filter" aria-labelledby="changelist-filter-header">
-                          {% if cl.is_facets_optional or cl.has_active_filters %}
-                          <div id="changelist-filter-extra-actions">
-                            {% if cl.is_facets_optional %}
-                            <small>
-                              {% if cl.add_facets %}<a href="{{ cl.remove_facet_link }}" class="hidelink text-decoration-none text-muted">{% translate "Hide counts" %}</a>
-                              {% else %}<a href="{{ cl.add_facet_link }}" class="viewlink text-decoration-none text-muted">{% translate "Show counts" %}</a>{% endif %}
-                            </small>{% endif %}
-                            <br>
-                            {% if cl.has_active_filters %}
-                            <small>
-                              <a href="{{ cl.clear_all_filters_qs }}" class="text-decoration-none text-muted">&#10006; {% translate "Clear all filters" %}</a>
-                            </small>{% endif %}
-                          </div>
-                          {% endif %}
+      
+        
+            
+              {% block search %}{% search_form cl %}{% endblock %}
+              {% block date_hierarchy %}{% if cl.date_hierarchy %}{% date_hierarchy cl %}{% endif %}{% endblock %}
+            
+              <form id="changelist-form" method="post" {% if cl.formset and cl.formset.is_multipart %} enctype="multipart/form-data" {% endif %} novalidate>{% csrf_token %}
+                {% if cl.formset %}
+                <div>{{ cl.formset.management_form }}</div>
+                {% endif %}
+              <div class="row">
+                    <div class="{% if cl.has_filters %}col-9{% else %}col-12{% endif %}">
+                    {% block result_list %}
+                    {% if action_form and actions_on_top and cl.show_admin_actions %}{% admin_actions %}{% endif %}
+                    {% result_list cl %}
+                    {% if action_form and actions_on_bottom and cl.show_admin_actions %}{% admin_actions %}{% endif %}
+                    {% endblock %}
+                    {% block pagination %}{% pagination cl %}{% endblock %}
+                  </div>
+              </form>
+            
+       
+        {% block filters %}
+        {% if cl.has_filters %}
+              <div class="col-3">
+              <div class="card" style="margin-top: 230px;">
+                <div class="card-header">{% translate 'Filter' %}</div>
+                  <div class="card-body">
+                      <nav id="changelist-filter" aria-labelledby="changelist-filter-header">
+                        {% if cl.is_facets_optional or cl.has_active_filters %}
+                        <div id="changelist-filter-extra-actions">
+                          {% if cl.is_facets_optional %}
+                          <small>
+                            {% if cl.add_facets %}<a href="{{ cl.remove_facet_link }}" class="hidelink text-decoration-none text-muted">{% translate "Hide counts" %}</a>
+                            {% else %}<a href="{{ cl.add_facet_link }}" class="viewlink text-decoration-none text-muted">{% translate "Show counts" %}</a>{% endif %}
+                          </small>{% endif %}
                           <br>
-                          {% for spec in cl.filter_specs %}{% admin_list_filter cl spec %}{% endfor %}
-                        </nav>
-                    </div>
-                </div>
-          </div>
-          {% endif %}
-          {% endblock %}
-        </div>
-    </div>
+                          {% if cl.has_active_filters %}
+                          <small>
+                            <a href="{{ cl.clear_all_filters_qs }}" class="text-decoration-none text-muted">&#10006; {% translate "Clear all filters" %}</a>
+                          </small>{% endif %}
+                        </div>
+                        {% endif %}
+                        <br>
+                        {% for spec in cl.filter_specs %}{% admin_list_filter cl spec %}{% endfor %}
+                      </nav>
+                  </div>
+              </div>
+            </div>
+            </div>
+       
+        {% endif %}
+        {% endblock %}
+      </div>
   </div>
 
 

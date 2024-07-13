@@ -1,0 +1,108 @@
+{% extends "admin/change_form.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+  <div x-data="userForm" x-cloak>
+    <ul class="nav justify-content-center mb-4">
+        <template x-for="[key, value] in Object.entries(stepForms)" :key="key">
+              <li class="nav-item">
+                 <div class="row">
+                    <div class="col-12">
+                        <i class="fa-solid fa-circle text-secondary ms-4" style="font-size: 50px;"></i>
+                    </div>
+                    <div class="col-12">
+                        <a class="nav-link active text-uppercase" @click="activateStepForm(key)" :class="key===activeStep ? 'text-dark' : 'text-muted'" aria-current="page" x-text="value.label"></a>
+                    </div>
+                 </div>
+              </li>
+        </template>
+    </ul>
+     <div class="card">
+         <div class="card-body">
+            <form method="post" action="" class="user_change" enctype="multipart/form-data" novalidate>
+                {% csrf_token %}
+                {{ adminform.form|crispy }}
+                <div class="submit-row" x-show="activeStep==='credentials'">
+                  <input type="submit" class="default" value="Save">
+                </div>
+            </form>
+         </div>
+     </div>
+  </div>
+
+  <script>
+    function userForm() {
+        return {
+            stepForms: {
+                "basicInfo": {
+                    label: "Basic Info",
+                    fields: ['first_name', 'last_name', 'email']
+                },
+                "configData": {
+                    label: "Configuration Data",
+                    fields: ['date_joined']
+                },
+                "permission": {
+                    label: "Permission",
+                    fields: ['is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions']
+                },
+                "credentials": {
+                    label: "Credentials",
+                    fields: ['username', 'password', 'password1', 'password2']
+                }
+            },
+            activeStep: 'basicInfo',
+            init() {
+                this.hideAll();
+                this.showForm(this.activeStep);
+            },
+            hideAll() {
+                document.querySelectorAll('.user_change div').forEach((e) => {
+                    e.style.display = "none";
+                });
+            },
+            showForm(stepName) {
+                const step = this.stepForms[stepName];
+                if (!step) return; // Handle invalid step names gracefully
+                
+                step.fields.forEach((field) => {
+                    try {
+                        const elm = document.querySelector(`#div_id_${field}`);
+                        if (elm) {
+                            elm.style.display = "block";
+                            elm.parentElement.style.display = "block";
+                            elm.querySelectorAll('div').forEach((e) => {
+                                e.style.display = "block";
+                            });
+                        }
+                    } catch (error) {
+                        console.error('Error showing form:', error);
+                    }
+                });
+                this.activeStep = stepName;
+            },
+            activateStepForm(name) {
+                console.log(name); // Logging for debugging purposes
+                this.hideAll();
+                this.showForm(name);
+            }
+        };
+    }
+    
+  </script>
+
+  <script>
+      const d = [
+        'id', 
+        'password', 
+        'last_login', 
+        'is_superuser', 
+        'username', 
+        'first_name', 
+        'last_name', 
+        'email', 
+        'is_staff', 
+        'is_active', 
+        'date_joined']
+
+  </script>
+{% endblock %}
