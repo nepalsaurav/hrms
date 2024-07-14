@@ -2,56 +2,84 @@
 {% load crispy_forms_tags %}
 {% block content %}
   <div x-data="userForm" x-cloak>
-    <ul class="nav justify-content-center mb-4">
-        <template x-for="[key, value] in Object.entries(stepForms)" :key="key">
-              <li class="nav-item">
-                 <div class="row">
-                    <div class="col-12">
-                        <i class="fa-solid fa-circle text-secondary ms-4" style="font-size: 50px;"></i>
-                    </div>
-                    <div class="col-12">
-                        <a class="nav-link active text-uppercase" @click="activateStepForm(key)" :class="key===activeStep ? 'text-dark' : 'text-muted'" aria-current="page" x-text="value.label"></a>
-                    </div>
-                 </div>
-              </li>
-        </template>
-    </ul>
-     <div class="card">
-         <div class="card-body">
-            <form method="post" action="" class="user_change" enctype="multipart/form-data" novalidate>
-                {% csrf_token %}
-                {{ adminform.form|crispy }}
-                <div class="submit-row" x-show="activeStep==='credentials'">
-                  <input type="submit" class="default" value="Save">
+    <div class="row">
+        <div class="col-3">
+            <div class="bs-stepper vertical">
+                <div class="bs-stepper-header" role="tablist">
+                    <!-- steps here -->
+                    <template x-for="[key, value] in Object.entries(stepForms)" :key="key">
+                         <span style="display: contents;">
+                            <div class="step">
+                                <button @click="activateStepForm(key)" type="button" class="step-trigger" role="tab" :class="setClassName(key)">
+                                    <span x-html="value.icons"></span>
+                                    <span class="bs-stepper-label" x-text="value.label"></span>
+                                </button>
+                            </div>
+                            <div class="bs-stepper-line"></div>
+                        </span>
+                    </template>
                 </div>
-            </form>
+            </div>
+        </div>
+         <div class="col-9">
+            <div class="card" style="width: 40rem;">
+                <div class="card-header" x-text="stepForms[activeStep].label"></div>
+                <div class="card-body">
+                    <form method="post" action="" class="user_change" enctype="multipart/form-data" novalidate>
+                        <fieldset>
+                            {% csrf_token %}
+                            {{ adminform.form|crispy }}
+                            <div class="submit-row" x-show="activeStep==='credentials'">
+                                <input type="submit" class="btn btn-primary" value="Save">
+                            </div>
+                        </fieldset>
+                    </form>
+                </div>
+            </div>
          </div>
-     </div>
+    </div>
   </div>
 
   <script>
     function userForm() {
         return {
             stepForms: {
-                "basicInfo": {
-                    label: "Basic Info",
+                "personal": {
+                    label: `Personal`,
+                    icons: `<i class="fa-solid fa-user"></i>`,
                     fields: ['first_name', 'last_name', 'email']
                 },
                 "configData": {
-                    label: "Configuration Data",
+                    label: `Configuration Data`,
+                    icons: `<i class="fa-solid fa-gear"></i>`,
                     fields: ['date_joined']
                 },
                 "permission": {
                     label: "Permission",
-                    fields: ['is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions']
+                    icons: `<i class="fa-solid fa-key"></i>`,
+                    fields: ['is_active', 'is_staff', 'is_superuser', 'groups']
                 },
                 "credentials": {
                     label: "Credentials",
-                    fields: ['username', 'password', 'password1', 'password2']
+                    icons: `<i class="fa-solid fa-lock"></i>`,
+                    fields: ['username', 'password']
                 }
             },
-            activeStep: 'basicInfo',
+            activeStep: 'personal',
+            errorInSteps: new Set(),
+            completeForm: new Set(),
             init() {
+                document.querySelectorAll(".invalid-feedback").forEach((e) => {
+                    const id = e.getAttribute("id")
+                    Object.entries(this.stepForms).forEach(([key, value]) => {
+                        const errorId = id.split("_").at(-1)
+                        if(value.fields.includes(errorId)) {
+                            this.errorInSteps.add(key)
+                        }
+                    })
+                })
+                console.log(this.errorInSteps)
+                
                 this.hideAll();
                 this.showForm(this.activeStep);
             },
@@ -81,28 +109,52 @@
                 this.activeStep = stepName;
             },
             activateStepForm(name) {
-                console.log(name); // Logging for debugging purposes
                 this.hideAll();
                 this.showForm(name);
-            }
+                const previousKey = this.getPreviousKey(name)
+                const filledFields = []
+                const fields = this.stepForms[previousKey].fields
+                fields.forEach((e) => {
+                    const div = document.querySelector(`#div_id_${e}`)
+                    div.querySelectorAll('input').forEach((input) => {
+                        if (input.value != "") {
+                            filledFields.push(e)
+                        }
+                    })
+                })
+                if (filledFields.length >= fields.length) {
+                    this.completeForm.add(previousKey)
+                }
+                console.log(filledFields, fields)
+                console.log(filledFields.length, fields.length)
+                console.log(this.completeForm)
+            },
+            setClassName(name) {
+                if (this.errorInSteps.has(name)) {
+                    return "text-danger"
+                }
+                if (this.completeForm.has(name)) {
+                    return "text-success"
+                }
+                if (this.activeStep === name) {
+                    return "text-primary"
+                }
+
+            },
+            getPreviousKey(currentKey) {
+                const keys = Object.keys(this.stepForms);
+                const currentIndex = keys.indexOf(currentKey);
+                console.log(currentIndex, keys.length)
+                if (currentIndex > 0) {
+                    return keys[currentIndex - 1];
+                } if (currentIndex === 0) {
+                    return keys[keys.length-1]
+                }
+           }
         };
     }
     
   </script>
 
-  <script>
-      const d = [
-        'id', 
-        'password', 
-        'last_login', 
-        'is_superuser', 
-        'username', 
-        'first_name', 
-        'last_name', 
-        'email', 
-        'is_staff', 
-        'is_active', 
-        'date_joined']
-
-  </script>
+  
 {% endblock %}
