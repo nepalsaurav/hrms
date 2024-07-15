@@ -1,6 +1,6 @@
 {% block usertools %}
 {% if has_permission %}
-<nav  x-data="topNav" x-cloak class="navbar navbar-expand-lg fixed-top bg-body-tertiary border-bottom" style="box-shadow: none;">
+<nav x-data="topNav" x-cloak class="navbar navbar-expand-lg sticky-top bg-body-tertiary border-bottom" style="box-shadow: none;">
     <div class="container-fluid">
       <a class="navbar-brand" href="#">HRMS Admin</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -10,7 +10,6 @@
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
           <template x-for="[key, value] in Object.entries(appNames)">
               <li class="nav-item dropdown">
-                <span x-text="console.log(key)"></span>
                 <a x-text="key" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                 </a>
                 <ul class="dropdown-menu">
@@ -50,17 +49,19 @@
           },
           init() {
             // Construct app names and initialize with empty arrays
-            {% if app_list %}
-            {% for app in app_list %}
-            {this.appNames['{{ app.name }}'] = []}
-            {% endfor %}
-            {% for app in app_list %}
-            {% for model in app.models %}
-            {this.appendToAppList('{{ app.name }}', '{{ model.name }}', '{{ model.admin_url }}', '{{ request.path }}')}
-            {% endfor %}
-            {% endfor %}
-            {% endif %}
-            //  console.log(this.appNames)
+            const _ = `
+              {% if app_list %}
+              {% for app in app_list %}
+              ${this.appNames['{{ app.name }}'] = []}
+              {% endfor %}
+              {% for app in app_list %}
+              {% for model in app.models %}
+              ${this.appendToAppList('{{ app.name }}', '{{ model.name }}', '{{ model.admin_url }}', '{{ request.path }}')}
+              {% endfor %}
+              {% endfor %}
+              {% endif %}
+            `
+             console.log(this.appNames)
           },
 
           appendToAppList(name, modelName, url, currentUrl) {

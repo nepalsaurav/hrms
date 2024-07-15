@@ -5,8 +5,15 @@
 <div id="site-name"><a href="{% url 'admin:index' %}">{{ site_header|default:_('Django administration') }}</a></div>
 {% endblock %}
 {% block extrahead %}
+<meta name="htmx-config" content='
+  {
+    "refreshOnHistoryMiss":"true",
+    "historyCacheSize": "0",
+    "globalViewTransitions": "true",
+  }
+'>
 <script src="https://unpkg.com/htmx.org@2.0.1/dist/htmx.js" integrity="sha384-gpIh5aLQ0qmX8kZdyhsd6jA24uKLkqIr1WAGtantR4KsS97l/NRBvh8/8OYGThAf" crossorigin="anonymous"></script>
-<script src="{% static 'js/alpine_morph.js' %}" defer></script>
+{% comment %}<script src="{% static 'js/alpine_morph.js' %}" defer></script>{% endcomment %}
 <script src="{% static 'esbuild/alpine/alpine.js' %}" defer></script>
 <script src="{% static 'js/bootstrap.js' %}" defer></script>
 <link rel="stylesheet" href="{% static 'css/flatpicker.css' %}">
@@ -30,13 +37,13 @@
 <script>
   /* If browser back button was used, flush cache */
       
-  window.addEventListener('popstate', function (event) {
+  {{/*  window.addEventListener('popstate', function (event) {
             // Handle the back/forward button event here
             if(event.state.htmx) {
                location.reload()
             }
             console.log('Popstate event detected!');
-  });
+  });  */}}
       
 </script>
 {% endblock %}
