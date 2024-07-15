@@ -1,6 +1,6 @@
 {% block usertools %}
 {% if has_permission %}
-<nav x-data="topNav" x-cloak class="navbar navbar-expand-lg fixed-top bg-body-tertiary border-bottom" style="box-shadow: none;">
+<nav  x-data="topNav" x-cloak class="navbar navbar-expand-lg fixed-top bg-body-tertiary border-bottom" style="box-shadow: none;">
     <div class="container-fluid">
       <a class="navbar-brand" href="#">HRMS Admin</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -8,23 +8,24 @@
       </button>
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-          <template x-for="[key, value] in Object.entries(appNames)" :key="key">
-             <li class="nav-item dropdown">
+          <template x-for="[key, value] in Object.entries(appNames)">
+              <li class="nav-item dropdown">
+                <span x-text="console.log(key)"></span>
                 <a x-text="key" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                 </a>
                 <ul class="dropdown-menu">
-                   <template x-for="item in value" :key="item.name">
-                      <li>
-                        <a class="dropdown-item" :href="item.url" x-text="item.name"></a>
-                      </li>
-                   </template>
-                </ul>    
-             </li>
+                  <template x-for="item in value" :key="item.name">
+                    <li>
+                      <a class="dropdown-item" :href="item.url" x-text="item.name"></a>
+                    </li>
+                  </template>
+                </ul>
+              </li>
           </template>
         </ul>
         <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
           <li class="nav-item">
-            <a class="nav-link" aria-current="page" href="{{ site_url }}">View site</a>
+            <a class="nav-link" aria-current="page" target="_blank" href="{{ site_url }}">View site</a>
           </li>
           {% if user.has_usable_password %}
           <li class="nav-item">
@@ -38,52 +39,45 @@
         </form>
       </div>
     </div>
-  </nav>
+    <script>
+      function topNav() {
+        return {
+          appNames: {},
+          sepeateAppDropdown: ['Accounts', 'Authentication and Authorization'],
+          icons: {
+            "Email addresses": '<i class="fa fa-envelope" aria-hidden="true"></i>',
+            "Users": '<i class="fa fa-user" aria-hidden="true"></i>'
+          },
+          init() {
+            // Construct app names and initialize with empty arrays
+            {% if app_list %}
+            {% for app in app_list %}
+            {this.appNames['{{ app.name }}'] = []}
+            {% endfor %}
+            {% for app in app_list %}
+            {% for model in app.models %}
+            {this.appendToAppList('{{ app.name }}', '{{ model.name }}', '{{ model.admin_url }}', '{{ request.path }}')}
+            {% endfor %}
+            {% endfor %}
+            {% endif %}
+            //  console.log(this.appNames)
+          },
 
-  
-
-
-<script>
-    function topNav() {
-       return {
-         appNames: {},
-         sepeateAppDropdown: ['Accounts', 'Authentication and Authorization'],
-         icons: {
-             "Email addresses" : '<i class="fa fa-envelope" aria-hidden="true"></i>',
-              "Users":  '<i class="fa fa-user" aria-hidden="true"></i>' 
-         },
-         init() {
-           // Construct app names and initialize with empty arrays
-           const _ =` 
-           {% for app in app_list %}
-           ${this.appNames['{{ app.name }}'] = []}
-           {% endfor %}
-
-           // Populate app names with model names
-           {% for app in app_list %}
-           {% for model in app.models %}
-           ${this.appendToAppList('{{ app.name }}', '{{ model.name }}', '{{ model.admin_url }}', '{{ request.path }}')}
-           {% endfor %}
-           {% endfor %}
-           `
-           this.appNames
-           console.log(this.appNames)
-         },
-
-         appendToAppList(name, modelName, url, currentUrl) {
-           let appName = name; 
-           if(!this.sepeateAppDropdown.includes(appName)) {
-             if(this.appNames['Modules'] === undefined) {
-               this.appNames['Modules'] = []
-             }
-             appName = 'Modules'
-             delete this.appNames[name]
-           } 
-           this.appNames[appName].push({ name: modelName, url: url, currentUrl: currentUrl })
-         }
+          appendToAppList(name, modelName, url, currentUrl) {
+            let appName = name;
+            if (!this.sepeateAppDropdown.includes(appName)) {
+              if (this.appNames['Modules'] === undefined) {
+                this.appNames['Modules'] = []
+              }
+              appName = 'Modules'
+              delete this.appNames[name]
+            }
+            this.appNames[appName].push({ name: modelName, url: url, currentUrl: currentUrl })
+          },
+        }
       }
-    }
-</script>
+    </script>
+  </nav>
 {% endif %}
 {% endblock %}
 {% block nav-global %}{% endblock %}

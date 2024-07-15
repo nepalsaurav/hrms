@@ -20,17 +20,26 @@
 
 {% block content %}
 
+  <script type="text/javascript" src="{% url 'admin:jsi18n' %}"></script>
+  {% if confirm_form %}
+  {{ confirm_form.media }}
+  {% else %}
+  {{ form.media }}
+  {% endif %}
+ 
   {% if confirm_form %}
     {% block confirm_import_form %}
-    <form action="{% url opts|admin_urlname:"process_import" %}" method="POST">
-      {% csrf_token %}
-      {{ confirm_form.as_p }}
-      <p>
-        {% translate "Below is a preview of data to be imported. If you are satisfied with the results, click 'Confirm import'" %}
-      </p>
-      <div class="submit-row">
-        <input type="submit" class="default btn btn-primary" name="confirm" value="{% translate "Confirm import" %}">
-      </div>
+    <form action="{% url opts|admin_urlname:'process_import' %}" method="POST">
+       <fieldset>
+          {% csrf_token %}
+          {{ confirm_form.as_p }}
+          <p>
+            {% translate "Below is a preview of data to be imported. If you are satisfied with the results, click 'Confirm import'" %}
+          </p>
+          <div class="submit-row">
+            <input type="submit" class="default btn btn-primary" name="confirm" value="{% translate " Confirm import" %}">
+          </div>
+       </fieldset>
     </form>
     {% endblock %}
   {% else %}
@@ -44,7 +53,7 @@
       {% block form_detail %}
           <fieldset class="module aligned">
           {% for field in form %}
-            <div class="form-row">
+            <div class="form-row mt-3">
               {{ field.errors }}
 
               {{ field.label_tag }}
@@ -61,13 +70,12 @@
               {% endif %}
             </div>
           {% endfor %}
+          {% block form_submit_button %}
+          <div class="mt-3">
+            <input type="submit" class="default btn btn-primary" value="{% translate " Submit" %}">
+          </div>
+          {% endblock %}
         </fieldset>
-      {% endblock %}
-
-      {% block form_submit_button %}
-        <div class="submit-row">
-          <input type="submit" class="default btn btn-primary" value="{% translate "Submit" %}">
-        </div>
       {% endblock %}
     </form>
     {% endblock %}

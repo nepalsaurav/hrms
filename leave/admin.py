@@ -19,7 +19,7 @@ class LeaveRequestAdmin(ImportExportModelAdmin):
     list_display = ['user', 'leave_type', 'start_date', 'end_date', 'status']
     list_filter = ['status', 'leave_type', 'user__username']
     search_fields = ['user__username']
-    autocomplete_fields = ['user']
     resource_classes = [LeaveResource]
+    form = LeaveForm
 
 admin.site.register(Leave, LeaveRequestAdmin)

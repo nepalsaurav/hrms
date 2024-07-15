@@ -22,8 +22,6 @@ ALLOWED_HOSTS = ["localhost", "0.0.0.0", "127.0.0.1", "*"]
 # Application definition
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
 INSTALLED_APPS = [
-    "dal",
-    "dal_select2",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -36,7 +34,7 @@ INSTALLED_APPS = [
     "allauth",
     "allauth.account",
     "crispy_bootstrap5",
-    "debug_toolbar",
+    # "debug_toolbar",
     "django_vite",
     "import_export",
     "crispy_forms",
@@ -54,13 +52,14 @@ MIDDLEWARE = [
     "whitenoise.middleware.WhiteNoiseMiddleware",  # WhiteNoise
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
-    "debug_toolbar.middleware.DebugToolbarMiddleware",  # Django Debug Toolbar
+   
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "allauth.account.middleware.AccountMiddleware",  # django-allauth
     "hrms.middleware.DisableCSRFMiddleware"
+    
     # "hrms.middleware.TurboMiddleware"
 ]
 
@@ -226,3 +225,5 @@ DJANGO_VITE["default"]["manifest_path"] = BASE_DIR / "static/build/manifest.json
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 
 CRISPY_TEMPLATE_PACK = "bootstrap5"
+
+

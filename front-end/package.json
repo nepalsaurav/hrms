@@ -16,7 +16,9 @@
     "vite": "^5.3.1"
   },
   "dependencies": {
+    "@alpinejs/morph": "^3.14.1",
     "@picocss/pico": "^2.0.6",
+    "alpinejs": "^3.14.1",
     "bootstrap": "5.3.3",
     "bootstrap-icons": "^1.11.3",
     "esbuild-sass-plugin": "^3.3.1",

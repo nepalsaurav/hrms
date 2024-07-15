@@ -16,3 +16,12 @@ from django.utils.deprecation import MiddlewareMixin
 class DisableCSRFMiddleware(MiddlewareMixin):
     def process_request(self, request):
         setattr(request, '_dont_enforce_csrf_checks', True)
+
+
+def CacheControlMiddleware(get_response):
+    def middleware(request):
+        response = get_response(request)
+        if "HX-Request" in request.headers:
+            response["Cache-Control"] = "no-store, max-age=0"
+        return response
+    return middleware

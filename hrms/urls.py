@@ -20,9 +20,9 @@ urlpatterns = [
     path("", include("accounts.urls")),
 ]
 
-if settings.DEBUG:
-    import debug_toolbar # type: ignore
+# if settings.DEBUG:
+#     import debug_toolbar # type: ignore
 
-    urlpatterns = [
-        path("__debug__/", include(debug_toolbar.urls)),
-    ] + urlpatterns
+#     urlpatterns = [
+#         path("__debug__/", include(debug_toolbar.urls)),
+#     ] + urlpatterns

@@ -2,7 +2,6 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from .models import CustomUser
 from django.contrib.auth.models import Group
-from django.contrib.auth.models import Permission
 
 groups = forms.ModelMultipleChoiceField(
         queryset=Group.objects.all(),
@@ -17,10 +16,11 @@ class CustomUserCreationForm(UserCreationForm):
     groups = groups
     class Meta(UserCreationForm.Meta):
         model = CustomUser
-        fields = ('email',)
+        fields = ('username','email',)
 
 class CustomUserChangeForm(UserChangeForm):
     groups = groups
     class Meta:
         model = CustomUser
-        fields = ('email', 'username',)
+        exclude = ['last_login', 'user_permissions', 'date_joined', 'username',]
+        # fields = ('email', 'username',)

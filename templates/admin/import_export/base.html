@@ -3,7 +3,6 @@
 {% load admin_urls %}
 {% load static %}
 
-{% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{% static "admin/css/forms.css" %}" />{% endblock %}
 {% block bodyclass %}{{ block.super }} {{ opts.app_label }}-{{ opts.object_name.lower }} change-form{% endblock %}
 {% if not is_popup %}
 {% block breadcrumbs %}
@@ -21,6 +20,5 @@
     {% block breadcrumbs_last %}{% endblock %}
 </li>
 </ol>
-
 {% endblock %}
 {% endif %}
