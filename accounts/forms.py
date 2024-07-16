@@ -53,12 +53,22 @@ class CustomUserChangeForm(UserChangeForm):
 
 
 class CustomGroupForm(forms.ModelForm):
+    name = forms.CharField(
+        widget=forms.TextInput(attrs={"placeholder": "group name"}),
+    )
     permissions = forms.ModelMultipleChoiceField(
         queryset=Permission.objects.all(),
         widget=forms.CheckboxSelectMultiple,
         label="User Permissions",
         required= False
     )
+    
+    def clean(self):
+        cleaned_data = self.cleaned_data
+        name = cleaned_data['name']   
+        if name and Group.objects.filter(name=name):
+            raise forms.ValidationError({ 'name':["dublicate group name"]})
+        return cleaned_data
     class Meta:
         model = Group
         fields = ['name', 'permissions']

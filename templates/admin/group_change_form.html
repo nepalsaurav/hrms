@@ -5,31 +5,29 @@
 
 {% block content %}
 <div id="content-main" x-data="groupChange">
-    <form id="{{ opts.model_name }}_form" method="post" enctype="multipart/form-data" novalidate>
+    <form x-ref="modelPermission" id="{{ opts.model_name }}_form" method="post" enctype="multipart/form-data" novalidate>
         {% csrf_token %}
-        <fieldset class="module aligned">
+        <fieldset class="module aligned" :disabled="ispermissionModelFormLoading">
             <div class="card">
                 <div class="card-header">Model Permissions</div>
                 <div class="card-body">
-                    <div id="div_id_name" class="mb-3">
-                        <label for="id_name" class="form-label requiredField">
-                            Name<span class="asteriskField">*</span>
-                        </label>
-                        <input type="text" name="name" class="vTextField admintextinputwidget form-control" maxlength="150" required="" id="id_name">
-                    </div>
+                    {{ adminform.form.name|as_crispy_field }}
                     <template x-if="Object.keys(groupedPermissionData).length != 0">
                         <template x-for="[key, value] in Object.entries(groupedPermissionData)">
                               <div class="card mb-3">
                                   <div class="card-body">
                                     <div class="row">
                                         <div class="col-2">
-                                            <p class="text-capitalize text-muted" x-text="key"></p>
+                                            <p class="text-capitalize text-muted align-middle" x-text="key"></p>
                                         </div>
                                         <div class="col-10">
-                                            <div class="row">
-                                                <template x-for="item in value">
-                                                    <div class="col-4">
-                                                        <p x-text="item.name"></p>
+                                            <div class="row border-right">
+                                                <template x-for="item in sortByName(value)">
+                                                    <div class="col-6">
+                                                        <div class="form-check">
+                                                            <input @change="handleCheckBoxChange" class="form-check-input" type="checkbox" name="permissions" :value="item.id" :id="item.codename">
+                                                            <label x-text="item.name" class="form-check-label" :for="item.codename"></label>
+                                                          </div>                                                          
                                                     </div>
                                                 </template>
                                             </div>
@@ -50,18 +48,79 @@
      function groupChange() {
         return {
             groupedPermissionData: {},
+            ispermissionModelFormLoading: false,
+            modelPermissionId: [],
             init() {
-                const permissionObject = JSON.parse("{{ permission_dict|escapejs }}")
-                this.groupedPermissionData = permissionObject.reduce((acc, item) => {
-                    const key = item.content_type.name;
-                    const value = { id: item.id, name: item.name, codename: item.codename };
-                    if (!acc[key]) {
+                const ignoreModel = [
+                    'email address', 
+                    'email confirmation',
+                    'log entry',
+                    'advancedfilter',
+                    'permission',
+                    'content type',
+                    'session',
+                    'site'
+                ];
+                const ignorePermissionName = [
+                    'add_',
+                    'change_',
+                    'delete_',
+                    'view_'
+                ];
+                const ignorePermissionNameModelList = [
+                    'leave'
+                ]
+                const permissionObject = JSON.parse("{{ permission_dict|escapejs }}");
+                acc = {};
+                permissionObject.forEach((item) => {
+                      const key = item.content_type.name;
+                      if (ignoreModel.includes(key)) return;
+                      const ignorePermissionNameForKey = ignorePermissionName.map((e) => (`${e}${key}`))
+                      if (ignorePermissionNameModelList.includes(key) && ignorePermissionNameForKey.includes(item.codename)) return
+                      const value = { id: item.id, name: item.name, codename: item.codename };
+                      if (!acc[key]) {
                         acc[key] = [];
-                    }
-                    acc[key].push(value);
-                    return acc;
-                }, {});
+                      }
+                      acc[key].push(value);
+                })
+                this.groupedPermissionData = acc
                 console.log(this.groupedPermissionData)
+            },
+            sortByName(array) {
+                return array.sort((a, b) => a.name > b.name)
+            },
+            async handleCheckBoxChange(event) {
+               const form = this.$refs.modelPermission
+               const formData = new FormData(form)
+               if (formData.get('name') === "") { 
+                alert("please enter group name"); 
+                event.target.checked = false
+                return; 
+               }
+               const id = event.target.value
+               console.log(id)
+               this.ispermissionModelFormLoading = true
+               const currentUrl = location.href
+               console.log(currentUrl)
+               const resp = await fetch(currentUrl, {
+                  method: "post",
+                  body: formData
+               })
+               console.log(resp)
+               if (resp.status === 200) {
+                 if(!resp.redirected) {
+                    const htmlResp = await resp.text();
+                    const parse = new DOMParser();
+                    const htmlDoc = parse.parseFromString(htmlResp, 'text/html');
+                    document.querySelector('#div_id_name').innerHTML = htmlDoc.querySelector('#div_id_name').innerHTML
+                 }
+                 this.ispermissionModelFormLoading = false;
+                 return;
+               }
+               if (resp.status != 200) {
+                   window.location.href = resp.url;
+               }
+               
             }
         }
      }
