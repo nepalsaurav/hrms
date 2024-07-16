@@ -1,4 +1,5 @@
 /*global gettext, interpolate, ngettext*/
+
 "use strict";
 {
   function show(selector) {
@@ -67,18 +68,9 @@
     // data-actions-icnt is defined in the generated HTML
     // and contains the total amount of objects in the queryset
     const actions_icnt = Number(counter.dataset.actionsIcnt);
-    counter.textContent = interpolate(
-      ngettext(
-        "%(sel)s of %(cnt)s selected",
-        "%(sel)s of %(cnt)s selected",
-        sel
-      ),
-      {
-        sel: sel,
-        cnt: actions_icnt,
-      },
-      true
-    );
+    counter.textContent = `
+         ${sel}s of ${actions_icnt}s selected
+    `;
     const allToggle = document.getElementById(options.allToggleId);
     allToggle.checked = sel === actionCheckboxes.length;
     if (allToggle.checked) {
@@ -215,17 +207,16 @@
     window.addEventListener("pageshow", (event) =>
       updateCounter(actionCheckboxes, options)
     );
+    htmx.on("htmx:afterSettle", () => {
+      updateCounter(actionCheckboxes, options);
+    });
   };
 
   // Call function fn when the DOM is loaded and ready. If it is already
   // loaded, call the function now.
   // http://youmightnotneedjquery.com/#ready
   function ready(fn) {
-    if (window.readyState !== "loading") {
-      fn();
-    } else {
-      window.addEventListener("load", fn);
-    }
+    htmx.onLoad(fn);
   }
 
   ready(function () {

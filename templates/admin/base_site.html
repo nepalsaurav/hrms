@@ -5,21 +5,24 @@
 <div id="site-name"><a href="{% url 'admin:index' %}">{{ site_header|default:_('Django administration') }}</a></div>
 {% endblock %}
 {% block extrahead %}
-<meta name="htmx-config" content='
-  {
-    "refreshOnHistoryMiss":"true",
-    "historyCacheSize": "0",
-    "globalViewTransitions": "true",
-  }
-'>
+<meta name="htmx-config" content='{"refreshOnHistoryMiss":"true","historyCacheSize": "0","globalViewTransitions": "true"}'>
 <script src="https://unpkg.com/htmx.org@2.0.1/dist/htmx.js" integrity="sha384-gpIh5aLQ0qmX8kZdyhsd6jA24uKLkqIr1WAGtantR4KsS97l/NRBvh8/8OYGThAf" crossorigin="anonymous"></script>
-{% comment %}<script src="{% static 'js/alpine_morph.js' %}" defer></script>{% endcomment %}
 <script src="{% static 'esbuild/alpine/alpine.js' %}" defer></script>
 <script src="{% static 'js/bootstrap.js' %}" defer></script>
 <link rel="stylesheet" href="{% static 'css/flatpicker.css' %}">
 <script src="{% static 'js/flatpicker.js' %}"></script>
 <script src="{% static 'js/trix.js' %}"></script>
 <link rel="stylesheet" href="{% static 'css/trix.css' %}">
+
+<script src="{% static 'js/admin/jquery.js' %}"></script>
+<script src="{% static 'js/admin/jquery.init.js' %}"></script>
+<script src="{% static 'js/admin/core.js' %}"></script>
+<script src="{% static 'js/admin/actions.js' %}"></script>
+<script src="{% static 'js/admin/urlify.js' %}"></script>
+<script src="{% static 'js/admin/prepopulate.js' %}"></script>
+<script src="{% static 'js/admin/xregexp.js' %}"></script>
+<script src="{% static 'js/admin/filters.js' %}" defer></script>
+<!-- jquery -->
 {% comment %}
   <p>this script below is for form submit disabled fieldset</p>
 {% endcomment %}
@@ -45,6 +48,13 @@
             console.log('Popstate event detected!');
   });  */}}
       
+</script>
+
+
+<script>
+    htmx.on('htmx:afterRequest', () => {
+      window.scrollTo({top: 0})
+    })
 </script>
 {% endblock %}
 

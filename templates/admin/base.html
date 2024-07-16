@@ -14,10 +14,7 @@
 </head>
 <body 
     hx-boost="true" 
-    hx-ext="morphdom-swap" 
-    hx-select="#content-start" 
-    hx-target="#content-start" 
-    hx-swap="outerHTML show:#content-start:top transition:true" 
+    hx-swap="outerHTML" 
     class="{% if is_popup %}popup container {% endif %}{% block bodyclass %}{% endblock %}"
     data-admin-utc-offset="{% now 'Asia/Kathmandu' %}"
     id="body">
@@ -28,8 +25,8 @@
       {% include 'admin/top_nav.html' with app_list=available_apps show_changelinks=False %}
     {% endblock %}
     <!-- END Header --> 
-  <div class="container" style="padding-top: 50px;">
-    <main id="content-start" class="content" tabindex="-1">
+  <div class="container" id="content-start"  style="padding-top: 50px;">
+    <main class="content" tabindex="-1">
       {% block messages %}
       {% if messages %}
       <div class="alert alert-primary" role="alert">

@@ -5,3 +5,6 @@ class CustomUser(AbstractUser):
 
     def __str__(self):
         return self.username
+    class Meta:
+        verbose_name = 'Employee'
+        verbose_name_plural = 'Employees'

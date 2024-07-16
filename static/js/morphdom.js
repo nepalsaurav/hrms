@@ -1,772 +1,569 @@
-(function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
-    typeof define === 'function' && define.amd ? define(factory) :
-    (global = global || self, global.morphdom = factory());
-}(this, function () { 'use strict';
-
-    var DOCUMENT_FRAGMENT_NODE = 11;
-
-    function morphAttrs(fromNode, toNode) {
-        var toNodeAttrs = toNode.attributes;
-        var attr;
-        var attrName;
-        var attrNamespaceURI;
-        var attrValue;
-        var fromValue;
-
-        // document-fragments dont have attributes so lets not do anything
-        if (toNode.nodeType === DOCUMENT_FRAGMENT_NODE || fromNode.nodeType === DOCUMENT_FRAGMENT_NODE) {
-          return;
-        }
-
-        // update attributes on original DOM element
-        for (var i = toNodeAttrs.length - 1; i >= 0; i--) {
-            attr = toNodeAttrs[i];
-            attrName = attr.name;
-            attrNamespaceURI = attr.namespaceURI;
-            attrValue = attr.value;
-
-            if (attrNamespaceURI) {
-                attrName = attr.localName || attrName;
-                fromValue = fromNode.getAttributeNS(attrNamespaceURI, attrName);
-
-                if (fromValue !== attrValue) {
-                    if (attr.prefix === 'xmlns'){
-                        attrName = attr.name; // It's not allowed to set an attribute with the XMLNS namespace without specifying the `xmlns` prefix
-                    }
-                    fromNode.setAttributeNS(attrNamespaceURI, attrName, attrValue);
-                }
-            } else {
-                fromValue = fromNode.getAttribute(attrName);
-
-                if (fromValue !== attrValue) {
-                    fromNode.setAttribute(attrName, attrValue);
-                }
-            }
-        }
-
-        // Remove any extra attributes found on the original DOM element that
-        // weren't found on the target element.
-        var fromNodeAttrs = fromNode.attributes;
-
-        for (var d = fromNodeAttrs.length - 1; d >= 0; d--) {
-            attr = fromNodeAttrs[d];
-            attrName = attr.name;
-            attrNamespaceURI = attr.namespaceURI;
-
-            if (attrNamespaceURI) {
-                attrName = attr.localName || attrName;
-
-                if (!toNode.hasAttributeNS(attrNamespaceURI, attrName)) {
-                    fromNode.removeAttributeNS(attrNamespaceURI, attrName);
-                }
-            } else {
-                if (!toNode.hasAttribute(attrName)) {
-                    fromNode.removeAttribute(attrName);
-                }
-            }
-        }
+var Idiomorph = (function () {
+  "use strict";
+  let o = new Set();
+  let n = {
+    morphStyle: "outerHTML",
+    callbacks: {
+      beforeNodeAdded: t,
+      afterNodeAdded: t,
+      beforeNodeMorphed: t,
+      afterNodeMorphed: t,
+      beforeNodeRemoved: t,
+      afterNodeRemoved: t,
+      beforeAttributeUpdated: t,
+    },
+    head: {
+      style: "merge",
+      shouldPreserve: function (e) {
+        return e.getAttribute("im-preserve") === "true";
+      },
+      shouldReAppend: function (e) {
+        return e.getAttribute("im-re-append") === "true";
+      },
+      shouldRemove: t,
+      afterHeadMorphed: t,
+    },
+  };
+  function e(e, t, n = {}) {
+    if (e instanceof Document) {
+      e = e.documentElement;
     }
-
-    var range; // Create a range object for efficently rendering strings to elements.
-    var NS_XHTML = 'http://www.w3.org/1999/xhtml';
-
-    var doc = typeof document === 'undefined' ? undefined : document;
-    var HAS_TEMPLATE_SUPPORT = !!doc && 'content' in doc.createElement('template');
-    var HAS_RANGE_SUPPORT = !!doc && doc.createRange && 'createContextualFragment' in doc.createRange();
-
-    function createFragmentFromTemplate(str) {
-        var template = doc.createElement('template');
-        template.innerHTML = str;
-        return template.content.childNodes[0];
+    if (typeof t === "string") {
+      t = y(t);
     }
-
-    function createFragmentFromRange(str) {
-        if (!range) {
-            range = doc.createRange();
-            range.selectNode(doc.body);
-        }
-
-        var fragment = range.createContextualFragment(str);
-        return fragment.childNodes[0];
-    }
-
-    function createFragmentFromWrap(str) {
-        var fragment = doc.createElement('body');
-        fragment.innerHTML = str;
-        return fragment.childNodes[0];
-    }
-
-    /**
-     * This is about the same
-     * var html = new DOMParser().parseFromString(str, 'text/html');
-     * return html.body.firstChild;
-     *
-     * @method toElement
-     * @param {String} str
-     */
-    function toElement(str) {
-        str = str.trim();
-        if (HAS_TEMPLATE_SUPPORT) {
-          // avoid restrictions on content for things like `<tr><th>Hi</th></tr>` which
-          // createContextualFragment doesn't support
-          // <template> support not available in IE
-          return createFragmentFromTemplate(str);
-        } else if (HAS_RANGE_SUPPORT) {
-          return createFragmentFromRange(str);
-        }
-
-        return createFragmentFromWrap(str);
-    }
-
-    /**
-     * Returns true if two node's names are the same.
-     *
-     * NOTE: We don't bother checking `namespaceURI` because you will never find two HTML elements with the same
-     *       nodeName and different namespace URIs.
-     *
-     * @param {Element} a
-     * @param {Element} b The target element
-     * @return {boolean}
-     */
-    function compareNodeNames(fromEl, toEl) {
-        var fromNodeName = fromEl.nodeName;
-        var toNodeName = toEl.nodeName;
-        var fromCodeStart, toCodeStart;
-
-        if (fromNodeName === toNodeName) {
-            return true;
-        }
-
-        fromCodeStart = fromNodeName.charCodeAt(0);
-        toCodeStart = toNodeName.charCodeAt(0);
-
-        // If the target element is a virtual DOM node or SVG node then we may
-        // need to normalize the tag name before comparing. Normal HTML elements that are
-        // in the "http://www.w3.org/1999/xhtml"
-        // are converted to upper case
-        if (fromCodeStart <= 90 && toCodeStart >= 97) { // from is upper and to is lower
-            return fromNodeName === toNodeName.toUpperCase();
-        } else if (toCodeStart <= 90 && fromCodeStart >= 97) { // to is upper and from is lower
-            return toNodeName === fromNodeName.toUpperCase();
-        } else {
-            return false;
-        }
-    }
-
-    /**
-     * Create an element, optionally with a known namespace URI.
-     *
-     * @param {string} name the element name, e.g. 'div' or 'svg'
-     * @param {string} [namespaceURI] the element's namespace URI, i.e. the value of
-     * its `xmlns` attribute or its inferred namespace.
-     *
-     * @return {Element}
-     */
-    function createElementNS(name, namespaceURI) {
-        return !namespaceURI || namespaceURI === NS_XHTML ?
-            doc.createElement(name) :
-            doc.createElementNS(namespaceURI, name);
-    }
-
-    /**
-     * Copies the children of one DOM element to another DOM element
-     */
-    function moveChildren(fromEl, toEl) {
-        var curChild = fromEl.firstChild;
-        while (curChild) {
-            var nextChild = curChild.nextSibling;
-            toEl.appendChild(curChild);
-            curChild = nextChild;
-        }
-        return toEl;
-    }
-
-    function syncBooleanAttrProp(fromEl, toEl, name) {
-        if (fromEl[name] !== toEl[name]) {
-            fromEl[name] = toEl[name];
-            if (fromEl[name]) {
-                fromEl.setAttribute(name, '');
-            } else {
-                fromEl.removeAttribute(name);
-            }
-        }
-    }
-
-    var specialElHandlers = {
-        OPTION: function(fromEl, toEl) {
-            var parentNode = fromEl.parentNode;
-            if (parentNode) {
-                var parentName = parentNode.nodeName.toUpperCase();
-                if (parentName === 'OPTGROUP') {
-                    parentNode = parentNode.parentNode;
-                    parentName = parentNode && parentNode.nodeName.toUpperCase();
-                }
-                if (parentName === 'SELECT' && !parentNode.hasAttribute('multiple')) {
-                    if (fromEl.hasAttribute('selected') && !toEl.selected) {
-                        // Workaround for MS Edge bug where the 'selected' attribute can only be
-                        // removed if set to a non-empty value:
-                        // https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/12087679/
-                        fromEl.setAttribute('selected', 'selected');
-                        fromEl.removeAttribute('selected');
-                    }
-                    // We have to reset select element's selectedIndex to -1, otherwise setting
-                    // fromEl.selected using the syncBooleanAttrProp below has no effect.
-                    // The correct selectedIndex will be set in the SELECT special handler below.
-                    parentNode.selectedIndex = -1;
-                }
-            }
-            syncBooleanAttrProp(fromEl, toEl, 'selected');
-        },
-        /**
-         * The "value" attribute is special for the <input> element since it sets
-         * the initial value. Changing the "value" attribute without changing the
-         * "value" property will have no effect since it is only used to the set the
-         * initial value.  Similar for the "checked" attribute, and "disabled".
-         */
-        INPUT: function(fromEl, toEl) {
-            syncBooleanAttrProp(fromEl, toEl, 'checked');
-            syncBooleanAttrProp(fromEl, toEl, 'disabled');
-
-            if (fromEl.value !== toEl.value) {
-                fromEl.value = toEl.value;
-            }
-
-            if (!toEl.hasAttribute('value')) {
-                fromEl.removeAttribute('value');
-            }
-        },
-
-        TEXTAREA: function(fromEl, toEl) {
-            var newValue = toEl.value;
-            if (fromEl.value !== newValue) {
-                fromEl.value = newValue;
-            }
-
-            var firstChild = fromEl.firstChild;
-            if (firstChild) {
-                // Needed for IE. Apparently IE sets the placeholder as the
-                // node value and vise versa. This ignores an empty update.
-                var oldValue = firstChild.nodeValue;
-
-                if (oldValue == newValue || (!newValue && oldValue == fromEl.placeholder)) {
-                    return;
-                }
-
-                firstChild.nodeValue = newValue;
-            }
-        },
-        SELECT: function(fromEl, toEl) {
-            if (!toEl.hasAttribute('multiple')) {
-                var selectedIndex = -1;
-                var i = 0;
-                // We have to loop through children of fromEl, not toEl since nodes can be moved
-                // from toEl to fromEl directly when morphing.
-                // At the time this special handler is invoked, all children have already been morphed
-                // and appended to / removed from fromEl, so using fromEl here is safe and correct.
-                var curChild = fromEl.firstChild;
-                var optgroup;
-                var nodeName;
-                while(curChild) {
-                    nodeName = curChild.nodeName && curChild.nodeName.toUpperCase();
-                    if (nodeName === 'OPTGROUP') {
-                        optgroup = curChild;
-                        curChild = optgroup.firstChild;
-                    } else {
-                        if (nodeName === 'OPTION') {
-                            if (curChild.hasAttribute('selected')) {
-                                selectedIndex = i;
-                                break;
-                            }
-                            i++;
-                        }
-                        curChild = curChild.nextSibling;
-                        if (!curChild && optgroup) {
-                            curChild = optgroup.nextSibling;
-                            optgroup = null;
-                        }
-                    }
-                }
-
-                fromEl.selectedIndex = selectedIndex;
-            }
-        }
-    };
-
-    var ELEMENT_NODE = 1;
-    var DOCUMENT_FRAGMENT_NODE$1 = 11;
-    var TEXT_NODE = 3;
-    var COMMENT_NODE = 8;
-
-    function noop() {}
-
-    function defaultGetNodeKey(node) {
-      if (node) {
-        return (node.getAttribute && node.getAttribute('id')) || node.id;
+    let l = M(t);
+    let r = m(e, l, n);
+    return a(e, l, r);
+  }
+  function a(r, i, o) {
+    if (o.head.block) {
+      let t = r.querySelector("head");
+      let n = i.querySelector("head");
+      if (t && n) {
+        let e = c(n, t, o);
+        Promise.all(e).then(function () {
+          a(r, i, Object.assign(o, { head: { block: false, ignore: true } }));
+        });
+        return;
       }
     }
-
-    function morphdomFactory(morphAttrs) {
-
-      return function morphdom(fromNode, toNode, options) {
-        if (!options) {
-          options = {};
-        }
-
-        if (typeof toNode === 'string') {
-          if (fromNode.nodeName === '#document' || fromNode.nodeName === 'HTML' || fromNode.nodeName === 'BODY') {
-            var toNodeHtml = toNode;
-            toNode = doc.createElement('html');
-            toNode.innerHTML = toNodeHtml;
-          } else {
-            toNode = toElement(toNode);
-          }
-        } else if (toNode.nodeType === DOCUMENT_FRAGMENT_NODE$1) {
-          toNode = toNode.firstElementChild;
-        }
-
-        var getNodeKey = options.getNodeKey || defaultGetNodeKey;
-        var onBeforeNodeAdded = options.onBeforeNodeAdded || noop;
-        var onNodeAdded = options.onNodeAdded || noop;
-        var onBeforeElUpdated = options.onBeforeElUpdated || noop;
-        var onElUpdated = options.onElUpdated || noop;
-        var onBeforeNodeDiscarded = options.onBeforeNodeDiscarded || noop;
-        var onNodeDiscarded = options.onNodeDiscarded || noop;
-        var onBeforeElChildrenUpdated = options.onBeforeElChildrenUpdated || noop;
-        var skipFromChildren = options.skipFromChildren || noop;
-        var addChild = options.addChild || function(parent, child){ return parent.appendChild(child); };
-        var childrenOnly = options.childrenOnly === true;
-
-        // This object is used as a lookup to quickly find all keyed elements in the original DOM tree.
-        var fromNodesLookup = Object.create(null);
-        var keyedRemovalList = [];
-
-        function addKeyedRemoval(key) {
-          keyedRemovalList.push(key);
-        }
-
-        function walkDiscardedChildNodes(node, skipKeyedNodes) {
-          if (node.nodeType === ELEMENT_NODE) {
-            var curChild = node.firstChild;
-            while (curChild) {
-
-              var key = undefined;
-
-              if (skipKeyedNodes && (key = getNodeKey(curChild))) {
-                // If we are skipping keyed nodes then we add the key
-                // to a list so that it can be handled at the very end.
-                addKeyedRemoval(key);
-              } else {
-                // Only report the node as discarded if it is not keyed. We do this because
-                // at the end we loop through all keyed elements that were unmatched
-                // and then discard them in one final pass.
-                onNodeDiscarded(curChild);
-                if (curChild.firstChild) {
-                  walkDiscardedChildNodes(curChild, skipKeyedNodes);
-                }
-              }
-
-              curChild = curChild.nextSibling;
-            }
-          }
-        }
-
-        /**
-        * Removes a DOM node out of the original DOM
-        *
-        * @param  {Node} node The node to remove
-        * @param  {Node} parentNode The nodes parent
-        * @param  {Boolean} skipKeyedNodes If true then elements with keys will be skipped and not discarded.
-        * @return {undefined}
-        */
-        function removeNode(node, parentNode, skipKeyedNodes) {
-          if (onBeforeNodeDiscarded(node) === false) {
-            return;
-          }
-
-          if (parentNode) {
-            parentNode.removeChild(node);
-          }
-
-          onNodeDiscarded(node);
-          walkDiscardedChildNodes(node, skipKeyedNodes);
-        }
-
-        // // TreeWalker implementation is no faster, but keeping this around in case this changes in the future
-        // function indexTree(root) {
-        //     var treeWalker = document.createTreeWalker(
-        //         root,
-        //         NodeFilter.SHOW_ELEMENT);
-        //
-        //     var el;
-        //     while((el = treeWalker.nextNode())) {
-        //         var key = getNodeKey(el);
-        //         if (key) {
-        //             fromNodesLookup[key] = el;
-        //         }
-        //     }
-        // }
-
-        // // NodeIterator implementation is no faster, but keeping this around in case this changes in the future
-        //
-        // function indexTree(node) {
-        //     var nodeIterator = document.createNodeIterator(node, NodeFilter.SHOW_ELEMENT);
-        //     var el;
-        //     while((el = nodeIterator.nextNode())) {
-        //         var key = getNodeKey(el);
-        //         if (key) {
-        //             fromNodesLookup[key] = el;
-        //         }
-        //     }
-        // }
-
-        function indexTree(node) {
-          if (node.nodeType === ELEMENT_NODE || node.nodeType === DOCUMENT_FRAGMENT_NODE$1) {
-            var curChild = node.firstChild;
-            while (curChild) {
-              var key = getNodeKey(curChild);
-              if (key) {
-                fromNodesLookup[key] = curChild;
-              }
-
-              // Walk recursively
-              indexTree(curChild);
-
-              curChild = curChild.nextSibling;
-            }
-          }
-        }
-
-        indexTree(fromNode);
-
-        function handleNodeAdded(el) {
-          onNodeAdded(el);
-
-          var curChild = el.firstChild;
-          while (curChild) {
-            var nextSibling = curChild.nextSibling;
-
-            var key = getNodeKey(curChild);
-            if (key) {
-              var unmatchedFromEl = fromNodesLookup[key];
-              // if we find a duplicate #id node in cache, replace `el` with cache value
-              // and morph it to the child node.
-              if (unmatchedFromEl && compareNodeNames(curChild, unmatchedFromEl)) {
-                curChild.parentNode.replaceChild(unmatchedFromEl, curChild);
-                morphEl(unmatchedFromEl, curChild);
-              } else {
-                handleNodeAdded(curChild);
-              }
-            } else {
-              // recursively call for curChild and it's children to see if we find something in
-              // fromNodesLookup
-              handleNodeAdded(curChild);
-            }
-
-            curChild = nextSibling;
-          }
-        }
-
-        function cleanupFromEl(fromEl, curFromNodeChild, curFromNodeKey) {
-          // We have processed all of the "to nodes". If curFromNodeChild is
-          // non-null then we still have some from nodes left over that need
-          // to be removed
-          while (curFromNodeChild) {
-            var fromNextSibling = curFromNodeChild.nextSibling;
-            if ((curFromNodeKey = getNodeKey(curFromNodeChild))) {
-              // Since the node is keyed it might be matched up later so we defer
-              // the actual removal to later
-              addKeyedRemoval(curFromNodeKey);
-            } else {
-              // NOTE: we skip nested keyed nodes from being removed since there is
-              //       still a chance they will be matched up later
-              removeNode(curFromNodeChild, fromEl, true /* skip keyed nodes */);
-            }
-            curFromNodeChild = fromNextSibling;
-          }
-        }
-
-        function morphEl(fromEl, toEl, childrenOnly) {
-          var toElKey = getNodeKey(toEl);
-
-          if (toElKey) {
-            // If an element with an ID is being morphed then it will be in the final
-            // DOM so clear it out of the saved elements collection
-            delete fromNodesLookup[toElKey];
-          }
-
-          if (!childrenOnly) {
-            // optional
-            var beforeUpdateResult = onBeforeElUpdated(fromEl, toEl);
-            if (beforeUpdateResult === false) {
-              return;
-            } else if (beforeUpdateResult instanceof HTMLElement) {
-              fromEl = beforeUpdateResult;
-            }
-
-            // update attributes on original DOM element first
-            morphAttrs(fromEl, toEl);
-            // optional
-            onElUpdated(fromEl);
-
-            if (onBeforeElChildrenUpdated(fromEl, toEl) === false) {
-              return;
-            }
-          }
-
-          if (fromEl.nodeName !== 'TEXTAREA') {
-            morphChildren(fromEl, toEl);
-          } else {
-            specialElHandlers.TEXTAREA(fromEl, toEl);
-          }
-        }
-
-        function morphChildren(fromEl, toEl) {
-          var skipFrom = skipFromChildren(fromEl, toEl);
-          var curToNodeChild = toEl.firstChild;
-          var curFromNodeChild = fromEl.firstChild;
-          var curToNodeKey;
-          var curFromNodeKey;
-
-          var fromNextSibling;
-          var toNextSibling;
-          var matchingFromEl;
-
-          // walk the children
-          outer: while (curToNodeChild) {
-            toNextSibling = curToNodeChild.nextSibling;
-            curToNodeKey = getNodeKey(curToNodeChild);
-
-            // walk the fromNode children all the way through
-            while (!skipFrom && curFromNodeChild) {
-              fromNextSibling = curFromNodeChild.nextSibling;
-
-              if (curToNodeChild.isSameNode && curToNodeChild.isSameNode(curFromNodeChild)) {
-                curToNodeChild = toNextSibling;
-                curFromNodeChild = fromNextSibling;
-                continue outer;
-              }
-
-              curFromNodeKey = getNodeKey(curFromNodeChild);
-
-              var curFromNodeType = curFromNodeChild.nodeType;
-
-              // this means if the curFromNodeChild doesnt have a match with the curToNodeChild
-              var isCompatible = undefined;
-
-              if (curFromNodeType === curToNodeChild.nodeType) {
-                if (curFromNodeType === ELEMENT_NODE) {
-                  // Both nodes being compared are Element nodes
-
-                  if (curToNodeKey) {
-                    // The target node has a key so we want to match it up with the correct element
-                    // in the original DOM tree
-                    if (curToNodeKey !== curFromNodeKey) {
-                      // The current element in the original DOM tree does not have a matching key so
-                      // let's check our lookup to see if there is a matching element in the original
-                      // DOM tree
-                      if ((matchingFromEl = fromNodesLookup[curToNodeKey])) {
-                        if (fromNextSibling === matchingFromEl) {
-                          // Special case for single element removals. To avoid removing the original
-                          // DOM node out of the tree (since that can break CSS transitions, etc.),
-                          // we will instead discard the current node and wait until the next
-                          // iteration to properly match up the keyed target element with its matching
-                          // element in the original tree
-                          isCompatible = false;
-                        } else {
-                          // We found a matching keyed element somewhere in the original DOM tree.
-                          // Let's move the original DOM node into the current position and morph
-                          // it.
-
-                          // NOTE: We use insertBefore instead of replaceChild because we want to go through
-                          // the `removeNode()` function for the node that is being discarded so that
-                          // all lifecycle hooks are correctly invoked
-                          fromEl.insertBefore(matchingFromEl, curFromNodeChild);
-
-                          // fromNextSibling = curFromNodeChild.nextSibling;
-
-                          if (curFromNodeKey) {
-                            // Since the node is keyed it might be matched up later so we defer
-                            // the actual removal to later
-                            addKeyedRemoval(curFromNodeKey);
-                          } else {
-                            // NOTE: we skip nested keyed nodes from being removed since there is
-                            //       still a chance they will be matched up later
-                            removeNode(curFromNodeChild, fromEl, true /* skip keyed nodes */);
-                          }
-
-                          curFromNodeChild = matchingFromEl;
-                          curFromNodeKey = getNodeKey(curFromNodeChild);
-                        }
-                      } else {
-                        // The nodes are not compatible since the "to" node has a key and there
-                        // is no matching keyed node in the source tree
-                        isCompatible = false;
-                      }
-                    }
-                  } else if (curFromNodeKey) {
-                    // The original has a key
-                    isCompatible = false;
-                  }
-
-                  isCompatible = isCompatible !== false && compareNodeNames(curFromNodeChild, curToNodeChild);
-                  if (isCompatible) {
-                    // We found compatible DOM elements so transform
-                    // the current "from" node to match the current
-                    // target DOM node.
-                    // MORPH
-                    morphEl(curFromNodeChild, curToNodeChild);
-                  }
-
-                } else if (curFromNodeType === TEXT_NODE || curFromNodeType == COMMENT_NODE) {
-                  // Both nodes being compared are Text or Comment nodes
-                  isCompatible = true;
-                  // Simply update nodeValue on the original node to
-                  // change the text value
-                  if (curFromNodeChild.nodeValue !== curToNodeChild.nodeValue) {
-                    curFromNodeChild.nodeValue = curToNodeChild.nodeValue;
-                  }
-
-                }
-              }
-
-              if (isCompatible) {
-                // Advance both the "to" child and the "from" child since we found a match
-                // Nothing else to do as we already recursively called morphChildren above
-                curToNodeChild = toNextSibling;
-                curFromNodeChild = fromNextSibling;
-                continue outer;
-              }
-
-              // No compatible match so remove the old node from the DOM and continue trying to find a
-              // match in the original DOM. However, we only do this if the from node is not keyed
-              // since it is possible that a keyed node might match up with a node somewhere else in the
-              // target tree and we don't want to discard it just yet since it still might find a
-              // home in the final DOM tree. After everything is done we will remove any keyed nodes
-              // that didn't find a home
-              if (curFromNodeKey) {
-                // Since the node is keyed it might be matched up later so we defer
-                // the actual removal to later
-                addKeyedRemoval(curFromNodeKey);
-              } else {
-                // NOTE: we skip nested keyed nodes from being removed since there is
-                //       still a chance they will be matched up later
-                removeNode(curFromNodeChild, fromEl, true /* skip keyed nodes */);
-              }
-
-              curFromNodeChild = fromNextSibling;
-            } // END: while(curFromNodeChild) {}
-
-            // If we got this far then we did not find a candidate match for
-            // our "to node" and we exhausted all of the children "from"
-            // nodes. Therefore, we will just append the current "to" node
-            // to the end
-            if (curToNodeKey && (matchingFromEl = fromNodesLookup[curToNodeKey]) && compareNodeNames(matchingFromEl, curToNodeChild)) {
-              // MORPH
-              if(!skipFrom){ addChild(fromEl, matchingFromEl); }
-              morphEl(matchingFromEl, curToNodeChild);
-            } else {
-              var onBeforeNodeAddedResult = onBeforeNodeAdded(curToNodeChild);
-              if (onBeforeNodeAddedResult !== false) {
-                if (onBeforeNodeAddedResult) {
-                  curToNodeChild = onBeforeNodeAddedResult;
-                }
-
-                if (curToNodeChild.actualize) {
-                  curToNodeChild = curToNodeChild.actualize(fromEl.ownerDocument || doc);
-                }
-                addChild(fromEl, curToNodeChild);
-                handleNodeAdded(curToNodeChild);
-              }
-            }
-
-            curToNodeChild = toNextSibling;
-            curFromNodeChild = fromNextSibling;
-          }
-
-          cleanupFromEl(fromEl, curFromNodeChild, curFromNodeKey);
-
-          var specialElHandler = specialElHandlers[fromEl.nodeName];
-          if (specialElHandler) {
-            specialElHandler(fromEl, toEl);
-          }
-        } // END: morphChildren(...)
-
-        var morphedNode = fromNode;
-        var morphedNodeType = morphedNode.nodeType;
-        var toNodeType = toNode.nodeType;
-
-        if (!childrenOnly) {
-          // Handle the case where we are given two DOM nodes that are not
-          // compatible (e.g. <div> --> <span> or <div> --> TEXT)
-          if (morphedNodeType === ELEMENT_NODE) {
-            if (toNodeType === ELEMENT_NODE) {
-              if (!compareNodeNames(fromNode, toNode)) {
-                onNodeDiscarded(fromNode);
-                morphedNode = moveChildren(fromNode, createElementNS(toNode.nodeName, toNode.namespaceURI));
-              }
-            } else {
-              // Going from an element node to a text node
-              morphedNode = toNode;
-            }
-          } else if (morphedNodeType === TEXT_NODE || morphedNodeType === COMMENT_NODE) { // Text or comment node
-            if (toNodeType === morphedNodeType) {
-              if (morphedNode.nodeValue !== toNode.nodeValue) {
-                morphedNode.nodeValue = toNode.nodeValue;
-              }
-
-              return morphedNode;
-            } else {
-              // Text node to something else
-              morphedNode = toNode;
-            }
-          }
-        }
-
-        if (morphedNode === toNode) {
-          // The "to node" was not compatible with the "from node" so we had to
-          // toss out the "from node" and use the "to node"
-          onNodeDiscarded(fromNode);
-        } else {
-          if (toNode.isSameNode && toNode.isSameNode(morphedNode)) {
-            return;
-          }
-
-          morphEl(morphedNode, toNode, childrenOnly);
-
-          // We now need to loop over any keyed nodes that might need to be
-          // removed. We only do the removal if we know that the keyed node
-          // never found a match. When a keyed node is matched up we remove
-          // it out of fromNodesLookup and we use fromNodesLookup to determine
-          // if a keyed node has been matched up or not
-          if (keyedRemovalList) {
-            for (var i=0, len=keyedRemovalList.length; i<len; i++) {
-              var elToRemove = fromNodesLookup[keyedRemovalList[i]];
-              if (elToRemove) {
-                removeNode(elToRemove, elToRemove.parentNode, false);
-              }
-            }
-          }
-        }
-
-        if (!childrenOnly && morphedNode !== fromNode && fromNode.parentNode) {
-          if (morphedNode.actualize) {
-            morphedNode = morphedNode.actualize(fromNode.ownerDocument || doc);
-          }
-          // If we had to swap out the from node with a new node because the old
-          // node was not compatible with the target node then we need to
-          // replace the old DOM node in the original DOM tree. This is only
-          // possible if the original DOM node was part of a DOM tree which
-          // we know is the case if it has a parent node.
-          fromNode.parentNode.replaceChild(morphedNode, fromNode);
-        }
-
-        return morphedNode;
-      };
+    if (o.morphStyle === "innerHTML") {
+      l(i, r, o);
+      return r.children;
+    } else if (o.morphStyle === "outerHTML" || o.morphStyle == null) {
+      let e = N(i, r, o);
+      let t = e?.previousSibling;
+      let n = e?.nextSibling;
+      let l = d(r, e, o);
+      if (e) {
+        return k(t, l, n);
+      } else {
+        return [];
+      }
+    } else {
+      throw "Do not understand how to morph style " + o.morphStyle;
     }
-
-    var morphdom = morphdomFactory(morphAttrs);
-
-    return morphdom;
-
-}));
+  }
+  function u(e, t) {
+    return t.ignoreActiveValue && e === document.activeElement;
+  }
+  function d(e, t, n) {
+    if (n.ignoreActive && e === document.activeElement) {
+    } else if (t == null) {
+      if (n.callbacks.beforeNodeRemoved(e) === false) return e;
+      e.remove();
+      n.callbacks.afterNodeRemoved(e);
+      return null;
+    } else if (!g(e, t)) {
+      if (n.callbacks.beforeNodeRemoved(e) === false) return e;
+      if (n.callbacks.beforeNodeAdded(t) === false) return e;
+      e.parentElement.replaceChild(t, e);
+      n.callbacks.afterNodeAdded(t);
+      n.callbacks.afterNodeRemoved(e);
+      return t;
+    } else {
+      if (n.callbacks.beforeNodeMorphed(e, t) === false) return e;
+      if (e instanceof HTMLHeadElement && n.head.ignore) {
+      } else if (e instanceof HTMLHeadElement && n.head.style !== "morph") {
+        c(t, e, n);
+      } else {
+        r(t, e, n);
+        if (!u(e, n)) {
+          l(t, e, n);
+        }
+      }
+      n.callbacks.afterNodeMorphed(e, t);
+      return e;
+    }
+  }
+  function l(n, l, r) {
+    let i = n.firstChild;
+    let o = l.firstChild;
+    let a;
+    while (i) {
+      a = i;
+      i = a.nextSibling;
+      if (o == null) {
+        if (r.callbacks.beforeNodeAdded(a) === false) return;
+        l.appendChild(a);
+        r.callbacks.afterNodeAdded(a);
+        x(r, a);
+        continue;
+      }
+      if (b(a, o, r)) {
+        d(o, a, r);
+        o = o.nextSibling;
+        x(r, a);
+        continue;
+      }
+      let e = S(n, l, a, o, r);
+      if (e) {
+        o = v(o, e, r);
+        d(e, a, r);
+        x(r, a);
+        continue;
+      }
+      let t = A(n, l, a, o, r);
+      if (t) {
+        o = v(o, t, r);
+        d(t, a, r);
+        x(r, a);
+        continue;
+      }
+      if (r.callbacks.beforeNodeAdded(a) === false) return;
+      l.insertBefore(a, o);
+      r.callbacks.afterNodeAdded(a);
+      x(r, a);
+    }
+    while (o !== null) {
+      let e = o;
+      o = o.nextSibling;
+      w(e, r);
+    }
+  }
+  function f(e, t, n, l) {
+    if (e === "value" && l.ignoreActiveValue && t === document.activeElement) {
+      return true;
+    }
+    return l.callbacks.beforeAttributeUpdated(e, t, n) === false;
+  }
+  function r(t, n, l) {
+    let e = t.nodeType;
+    if (e === 1) {
+      const r = t.attributes;
+      const i = n.attributes;
+      for (const o of r) {
+        if (f(o.name, n, "update", l)) {
+          continue;
+        }
+        if (n.getAttribute(o.name) !== o.value) {
+          n.setAttribute(o.name, o.value);
+        }
+      }
+      for (let e = i.length - 1; 0 <= e; e--) {
+        const a = i[e];
+        if (f(a.name, n, "remove", l)) {
+          continue;
+        }
+        if (!t.hasAttribute(a.name)) {
+          n.removeAttribute(a.name);
+        }
+      }
+    }
+    if (e === 8 || e === 3) {
+      if (n.nodeValue !== t.nodeValue) {
+        n.nodeValue = t.nodeValue;
+      }
+    }
+    if (!u(n, l)) {
+      s(t, n, l);
+    }
+  }
+  function i(t, n, l, r) {
+    if (t[l] !== n[l]) {
+      let e = f(l, n, "update", r);
+      if (!e) {
+        n[l] = t[l];
+      }
+      if (t[l]) {
+        if (!e) {
+          n.setAttribute(l, t[l]);
+        }
+      } else {
+        if (!f(l, n, "remove", r)) {
+          n.removeAttribute(l);
+        }
+      }
+    }
+  }
+  function s(n, l, r) {
+    if (
+      n instanceof HTMLInputElement &&
+      l instanceof HTMLInputElement &&
+      n.type !== "file"
+    ) {
+      let e = n.value;
+      let t = l.value;
+      i(n, l, "checked", r);
+      i(n, l, "disabled", r);
+      if (!n.hasAttribute("value")) {
+        if (!f("value", l, "remove", r)) {
+          l.value = "";
+          l.removeAttribute("value");
+        }
+      } else if (e !== t) {
+        if (!f("value", l, "update", r)) {
+          l.setAttribute("value", e);
+          l.value = e;
+        }
+      }
+    } else if (n instanceof HTMLOptionElement) {
+      i(n, l, "selected", r);
+    } else if (
+      n instanceof HTMLTextAreaElement &&
+      l instanceof HTMLTextAreaElement
+    ) {
+      let e = n.value;
+      let t = l.value;
+      if (f("value", l, "update", r)) {
+        return;
+      }
+      if (e !== t) {
+        l.value = e;
+      }
+      if (l.firstChild && l.firstChild.nodeValue !== e) {
+        l.firstChild.nodeValue = e;
+      }
+    }
+  }
+  function c(e, t, l) {
+    let r = [];
+    let i = [];
+    let o = [];
+    let a = [];
+    let u = l.head.style;
+    let d = new Map();
+    for (const n of e.children) {
+      d.set(n.outerHTML, n);
+    }
+    for (const s of t.children) {
+      let e = d.has(s.outerHTML);
+      let t = l.head.shouldReAppend(s);
+      let n = l.head.shouldPreserve(s);
+      if (e || n) {
+        if (t) {
+          i.push(s);
+        } else {
+          d.delete(s.outerHTML);
+          o.push(s);
+        }
+      } else {
+        if (u === "append") {
+          if (t) {
+            i.push(s);
+            a.push(s);
+          }
+        } else {
+          if (l.head.shouldRemove(s) !== false) {
+            i.push(s);
+          }
+        }
+      }
+    }
+    a.push(...d.values());
+    p("to append: ", a);
+    let f = [];
+    for (const c of a) {
+      p("adding: ", c);
+      let n = document
+        .createRange()
+        .createContextualFragment(c.outerHTML).firstChild;
+      p(n);
+      if (l.callbacks.beforeNodeAdded(n) !== false) {
+        if (n.href || n.src) {
+          let t = null;
+          let e = new Promise(function (e) {
+            t = e;
+          });
+          n.addEventListener("load", function () {
+            t();
+          });
+          f.push(e);
+        }
+        t.appendChild(n);
+        l.callbacks.afterNodeAdded(n);
+        r.push(n);
+      }
+    }
+    for (const h of i) {
+      if (l.callbacks.beforeNodeRemoved(h) !== false) {
+        t.removeChild(h);
+        l.callbacks.afterNodeRemoved(h);
+      }
+    }
+    l.head.afterHeadMorphed(t, { added: r, kept: o, removed: i });
+    return f;
+  }
+  function p() {}
+  function t() {}
+  function h(e) {
+    let t = {};
+    Object.assign(t, n);
+    Object.assign(t, e);
+    t.callbacks = {};
+    Object.assign(t.callbacks, n.callbacks);
+    Object.assign(t.callbacks, e.callbacks);
+    t.head = {};
+    Object.assign(t.head, n.head);
+    Object.assign(t.head, e.head);
+    return t;
+  }
+  function m(e, t, n) {
+    n = h(n);
+    return {
+      target: e,
+      newContent: t,
+      config: n,
+      morphStyle: n.morphStyle,
+      ignoreActive: n.ignoreActive,
+      ignoreActiveValue: n.ignoreActiveValue,
+      idMap: C(e, t),
+      deadIds: new Set(),
+      callbacks: n.callbacks,
+      head: n.head,
+    };
+  }
+  function b(e, t, n) {
+    if (e == null || t == null) {
+      return false;
+    }
+    if (e.nodeType === t.nodeType && e.tagName === t.tagName) {
+      if (e.id !== "" && e.id === t.id) {
+        return true;
+      } else {
+        return L(n, e, t) > 0;
+      }
+    }
+    return false;
+  }
+  function g(e, t) {
+    if (e == null || t == null) {
+      return false;
+    }
+    return e.nodeType === t.nodeType && e.tagName === t.tagName;
+  }
+  function v(t, e, n) {
+    while (t !== e) {
+      let e = t;
+      t = t.nextSibling;
+      w(e, n);
+    }
+    x(n, e);
+    return e.nextSibling;
+  }
+  function S(n, e, l, r, i) {
+    let o = L(i, l, e);
+    let t = null;
+    if (o > 0) {
+      let e = r;
+      let t = 0;
+      while (e != null) {
+        if (b(l, e, i)) {
+          return e;
+        }
+        t += L(i, e, n);
+        if (t > o) {
+          return null;
+        }
+        e = e.nextSibling;
+      }
+    }
+    return t;
+  }
+  function A(e, t, n, l, r) {
+    let i = l;
+    let o = n.nextSibling;
+    let a = 0;
+    while (i != null) {
+      if (L(r, i, e) > 0) {
+        return null;
+      }
+      if (g(n, i)) {
+        return i;
+      }
+      if (g(o, i)) {
+        a++;
+        o = o.nextSibling;
+        if (a >= 2) {
+          return null;
+        }
+      }
+      i = i.nextSibling;
+    }
+    return i;
+  }
+  function y(n) {
+    let l = new DOMParser();
+    let e = n.replace(/<svg(\s[^>]*>|>)([\s\S]*?)<\/svg>/gim, "");
+    if (e.match(/<\/html>/) || e.match(/<\/head>/) || e.match(/<\/body>/)) {
+      let t = l.parseFromString(n, "text/html");
+      if (e.match(/<\/html>/)) {
+        t.generatedByIdiomorph = true;
+        return t;
+      } else {
+        let e = t.firstChild;
+        if (e) {
+          e.generatedByIdiomorph = true;
+          return e;
+        } else {
+          return null;
+        }
+      }
+    } else {
+      let e = l.parseFromString(
+        "<body><template>" + n + "</template></body>",
+        "text/html"
+      );
+      let t = e.body.querySelector("template").content;
+      t.generatedByIdiomorph = true;
+      return t;
+    }
+  }
+  function M(e) {
+    if (e == null) {
+      const t = document.createElement("div");
+      return t;
+    } else if (e.generatedByIdiomorph) {
+      return e;
+    } else if (e instanceof Node) {
+      const t = document.createElement("div");
+      t.append(e);
+      return t;
+    } else {
+      const t = document.createElement("div");
+      for (const n of [...e]) {
+        t.append(n);
+      }
+      return t;
+    }
+  }
+  function k(e, t, n) {
+    let l = [];
+    let r = [];
+    while (e != null) {
+      l.push(e);
+      e = e.previousSibling;
+    }
+    while (l.length > 0) {
+      let e = l.pop();
+      r.push(e);
+      t.parentElement.insertBefore(e, t);
+    }
+    r.push(t);
+    while (n != null) {
+      l.push(n);
+      r.push(n);
+      n = n.nextSibling;
+    }
+    while (l.length > 0) {
+      t.parentElement.insertBefore(l.pop(), t.nextSibling);
+    }
+    return r;
+  }
+  function N(e, t, n) {
+    let l;
+    l = e.firstChild;
+    let r = l;
+    let i = 0;
+    while (l) {
+      let e = T(l, t, n);
+      if (e > i) {
+        r = l;
+        i = e;
+      }
+      l = l.nextSibling;
+    }
+    return r;
+  }
+  function T(e, t, n) {
+    if (g(e, t)) {
+      return 0.5 + L(n, e, t);
+    }
+    return 0;
+  }
+  function w(e, t) {
+    x(t, e);
+    if (t.callbacks.beforeNodeRemoved(e) === false) return;
+    e.remove();
+    t.callbacks.afterNodeRemoved(e);
+  }
+  function H(e, t) {
+    return !e.deadIds.has(t);
+  }
+  function E(e, t, n) {
+    let l = e.idMap.get(n) || o;
+    return l.has(t);
+  }
+  function x(e, t) {
+    let n = e.idMap.get(t) || o;
+    for (const l of n) {
+      e.deadIds.add(l);
+    }
+  }
+  function L(e, t, n) {
+    let l = e.idMap.get(t) || o;
+    let r = 0;
+    for (const i of l) {
+      if (H(e, i) && E(e, i, n)) {
+        ++r;
+      }
+    }
+    return r;
+  }
+  function R(e, n) {
+    let l = e.parentElement;
+    let t = e.querySelectorAll("[id]");
+    for (const r of t) {
+      let t = r;
+      while (t !== l && t != null) {
+        let e = n.get(t);
+        if (e == null) {
+          e = new Set();
+          n.set(t, e);
+        }
+        e.add(r.id);
+        t = t.parentElement;
+      }
+    }
+  }
+  function C(e, t) {
+    let n = new Map();
+    R(e, n);
+    R(t, n);
+    return n;
+  }
+  return { morph: e, defaults: n };
+})();
+(function () {
+  function r(e) {
+    if (e === "morph" || e === "morph:outerHTML") {
+      return { morphStyle: "outerHTML" };
+    } else if (e === "morph:innerHTML") {
+      return { morphStyle: "innerHTML" };
+    } else if (e.startsWith("morph:")) {
+      return Function("return (" + e.slice(6) + ")")();
+    }
+  }
+  htmx.defineExtension("morph", {
+    isInlineSwap: function (e) {
+      let t = r(e);
+      return t.swapStyle === "outerHTML" || t.swapStyle == null;
+    },
+    handleSwap: function (e, t, n) {
+      let l = r(e);
+      if (l) {
+        return Idiomorph.morph(t, n.children, l);
+      }
+    },
+  });
+})();
