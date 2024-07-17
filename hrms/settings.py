@@ -187,7 +187,7 @@ AUTH_USER_MODEL = "accounts.CustomUser"
 
 # django-allauth config
 # https://docs.djangoproject.com/en/dev/ref/settings/#site-id
-SITE_ID = 1
+SITE_ID = 2
 
 # https://docs.djangoproject.com/en/dev/ref/settings/#login-redirect-url
 LOGIN_REDIRECT_URL = "home"

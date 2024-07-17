@@ -3,6 +3,7 @@ from django.contrib import admin
 from django.urls import path, include
 from allauth.account.views import LoginView # type: ignore
 from allauth.account.views import LogoutView # type: ignore
+from allauth.account.views import PasswordChangeView # type: ignore
 
 
 
@@ -10,6 +11,7 @@ admin.autodiscover()
 
 admin.site.login = LoginView.as_view()
 admin.site.logout = LogoutView.as_view()
+admin.site.password_change = PasswordChangeView.as_view()
 
 
 urlpatterns = [

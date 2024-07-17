@@ -43,7 +43,6 @@
       {{ cl.formset.non_form_errors }}
   {% endif %}
   <div class="module{% if cl.has_filters %} filtered{% endif %}" id="changelist">
-
               {% block search %}{% search_form cl %}{% endblock %}
               {% block date_hierarchy %}{% if cl.date_hierarchy %}{% date_hierarchy cl %}{% endif %}{% endblock %}
             
@@ -62,8 +61,8 @@
                   </div>
               </form>
             
-       
         {% block filters %}
+        {% if cl.result_list|length > 0 %}
         {% if cl.has_filters %}
               <div class="col-3">
               <div class="card" style="margin-top: 230px;">
@@ -91,7 +90,7 @@
               </div>
             </div>
             </div>
-       
+        {% endif %}
         {% endif %}
         {% endblock %}
       </div>

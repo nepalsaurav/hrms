@@ -1,13 +1,19 @@
 <!-- templates/custom_user_change_form.html -->
 
 {% extends 'admin/change_form.html' %}
+{% load i18n admin_urls %}
+
 {% load crispy_forms_tags %}
 
 {% block content %}
 <div id="content-main" x-data="groupChange">
-    <form x-ref="modelPermission" id="{{ opts.model_name }}_form" method="post" enctype="multipart/form-data" novalidate>
+    <form  x-ref="modelPermission" id="{{ opts.model_name }}_form" method="post" enctype="multipart/form-data" novalidate>
         {% csrf_token %}
         <fieldset class="module aligned" :disabled="ispermissionModelFormLoading">
+            <div class="d-flex mb-3 justify-content-end">
+                <input type="submit" value="Save" class="btn btn-primary">
+                <a href="{% url 'admin:auth_group_delete' object_id %}" class="btn btn-danger ms-3">{% translate "Delete" %}</a>
+            </div>
             <div class="card">
                 <div class="card-header">Model Permissions</div>
                 <div class="card-body">
@@ -25,7 +31,7 @@
                                                 <template x-for="item in sortByName(value)">
                                                     <div class="col-6">
                                                         <div class="form-check">
-                                                            <input @change="handleCheckBoxChange" class="form-check-input" type="checkbox" name="permissions" :value="item.id" :id="item.codename">
+                                                            <input class="form-check-input" type="checkbox" name="permissions" :value="item.id" :id="item.codename" :checked="activePermissions.includes(item.id)">
                                                             <label x-text="item.name" class="form-check-label" :for="item.codename"></label>
                                                           </div>                                                          
                                                     </div>
@@ -50,7 +56,12 @@
             groupedPermissionData: {},
             ispermissionModelFormLoading: false,
             modelPermissionId: [],
+            activePermissions: [],
             init() {
+                const activePermissionFromTemplate = "{{ active_form|escapejs }}"
+                if (activePermissionFromTemplate != "") {
+                    this.activePermissions = JSON.parse(activePermissionFromTemplate)
+                }
                 const ignoreModel = [
                     'email address', 
                     'email confirmation',
@@ -89,40 +100,7 @@
             sortByName(array) {
                 return array.sort((a, b) => a.name > b.name)
             },
-            async handleCheckBoxChange(event) {
-               const form = this.$refs.modelPermission
-               const formData = new FormData(form)
-               if (formData.get('name') === "") { 
-                alert("please enter group name"); 
-                event.target.checked = false
-                return; 
-               }
-               const id = event.target.value
-               console.log(id)
-               this.ispermissionModelFormLoading = true
-               const currentUrl = location.href
-               console.log(currentUrl)
-               const resp = await fetch(currentUrl, {
-                  method: "post",
-                  body: formData
-               })
-               console.log(resp)
-               if (resp.status === 200) {
-                 if(!resp.redirected) {
-                    const htmlResp = await resp.text();
-                    const parse = new DOMParser();
-                    const htmlDoc = parse.parseFromString(htmlResp, 'text/html');
-                    document.querySelector('#div_id_name').innerHTML = htmlDoc.querySelector('#div_id_name').innerHTML
-                 }
-                 this.ispermissionModelFormLoading = false;
-                 return;
-               }
-               if (resp.status != 200) {
-                   window.location.href = resp.url;
-               }
-               
-            }
-        }
+          }
      }
 
 </script>

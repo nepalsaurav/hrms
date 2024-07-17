@@ -28,12 +28,13 @@
           </li>
           {% if user.has_usable_password %}
           <li class="nav-item">
-            <a class="nav-link" href="{% url 'admin:password_change' %}">Change password</a>
+            <a class="nav-link" target="_blank" href="{% url 'admin:password_change' %}">Change password</a>
           </li>
           {% endif %}
         </ul>
-        <form id="logout-form" method="post" action="{% url 'admin:logout' %}">
+        <form hx-boost="false" id="logout-form" method="post" action="/accounts/logout/">
             {% csrf_token %}
+             <input type="hidden" name="next" :value="window.location.href">
             <button class="btn btn-secondary" type="submit">Log out</button>
         </form>
       </div>
@@ -61,7 +62,6 @@
               {% endfor %}
               {% endif %}
             `
-             console.log(this.appNames)
           },
 
           appendToAppList(name, modelName, url, currentUrl) {
