@@ -21,6 +21,18 @@ class Leave(models.Model):
         ('rejected', 'rejected')
     ], default='pending')
 
+    @property
+    def username(self):
+        return self.user.username
+    
+    @property
+    def first_name(self):
+        return self.user.first_name
+    
+    @property
+    def last_name(self):
+        return self.user.last_name
+
     class Meta:
         permissions = [
             ('can_view_all', 'Can View All Data'),

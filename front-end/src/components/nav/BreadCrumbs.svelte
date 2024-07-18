@@ -5,13 +5,18 @@
 </script>
 
 <nav aria-label="breadcrumb">
-  <ul>
+  <ol class="breadcrumb">
     {#each breadcrumbs as item (item.url)}
       {#if !item.isCurrent}
-        <li><a href={item.url} use:link>{item.label}</a></li>
+        <li class="breadcrumb-item">
+          <a href={item.url} use:link>{item.label}</a>
+        </li>
       {:else}
-        <li>{item.label}</li>
+        <!-- svelte-ignore a11y-missing-attribute -->
+        <li class="breadcrumb-item active" aria-current="page">
+          <a>{item.label}</a>
+        </li>
       {/if}
     {/each}
-  </ul>
+  </ol>
 </nav>

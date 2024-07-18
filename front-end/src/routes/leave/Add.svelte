@@ -22,9 +22,10 @@
 
   const formUrl = "/api/leave/add";
   const redirectSuccessURL = "/leave";
+  const formTitle = "Add Leave"
 </script>
 
 <main class="container">
   <BreadCrumbs {breadcrumbs} />
-  <AddForm {formUrl} {redirectSuccessURL} />
+  <AddForm {formUrl} {redirectSuccessURL} {formTitle}/>
 </main>

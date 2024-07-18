@@ -5,7 +5,7 @@
 </script>
 
 <TopNav />
-<div class="main-container">
+<div class="container main-container">
   <Router {routes} />
 </div>
 
