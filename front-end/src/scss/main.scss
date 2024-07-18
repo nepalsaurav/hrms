@@ -5,6 +5,7 @@
 // $danger: #ff4136;
 
 @import "../../node_modules/bootstrap/scss/bootstrap.scss";
+@import 'css-pro-layout/dist/scss/css-pro-layout.scss';
 
 #id_format {
   @extend .form-select;

@@ -17,58 +17,69 @@
     hx-swap="outerHTML" 
     class="{% if is_popup %}popup container {% endif %}{% block bodyclass %}{% endblock %}"
     data-admin-utc-offset="{% now 'Asia/Kathmandu' %}"
+    style="height: 100vh; margin: 0px;"
     id="body">
 
-    {% if not is_popup %}
-    <!-- Header -->
-    {% block header %}
-      {% include 'admin/top_nav.html' with app_list=available_apps show_changelinks=False %}
-    {% endblock %}
-    <!-- END Header --> 
-  <div class="container" id="content-start"  style="padding-top: 50px;">
-    <main class="content" tabindex="-1">
-      {% block messages %}
-      {% if messages %}
-      <div class="alert alert-primary" role="alert">
-        <ul class="messagelist list-unstyled">{% for message in messages %}
-          <li {% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message|capfirst }}</li>
-            {% endfor %}
-        </ul>
+    <div class="layout has-sidebar fixed-sidebar">
+      <aside id="sidebar" class="sidebar">
+         {% include 'admin/nav_sidebar.html' with app_list=available_apps show_changelinks=False %}
+      </aside>
+      <div class="layout">
+        <header class="header">
+          {% if not is_popup %}
+          <!-- Header -->
+          {% block header %}
+            <header class="header" style="width: 100%;">
+            {% include 'admin/top_nav.html' with app_list=available_apps show_changelinks=False %}
+            </header>
+          {% endblock %}
+        </header>
+        <main class="content container">
+          {% block messages %}
+          {% if messages %}
+          <div class="alert alert-primary" role="alert">
+            <ul class="messagelist list-unstyled">{% for message in messages %}
+              <li {% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message|capfirst }}</li>
+                {% endfor %}
+            </ul>
+          </div>
+          {% endif %}
+          {% endblock messages %}
+    
+          {% block nav-breadcrumbs %}
+          <nav aria-label="breadcrumb mt-3">
+            {% block breadcrumbs %}
+            <ol class="breadcrumb">
+               <li class="breadcrumb-item">
+                  <a href="{% url 'admin:index' %}">{% translate 'Home' %}</a>
+               </li>
+              {% if title %} &rsaquo; {{ title }}{% endif %}
+            </ol>
+            {% endblock %}
+          </nav>
+          {% endblock %}
+          {% endif %}
+          <!-- Content -->
+          <div id="content" class="{% block coltype %}colM{% endblock %}">
+            {% block pretitle %}{% endblock %}
+            <br>
+            {% block content_title %}{% if title %}<h5 class="text-muted text-uppercase">{{ title }}</h5>{% endif %}{% endblock %}
+            <br>
+            {% block content_subtitle %}{% if subtitle %}<h6 class="text-muted">{{ subtitle }}</h6>{% endif %}{% endblock %}
+            {% block content %}
+            {% block object-tools %}{% endblock %}
+            {{ content }}
+            {% endblock %}
+            {% block sidebar %}{% endblock %}
+            <br class="clear">
+          </div>
+          <!-- END Content -->
+        </main>
+        <div class="overlay"></div>
       </div>
-      {% endif %}
-      {% endblock messages %}
-
-      {% block nav-breadcrumbs %}
-      <nav aria-label="breadcrumb">
-        {% block breadcrumbs %}
-        <ol class="breadcrumb">
-           <li class="breadcrumb-item">
-              <a href="{% url 'admin:index' %}">{% translate 'Home' %}</a>
-           </li>
-          {% if title %} &rsaquo; {{ title }}{% endif %}
-        </ol>
-        {% endblock %}
-      </nav>
-      {% endblock %}
-      {% endif %}
-      <!-- Content -->
-      <div id="content" class="{% block coltype %}colM{% endblock %}">
-        {% block pretitle %}{% endblock %}
-        <br>
-        {% block content_title %}{% if title %}<h5 class="text-muted text-uppercase">{{ title }}</h5>{% endif %}{% endblock %}
-        <br>
-        {% block content_subtitle %}{% if subtitle %}<h6 class="text-muted">{{ subtitle }}</h6>{% endif %}{% endblock %}
-        {% block content %}
-        {% block object-tools %}{% endblock %}
-        {{ content }}
-        {% endblock %}
-        {% block sidebar %}{% endblock %}
-        <br class="clear">
-      </div>
-      <!-- END Content -->
-    </main>
-    <footer id="footer">{% block footer %}{% endblock %}</footer>  
-  </div>
+    </div>
+  
+   
 
 
 

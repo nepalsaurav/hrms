@@ -1,5 +1,76 @@
-{% load i18n %}
- {% include 'admin/app_list.html' with app_list=available_apps show_changelinks=False %}
-</div>
+<div class="flex-shrink-0 p-3" style="width: 280px;" bis_skin_checked="1" x-cloak x-data="sideNav">
+    <a href="/" class="d-flex align-items-center pb-3 mb-3 text-decoration-none">
+      <svg class="bi pe-none me-2" width="30" height="24"><use xlink:href="#bootstrap"></use></svg>
+      <span class="fs-5 fw-semibold">HRMS ADMIN</span>
+    </a>
+    <ul class="list-unstyled ps-0">
+    <template x-for="[key, value] in Object.entries(appNames)">
+      <li class="mb-1">
+        <button style="text-wrap: nowrap;" class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed" data-bs-toggle="collapse" 
+          :data-bs-target="`#${key.split(' ')[0]}`" aria-expanded="true">
+          <span x-text="key==='Authentication and Authorization' ? 'Authorization': key"></span>
+          <template x-if="(key in icons)">
+            <span x-html="icons[key]" class="ms-2"></span>
+          </template>
+        </button>
+        <div class="collapse show" :id="key.split(' ')[0]" bis_skin_checked="1">
+          <ul class="btn-toggle-nav nav-pills list-unstyled fw-normal pb-1 small">
+            <template x-for="item in value" :key="item.name"><
+            <li class="nav-item mb-2">
+            <a :href="item.url" :class="item.url === item.currentUrl && 'active'" class="nav-link d-inline-flex">
+                <template x-if="(item.name in icons)">
+                    <span x-html="icons[item.name]"></span>
+                </template>
+                <span x-text="item.name"></span>
+            </a>
+           </li>
+            </template> 
+        </ul>
+        </div>
+      </li>
+      </template>
+    </ul>
+  </div>
 
+  <script>
+    function sideNav() {
+      return {
+        appNames: {},
+        sepeateAppDropdown: ['Accounts', 'Authentication and Authorization'],
+        icons: {
+          "Email addresses": '<i class="fa fa-envelope me-2 pe-none" aria-hidden="true"></i>',
+          "Employees": '<i class="fa fa-user me-2 pe-none" aria-hidden="true"></i>',
+          "Accounts": '<i class="fa-solid fa-users pe-none"></i>',
+          "Authentication and Authorization": '<i class="fa-solid fa-key pe-none"></i>',
+          "Modules": '<i class="fa-solid fa-rocket pe-none"></i>'
+        },
+        init() {
+          // Construct app names and initialize with empty arrays
+          const _ = `
+            {% if app_list %}
+            {% for app in app_list %}
+            ${this.appNames['{{ app.name }}'] = []}
+            {% endfor %}
+            {% for app in app_list %}
+            {% for model in app.models %}
+            ${this.appendToAppList('{{ app.name }}', '{{ model.name }}', '{{ model.admin_url }}', '{{ request.path }}')}
+            {% endfor %}
+            {% endfor %}
+            {% endif %}
+          `
+        },
 
+        appendToAppList(name, modelName, url, currentUrl) {
+          let appName = name;
+          if (!this.sepeateAppDropdown.includes(appName)) {
+            if (this.appNames['Modules'] === undefined) {
+              this.appNames['Modules'] = []
+            }
+            appName = 'Modules'
+            delete this.appNames[name]
+          }
+          this.appNames[appName].push({ name: modelName, url: url, currentUrl: currentUrl })
+        },
+      }
+    }
+  </script>

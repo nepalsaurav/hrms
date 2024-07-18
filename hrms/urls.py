@@ -17,7 +17,6 @@ admin.site.password_change = PasswordChangeView.as_view()
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("accounts/", include("allauth.urls")),
-    path("select2/", include("django_select2.urls")),
     path("", include("pages.urls")),
     path("", include("leave.urls")),
     path("", include("accounts.urls")),
