@@ -4,13 +4,12 @@
   import flatpickr from "flatpickr";
   import { parseHTML } from "../utils/parse_html";
   import Choices from "choices.js";
+  import { customFetch } from "../utils/custo_fetch";
   //props
   export let formUrl;
   export let redirectSuccessURL;
   export let formTitle;
   //props
-
-  let scriptSrcs = [];
 
   const autoCompleteField = [
     {
@@ -25,32 +24,19 @@
 
   async function fetchForm() {
     try {
-      const resp = await fetch(formUrl);
-      const formContent = await resp.text();
-      parsedForm = parseHTML(formContent);
-      scriptSrcs = parsedForm.scriptSrcs;
-      loading = false;
+      const formContent = await customFetch(formUrl);
+      if (formContent.type === "text") {
+        parsedForm = parseHTML(formContent.data);
+        loading = false;
+      }
     } catch (err) {
       error = err;
     }
   }
 
-  fetchForm();
-
-  async function removeErrorMessage() {
-    const elements = document.querySelectorAll("input, textarea, select");
-
-    elements.forEach((element) => {
-      element.addEventListener("click", () => {
-        element.removeAttribute("aria-invalid");
-        element.classList.remove("is-invalid");
-        const nextSibling = element.nextElementSibling;
-        if (nextSibling && nextSibling instanceof HTMLElement) {
-          nextSibling.style.display = "none"; // or any other style modification
-        }
-      });
-    });
-  }
+  onMount(() => {
+    fetchForm();
+  });
 
   async function initFlatPicker() {
     document.querySelectorAll(".flatpicker").forEach((e) => {
@@ -59,7 +45,6 @@
   }
 
   afterUpdate(async () => {
-    await removeErrorMessage();
     await initFlatPicker();
     await choiceSelectInit();
   });
@@ -93,15 +78,13 @@
     try {
       // @ts-ignore
       const formData = new FormData(e.target);
-      const resp = await fetch(formUrl, {
-        method: "POST",
-        body: formData,
-      });
-      const data = await resp.text();
-      if (data === "success") {
-        push(redirectSuccessURL);
-      } else {
-        parsedForm = parseHTML(data);
+      const data = await customFetch(formUrl, "POST", formData);
+      if (data.type === "text") {
+        if (data.data === "success") {
+          push(redirectSuccessURL);
+        } else {
+          parsedForm = parseHTML(data.data);
+        }
       }
     } catch {
       error = "something error occured";

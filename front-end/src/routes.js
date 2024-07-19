@@ -6,10 +6,10 @@ export const routes = {
   }),
 
   //leave page
-  "/leave": wrap({
+  "/leave/": wrap({
     asyncComponent: () => import("./routes/leave/List.svelte"),
   }),
-  "/leave/add": wrap({
+  "/leave/add/": wrap({
     asyncComponent: () => import("./routes/leave/Add.svelte"),
   }),
 };

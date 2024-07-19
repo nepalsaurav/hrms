@@ -4,8 +4,10 @@
 // $primary: #030303;
 // $danger: #ff4136;
 
+$sidebar-collapsed-width: 0px !default;
+
 @import "../../node_modules/bootstrap/scss/bootstrap.scss";
-@import 'css-pro-layout/dist/scss/css-pro-layout.scss';
+@import "css-pro-layout/dist/scss/css-pro-layout.scss";
 
 #id_format {
   @extend .form-select;

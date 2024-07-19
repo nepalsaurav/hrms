@@ -59,7 +59,7 @@ def leave_home(request):
 def table_data(request, Model, FilterForm, per_page, search_template, ModelSerializer):
     order_by = request.GET.get('order_by')
     if order_by == None or order_by == "":
-        queryset = Model.objects.all()
+        queryset = Model.objects.order_by('-created').all()
     else:
         queryset = Model.objects.order_by(order_by).all()
     filter = FilterForm(request.GET, queryset=queryset)
@@ -77,25 +77,40 @@ def table_data(request, Model, FilterForm, per_page, search_template, ModelSeria
     search_form = render_to_string(search_template, {"form": filter.form})
     try:
         page_list = p.page(page)
+        page_info = {
+            "totalSize": p.count,
+            "currentPage": page_list.number,
+            "perPage": p.per_page,
+            "hasNext": page_list.has_next(),
+            "hasPrevious": page_list.has_previous(),
+            "totalPages": p.num_pages,
+            "startIndex": page_list.start_index(),
+            "endIndex": page_list.end_index(),
+            "orderBy": order_by
+
+        }
         serializer = ModelSerializer(page_list.object_list, many=True)
         table_data = JSONRenderer().render(serializer.data)
         return {
             "msgType": "success",
             "searchForm": search_form,
-            "tableData":  json.loads(table_data)
+            "tableData":  json.loads(table_data),
+            "pageInfo": page_info
         }
     except Exception as e:
         if(str(e) == "That page contains no results"):
             return {
                 "msgType": "success",
                 "searchForm": search_form,
-                "tableData":  json.loads("[]")
+                "tableData":  json.loads("[]"),
+                "pageInfo": None,
             }
         return {
                 "msgType": "failed",
                 "msg": "something error occured",
                 "searchForm": search_form,
-                "tableData":  json.loads("[]")
+                "tableData":  json.loads("[]"),
+                "pageInfo": None
         }
     
 

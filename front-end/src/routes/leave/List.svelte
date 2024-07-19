@@ -1,86 +1,75 @@
 <script>
   import { link } from "svelte-spa-router";
-  import { isLoading, listResponse } from "../../store/list";
   import SearchForm from "../../layout/SearchForm.svelte";
-  import { querystring } from "svelte-spa-router";
-  import { onMount } from "svelte";
-  import PageInfo from "../../layout/PageInfo.svelte";
+  import BreadCrumbs from "../../components/nav/BreadCrumbs.svelte";
+  import Table from "../../layout/Table.svelte";
 
-  /**
-   * @param {RequestInfo | URL} [url]
-   */
-  async function fetchData(url) {
-    try {
-      const resp = await fetch(url);
-      const data = await resp.json();
-      $listResponse = data;
-      $isLoading = false;
-    } catch {}
-  }
+  const breadcrumbs = [
+    {
+      url: "/",
+      label: "Dashboard",
+      isCurrent: false,
+    },
+    {
+      url: "/leave/",
+      label: "Leave",
+      isCurrent: true,
+    },
+  ];
 
-  onMount(() => {
-    fetchData("/api/leave");
-  });
-
-  $: {
-    if ($querystring === "") {
-      fetchData("/api/leave");
-    } else {
-      fetchData(`/api/leave?${$querystring}`);
-    }
-  }
+  const apiURL = "/api/leave";
+  const tableColumns = [
+    {
+      name: "username",
+      label: "USERNAME",
+      orderBy: true,
+      orderName: "user",
+    },
+    {
+      name: "first_name",
+      label: "FIRST NAME",
+    },
+    {
+      name: "start_date",
+      label: "START DATE",
+      orderBy: true,
+      orderName: "start_date",
+    },
+    {
+      name: "end_date",
+      label: "END DATE",
+      orderBy: true,
+      orderName: "end_date",
+    },
+    {
+      name: "status",
+      label: "STATUS",
+      orderBy: true,
+      orderName: "status",
+      slot: true,
+    },
+  ];
 </script>
 
-<h1>leave list page</h1>
+<BreadCrumbs {breadcrumbs} />
 
-<a href="/leave/add" use:link>Add leave</a>
+<div class="d-flex mb-2 flex-row-reverse">
+  <a href="/leave/add" class="btn btn-primary" use:link>
+    <i class="fa-solid fa-plus"></i>
+    Add Leave
+  </a>
+</div>
 
 <SearchForm />
 
-{#if $isLoading}
-  <!-- content here -->
-  <p>true</p>
-{:else if $listResponse}
-  {#if $listResponse.tableData.length === 0}
-    <!-- content here -->
-    <p>no data found</p>
-  {:else}
-    <PageInfo />
-    <table class="table table-bordered">
-      <thead>
-        <tr>
-          <th>username</th>
-          <th>name</th>
-          <th>start date</th>
-          <th>end date</th>
-          <th>status</th>
-        </tr>
-      </thead>
-      <tbody>
-        {#each $listResponse.tableData as item, i (item.id)}
-          <tr>
-            <td>{item.username}</td>
-            <td>{item.first_name} {item.last_name}</td>
-            <td>{item.start_date}</td>
-            <td>{item.end_date}</td>
-            {#if item.status === "pending"}
-              <td><span class="badge bg-warning text-muted">pending</span></td>
-            {:else if item.status === "approved"}
-              <td><span class="badge bg-success text-muted">approved</span></td>
-            {:else}
-              <td><span class="badge bg-danger text-muted">reject</span></td>
-            {/if}
-          </tr>
-        {/each}
-      </tbody>
-    </table>
-
-    <!-- else content here -->
+<Table {apiURL} {tableColumns} let:col let:item>
+  {#if col.name === "status"}
+    {#if item.status === "pending"}
+      <span class="badge bg-warning text-muted">pending</span>
+    {:else if item.status === "approved"}
+      <span class="badge bg-success text-muted">approved</span>
+    {:else}
+      <span class="badge bg-danger text-muted">reject</span>
+    {/if}
   {/if}
-{/if}
-
-<style>
-  .table thead tr th {
-    text-transform: uppercase;
-  }
-</style>
+</Table>

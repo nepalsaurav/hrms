@@ -11460,8 +11460,8 @@ fieldset:disabled .btn {
     0.3s;
 }
 .layout .sidebar.collapsed {
-  width: 80px;
-  min-width: 80px;
+  width: 0px;
+  min-width: 0px;
 }
 @media (max-width: 480px) {
   .layout .sidebar.break-point-xs {
@@ -11472,7 +11472,7 @@ fieldset:disabled .btn {
     z-index: 100;
   }
   .layout .sidebar.break-point-xs.collapsed {
-    left: -80px;
+    left: 0px;
   }
   .layout .sidebar.break-point-xs.toggled {
     left: 0;
@@ -11494,7 +11494,7 @@ fieldset:disabled .btn {
     z-index: 100;
   }
   .layout .sidebar.break-point-sm.collapsed {
-    left: -80px;
+    left: 0px;
   }
   .layout .sidebar.break-point-sm.toggled {
     left: 0;
@@ -11516,7 +11516,7 @@ fieldset:disabled .btn {
     z-index: 100;
   }
   .layout .sidebar.break-point-md.collapsed {
-    left: -80px;
+    left: 0px;
   }
   .layout .sidebar.break-point-md.toggled {
     left: 0;
@@ -11538,7 +11538,7 @@ fieldset:disabled .btn {
     z-index: 100;
   }
   .layout .sidebar.break-point-lg.collapsed {
-    left: -80px;
+    left: 0px;
   }
   .layout .sidebar.break-point-lg.toggled {
     left: 0;
@@ -11560,7 +11560,7 @@ fieldset:disabled .btn {
     z-index: 100;
   }
   .layout .sidebar.break-point-xl.collapsed {
-    left: -80px;
+    left: 0px;
   }
   .layout .sidebar.break-point-xl.toggled {
     left: 0;
@@ -11582,7 +11582,7 @@ fieldset:disabled .btn {
     z-index: 100;
   }
   .layout .sidebar.break-point-xxl.collapsed {
-    left: -80px;
+    left: 0px;
   }
   .layout .sidebar.break-point-xxl.toggled {
     left: 0;
@@ -11669,7 +11669,7 @@ fieldset:disabled .btn {
   width: calc(100% - 280px);
 }
 .layout.fixed-header.fixed-sidebar .sidebar.collapsed ~ .layout .header {
-  width: calc(100% - 80px);
+  width: calc(100% - 0px);
 }
 .layout.rtl {
   direction: rtl;
@@ -11681,7 +11681,7 @@ fieldset:disabled .btn {
   }
   .layout.rtl .sidebar.break-point-xs.collapsed {
     left: auto;
-    right: -80px;
+    right: 0px;
   }
   .layout.rtl .sidebar.break-point-xs.toggled {
     left: auto;
@@ -11695,7 +11695,7 @@ fieldset:disabled .btn {
   }
   .layout.rtl .sidebar.break-point-sm.collapsed {
     left: auto;
-    right: -80px;
+    right: 0px;
   }
   .layout.rtl .sidebar.break-point-sm.toggled {
     left: auto;
@@ -11709,7 +11709,7 @@ fieldset:disabled .btn {
   }
   .layout.rtl .sidebar.break-point-md.collapsed {
     left: auto;
-    right: -80px;
+    right: 0px;
   }
   .layout.rtl .sidebar.break-point-md.toggled {
     left: auto;
@@ -11723,7 +11723,7 @@ fieldset:disabled .btn {
   }
   .layout.rtl .sidebar.break-point-lg.collapsed {
     left: auto;
-    right: -80px;
+    right: 0px;
   }
   .layout.rtl .sidebar.break-point-lg.toggled {
     left: auto;
@@ -11737,7 +11737,7 @@ fieldset:disabled .btn {
   }
   .layout.rtl .sidebar.break-point-xl.collapsed {
     left: auto;
-    right: -80px;
+    right: 0px;
   }
   .layout.rtl .sidebar.break-point-xl.toggled {
     left: auto;
@@ -11751,7 +11751,7 @@ fieldset:disabled .btn {
   }
   .layout.rtl .sidebar.break-point-xxl.collapsed {
     left: auto;
-    right: -80px;
+    right: 0px;
   }
   .layout.rtl .sidebar.break-point-xxl.toggled {
     left: auto;

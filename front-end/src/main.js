@@ -7,6 +7,7 @@ import "../node_modules/flatpickr/dist/flatpickr.min.css";
 import "../node_modules/choices.js/public/assets/styles/choices.min.css";
 
 // @ts-ignore
+import * as bootstrap from "bootstrap";
 import App from "./App.svelte";
 
 const app = new App({

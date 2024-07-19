@@ -20,6 +20,7 @@ class Leave(models.Model):
         ('approved', 'approved'),
         ('rejected', 'rejected')
     ], default='pending')
+    created = models.DateTimeField(auto_now_add=True)
 
     @property
     def username(self):

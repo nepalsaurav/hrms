@@ -9,12 +9,12 @@
       isCurrent: false,
     },
     {
-      url: "/leave",
+      url: "/leave/",
       label: "Leave",
       isCurrent: false,
     },
     {
-      url: "/leave/add",
+      url: "/leave/add/",
       label: "Add",
       isCurrent: true,
     },
@@ -22,10 +22,10 @@
 
   const formUrl = "/api/leave/add";
   const redirectSuccessURL = "/leave";
-  const formTitle = "Add Leave"
+  const formTitle = "Add Leave";
 </script>
 
 <main class="container">
   <BreadCrumbs {breadcrumbs} />
-  <AddForm {formUrl} {redirectSuccessURL} {formTitle}/>
+  <AddForm {formUrl} {redirectSuccessURL} {formTitle} />
 </main>
