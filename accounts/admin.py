@@ -6,7 +6,7 @@ from django.http import HttpRequest
 from django.http.response import HttpResponse
 from django.urls import path
 from .forms import CustomGroupForm, CustomUserChangeForm, CustomUserCreationForm
-from .models import CustomUser
+from .models import Branch, CustomUser, Department
 from django.contrib.auth.admin import GroupAdmin
 from django.contrib.auth.models import Group, Permission
 from django.contrib.contenttypes.models import ContentType
@@ -15,16 +15,24 @@ from django.core import serializers
 
 class CustomUserAdmin(UserAdmin):
     model = CustomUser
-    list_display = ['username','email', 'last_login']
+    list_display = ['username','email', 'last_login', 'department']
     change_form_template = "admin/user_change_form.html"
     form = CustomUserChangeForm
+   
     def add_view(self, request: HttpRequest, form_url: str = "", extra_context: None = None) -> HttpResponse:
-        self.form = CustomUserCreationForm
         self.add_form = CustomUserCreationForm
         return super().add_view(request, form_url, extra_context)
-    def change_view(self, request: HttpRequest, object_id: str, form_url: str = "", extra_context: dict[str, bool] | None = "") -> HttpResponse:
-        self.form = CustomUserChangeForm
+    
+    def change_view(self, request: HttpRequest, object_id: str, form_url: str = "", extra_context: dict[str, bool] | None = None) -> HttpResponse:
+        if request.method == "GET":
+            self.form = CustomUserChangeForm
+            print(extra_context)
+            context = self.admin_site.each_context(request=request)
+            
+
+            print(context)
         return super().change_view(request, object_id, form_url, extra_context)
+
    
 
 class CustomGroupsAdmin(GroupAdmin):
@@ -52,10 +60,13 @@ class CustomGroupsAdmin(GroupAdmin):
         print(group_name)
         print(active_form)
         return super().change_view(request, object_id, form_url, extra_context)
+    
 
 admin.site.register(CustomUser, CustomUserAdmin)
 admin.site.unregister(Group)
 admin.site.register(Group, CustomGroupsAdmin)
+admin.site.register(Department)
+admin.site.register(Branch)
 
 
 def permission_dict(id = None):
@@ -84,3 +95,5 @@ def permission_dict(id = None):
         # Add the dictionary to the list
         expanded_permissions.append(permission_dict)
     return expanded_permissions
+
+

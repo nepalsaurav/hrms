@@ -21,6 +21,10 @@ class LeaveFilter(django_filters.FilterSet):
     #     label="First Name",
     #     lookup_expr="user__firstname"
     # )
+
+    def filter_queryset(self, queryset):
+        print(self)
+        return super().filter_queryset(queryset)
     class Meta:
         model = Leave
         fields = ['user','start_date', 'end_date', 'leave_type', 'status']

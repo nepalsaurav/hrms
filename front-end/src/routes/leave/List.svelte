@@ -3,6 +3,8 @@
   import SearchForm from "../../layout/SearchForm.svelte";
   import BreadCrumbs from "../../components/nav/BreadCrumbs.svelte";
   import Table from "../../layout/Table.svelte";
+  import Action from "./Action.svelte";
+  import Status from "./Status.svelte";
 
   const breadcrumbs = [
     {
@@ -48,6 +50,11 @@
       orderName: "status",
       slot: true,
     },
+    {
+      name: "action",
+      label: "ACTION",
+      slot: true,
+    },
   ];
 </script>
 
@@ -64,12 +71,10 @@
 
 <Table {apiURL} {tableColumns} let:col let:item>
   {#if col.name === "status"}
-    {#if item.status === "pending"}
-      <span class="badge bg-warning text-muted">pending</span>
-    {:else if item.status === "approved"}
-      <span class="badge bg-success text-muted">approved</span>
-    {:else}
-      <span class="badge bg-danger text-muted">reject</span>
-    {/if}
+    <Status {item} />
+  {/if}
+
+  {#if col.name === "action"}
+    <Action {item} />
   {/if}
 </Table>

@@ -12,4 +12,10 @@ export const routes = {
   "/leave/add/": wrap({
     asyncComponent: () => import("./routes/leave/Add.svelte"),
   }),
+  "/leave/view/:id/": wrap({
+    asyncComponent: () => import("./routes/leave/View.svelte"),
+  }),
+  "/leave/edit/:id/": wrap({
+    asyncComponent: () => import("./routes/leave/Edit.svelte"),
+  }),
 };

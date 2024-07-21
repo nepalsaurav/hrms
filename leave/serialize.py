@@ -6,6 +6,8 @@ class LeaveSerializer(serializers.ModelSerializer):
     first_name = serializers.CharField(source='user.first_name', read_only=True)
     last_name = serializers.CharField(source='user.last_name', read_only=True)
 
+
+
     class Meta:
         model = Leave
         fields = '__all__'

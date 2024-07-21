@@ -14,6 +14,7 @@ admin.site.logout = LogoutView.as_view()
 admin.site.password_change = PasswordChangeView.as_view()
 
 
+
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("accounts/", include("allauth.urls")),

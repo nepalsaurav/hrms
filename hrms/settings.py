@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     "import_export",
     "crispy_forms",
     "widget_tweaks",
+    "rest_framework",
    
     # Local
     "accounts",
@@ -209,6 +210,8 @@ ACCOUNT_AUTHENTICATION_METHOD = "username_email"
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_UNIQUE_EMAIL = True
 ACCOUNT_USER_MODEL_USERNAME_FIELD = 'username'
+
+
 
 
 #django vite setting
