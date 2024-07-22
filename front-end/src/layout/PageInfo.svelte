@@ -4,19 +4,18 @@
   async function handleRowPerChange(e) {
     const target = e.target;
     const selectedPerPage = target.options[target.selectedIndex].value;
-    console.log(selectedPerPage);
-    const searchParams = new URLSearchParams($querystring);
-    searchParams.set("per_page", selectedPerPage);
+    const searchParams = new URLSearchParams();
+    searchParams.set("page_size", selectedPerPage);
     push(`${$location}?${searchParams.toString()}`);
   }
+  console.log($listResponse.pageSize);
 </script>
 
 <div class="d-inline-flex mb-3 mt-2">
   <div>
     <p class="text-muted">
-      page {$listResponse.pageInfo.currentPage} of {$listResponse.pageInfo
-        .totalPages} [showing {$listResponse.pageInfo.startIndex} - {$listResponse
-        .pageInfo.endIndex} of {$listResponse.pageInfo.totalSize} records]
+      page {$listResponse.currentPage} of {$listResponse.totalPages} [showing {$listResponse.startIndex}
+      - {$listResponse.endIndex} of {$listResponse.count} records]
     </p>
   </div>
   <div class="d-inline-flex align-self-center ms-4">
@@ -28,7 +27,7 @@
       on:change={handleRowPerChange}
     >
       {#each Array.from([10, 20, 40, 50]) as item}
-        <option selected={$listResponse.pageInfo.perPage === item} value={item}
+        <option selected={$listResponse.pageSize === item} value={item}
           >{item}</option
         >
       {/each}

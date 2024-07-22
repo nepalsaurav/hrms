@@ -20,8 +20,8 @@
     },
   ];
 
-  const formUrl = "/api/leave/add";
-  const redirectSuccessURL = "/leave";
+  const formUrl = "/api/leave/add/";
+  const redirectSuccessURL = "/leave/";
   const formTitle = "Add Leave";
 </script>
 

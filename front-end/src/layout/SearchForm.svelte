@@ -4,13 +4,15 @@
   import { location, querystring } from "svelte-spa-router";
   async function handleSearchFormSubmit(e) {
     const form = new FormData(e.target);
-    const searchParams = new URLSearchParams($querystring);
+    const searchParams = new URLSearchParams();
     for (const [key, value] of form.entries()) {
       if (value != "" && typeof value === "string") {
         searchParams.set(key, value);
       }
     }
+
     if (searchParams.toString() != "") {
+      searchParams.delete("page");
       push(`${$location}?${searchParams.toString()}`);
     }
   }
@@ -27,7 +29,7 @@
     <div class="card-body">
       <form on:submit|preventDefault={handleSearchFormSubmit}>
         <fieldset>
-          {@html $listResponse.searchForm}
+          {@html $listResponse.results.searchForm}
           <input type="submit" value="Search" class="btn btn-primary" />
           <input
             type="reset"

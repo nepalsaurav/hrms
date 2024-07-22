@@ -61,7 +61,7 @@ class Leave(models.Model):
         return self.user.last_name
     
     
-    objects = LeaveManager()
+    # objects = LeaveManager()
 
     class Meta:
         permissions = [

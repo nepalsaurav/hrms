@@ -15,12 +15,9 @@
   function getPages() {
     const pages = [];
     for (
-      let i = Math.max(1, $listResponse.pageInfo.currentPage - pageRange);
+      let i = Math.max(1, $listResponse.currentPage - pageRange);
       i <=
-      Math.min(
-        $listResponse.pageInfo.totalPages,
-        $listResponse.pageInfo.currentPage + pageRange
-      );
+      Math.min($listResponse.totalPages, $listResponse.currentPage + pageRange);
       i++
     ) {
       pages.push(i);
@@ -30,15 +27,15 @@
   console.log(getPages());
 </script>
 
-{#if $listResponse.pageInfo.totalPages > 1}
+{#if $listResponse.totalPages > 1}
   <nav aria-label="Page navigation example mt-2">
     <ul class="pagination justify-content-center">
-      {#if $listResponse.pageInfo.hasPrevious}
+      {#if $listResponse.hasPrevious}
         <li class="page-item">
           <button
             class="page-link"
             on:click={() => {
-              goToPage($listResponse.pageInfo.currentPage - 1);
+              goToPage($listResponse.currentPage - 1);
             }}>Previous</button
           >
         </li>
@@ -48,11 +45,11 @@
         </li>
       {/if}
 
-      {#if $listResponse.pageInfo.currentPage > pageRange + 1}
+      {#if $listResponse.currentPage > pageRange + 1}
         <li class="page-item">
           <button class="page-link" on:click={() => goToPage(1)}> 1 </button>
         </li>
-        {#if $listResponse.pageInfo.currentPage > pageRange + 2}
+        {#if $listResponse.currentPage > pageRange + 2}
           <li class="page-item disabled">
             <span class="page-link">...</span>
           </li>
@@ -61,9 +58,7 @@
 
       {#each getPages() as page}
         <li
-          class="page-item {$listResponse.pageInfo.currentPage === page
-            ? 'active'
-            : ''}"
+          class="page-item {$listResponse.currentPage === page ? 'active' : ''}"
         >
           <button class="page-link" on:click={() => goToPage(page)}>
             {page}
@@ -71,8 +66,8 @@
         </li>
       {/each}
 
-      {#if $listResponse.pageInfo.currentPage < $listResponse.pageInfo.totalPages - pageRange}
-        {#if $listResponse.pageInfo.currentPage < $listResponse.pageInfo.totalPages - pageRange - 1}
+      {#if $listResponse.currentPage < $listResponse.totalPages - pageRange}
+        {#if $listResponse.currentPage < $listResponse.totalPages - pageRange - 1}
           <li class="page-item disabled">
             <span class="page-link">...</span>
           </li>
@@ -80,19 +75,19 @@
         <li class="page-item">
           <button
             class="page-link"
-            on:click={() => goToPage($listResponse.pageInfo.totalPages)}
+            on:click={() => goToPage($listResponse.totalPages)}
           >
-            {$listResponse.pageInfo.totalPages}
+            {$listResponse.totalPages}
           </button>
         </li>
       {/if}
 
-      {#if $listResponse.pageInfo.hasNext}
+      {#if $listResponse.hasNext}
         <li class="page-item">
           <button
             class="page-link"
             on:click={() => {
-              goToPage($listResponse.pageInfo.currentPage + 1);
+              goToPage($listResponse.currentPage + 1);
             }}>Next</button
           >
         </li>

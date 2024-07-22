@@ -18,7 +18,7 @@
       const data = await customFetch((url = url));
       if (data.type === "json") {
         $listResponse = data.data;
-        // console.log($listResponse.results.list);
+        console.log($listResponse.results.list);
         $isLoading = false;
       }
     } catch {}
@@ -65,6 +65,12 @@
                 on:click={() => orderBy(col.orderName)}
               >
                 {col.label}
+                <!-- {#if $listResponse.pageInfo.orderBy === col.orderName}
+                  <i class="fa-solid fa-sort-up"></i>
+                {/if}
+                {#if $listResponse.pageInfo.orderBy === `-${col.orderName}`}
+                  <i class="fa-solid fa-sort-down"></i>
+                {/if} -->
               </th>
             {:else}
               <th class="text-uppercase text-muted">{col.label}</th>

@@ -1,9 +1,10 @@
 import json
-from django.db.models import Q
+from django.db.models import Q, query
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, render
 from django.contrib.auth.decorators import login_required
 from rest_framework.authentication import BasicAuthentication, SessionAuthentication
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
 
 from leave.serialize import LeaveSerializer
@@ -15,90 +16,32 @@ from django.template.loader import render_to_string
 from rest_framework.renderers import JSONRenderer # type: ignore
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.response import Response
-
-
-
-
-@api_view(['GET'])
-@authentication_classes([SessionAuthentication, BasicAuthentication])
-@permission_classes([IsAuthenticated])
-def leave_home(request):
-    data = table_data(
-        request = request,
-        Model = Leave,
-        FilterForm = LeaveFilter,
-        per_page=10,
-        search_template = "leave/search_form.html",
-        ModelSerializer = LeaveSerializer
-    )
-    return Response(data)
+from rest_framework import generics
+from django_filters import rest_framework as filters
 
 
 
 
 
-
-
-def table_data(request, Model, FilterForm, per_page, search_template, ModelSerializer):
-    order_by = request.GET.get('order_by')
-    object = Model.objects
-    object.set_user(request.user)
-    if order_by == None or order_by == "":
-        queryset = object.order_by('-created').all()
-    else:
-        queryset = object.order_by(order_by).all()
+class LeaveLists(generics.ListAPIView):
+    queryset = Leave.objects.all()
+    serializer_class = LeaveSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    filterset_class = LeaveFilter
     
-    filter = FilterForm(request.GET, queryset=queryset)
-    per_page = request.GET.get('per_page')
-    page = request.GET.get('page')
-    if per_page == None or per_page == "":
-        per_page = 10
-    else:
-        per_page = int(per_page)
-    if page == None or page == "":
-        page = 1
-    else:
-        page = int(page)
-    p = Paginator(filter.qs, per_page)
-    search_form = render_to_string(search_template, {"form": filter.form})
-    try:
-        page_list = p.page(page)
-        page_info = {
-            "totalSize": p.count,
-            "currentPage": page_list.number,
-            "perPage": p.per_page,
-            "hasNext": page_list.has_next(),
-            "hasPrevious": page_list.has_previous(),
-            "totalPages": p.num_pages,
-            "startIndex": page_list.start_index(),
-            "endIndex": page_list.end_index(),
-            "orderBy": order_by
+    def list(self, request, *args, **kwargs):
+        form = LeaveFilter(request.GET)
+        queryset = self.filter_queryset(self.get_queryset())
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            search_form = render_to_string("leave/search_form.html", {"form": form.form})
+            return self.get_paginated_response({"list": serializer.data, "searchForm": search_form})
 
-        }
-        serializer = ModelSerializer(page_list.object_list, many=True)
-        table_data = JSONRenderer().render(serializer.data)
-        return {
-            "msgType": "success",
-            "searchForm": search_form,
-            "tableData":  json.loads(table_data),
-            "pageInfo": page_info
-        }
-    except Exception as e:
-        if(str(e) == "That page contains no results"):
-            return {
-                "msgType": "success",
-                "searchForm": search_form,
-                "tableData":  json.loads("[]"),
-                "pageInfo": None,
-            }
-        return {
-                "msgType": "failed",
-                "msg": "something error occured",
-                "searchForm": search_form,
-                "tableData":  json.loads("[]"),
-                "pageInfo": None
-        }
-    
+        serializer = self.get_serializer(queryset, many=True)
+        search_form = render_to_string("leave/search_form.html", {"form": form.form})
+        return Response({"list": serializer.data, "searchForm": search_form})
+
 
 
 def leave_add(request):

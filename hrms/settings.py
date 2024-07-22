@@ -231,3 +231,8 @@ CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'hrms.pagination.CustomPagination',
+}
+
+
