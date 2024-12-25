@@ -3,6 +3,7 @@ import DatePicker from "./DatePicker.vue";
 import RichText from "./RichText.vue";
 import { ref } from "vue";
 import { watchEffect, computed } from "vue";
+import RelationalFieldSelect from "./RelationalFieldSelect.vue";
 const props = defineProps(["form", "errors"]);
 const form = props.form;
 const filename = ref("");
@@ -116,6 +117,15 @@ function updateFile(event) {
                 </label>
             </div>
             <!-- file input -->
+
+            <!-- relational field options -->
+            <RelationalFieldSelect
+                v-if="form.type === 'relational_field_select'"
+                :name="form.name"
+                :collection="form.collection"
+                :labelField="form.labelField"
+                :firstOption="form.firstOption"
+            />
 
             <p
                 class="help is-danger"

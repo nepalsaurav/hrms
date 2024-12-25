@@ -108,7 +108,10 @@ export const formDetails = {
       name: "department",
       label: "Department",
       placeholder: "e.g., IT",
-      type: "text",
+      collection: "department",
+      labelField: "name",
+      firstOption: "Select Department",
+      type: "relational_field_select",
       required: false,
     },
     {
@@ -199,6 +202,7 @@ export function trimFormObject(formObject) {
     "Select Marital Status",
     "Select Employment Type",
     "Select Role",
+    "Select Department",
   ];
   const cpObject = formObject;
   Object.entries(formObject).forEach(([key, value]) => {

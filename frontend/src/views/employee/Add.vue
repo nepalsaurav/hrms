@@ -43,6 +43,7 @@ async function handleSubmit(event) {
     const form = new FormData(target);
     let formObject = Object.fromEntries(form.entries());
     formObject = trimFormObject(formObject);
+    console.log(formObject);
     const validate = await validateForm(formObject, validationSchema);
     if (validate != true) {
         console.log(validate);
