@@ -159,6 +159,10 @@ async function deleteData() {
         selected.value = [];
     }
 }
+
+function detailViewClick(item) {
+    console.log(item);
+}
 </script>
 
 <template>
@@ -222,12 +226,23 @@ async function deleteData() {
                         />
                     </td>
 
-                    <td v-for="header in props.listHeader">
+                    <td
+                        v-for="header in props.listHeader"
+                        :class="{ 'text-link': header.link }"
+                        @click="header.link && detailViewClick(item)"
+                    >
                         <!-- render serial number -->
                         <span v-if="header.type === 'serial_number'">
                             {{ calculateSerialNumber(index) }}
                         </span>
                         <!-- render serial number -->
+
+                        <!-- render simple text -->
+                        <span v-if="header.type === 'text'">
+                            {{ item[header.name] }}
+                        </span>
+                        <!-- render simple text -->
+
                         <!-- render combine field  -->
                         <span v-if="header.type === 'combined'">
                             {{ renderCombineField(item, header.combinedField) }}
@@ -259,7 +274,7 @@ async function deleteData() {
                     </option>
                 </select>
             </div>
-            <div style="margin-left: 300px">
+            <div style="margin-left: 300px" v-if="listData.totalPages > 1">
                 <Pagination
                     :pageInfo="{
                         page: listData.page,
@@ -272,7 +287,7 @@ async function deleteData() {
         </div>
     </div>
 
-    <div v-if="!loading && error === null && listData">
+    <div v-if="!loading && error === null && listData" class="mt-4">
         <p v-if="listData.items.length === 0" class="has-text-weight-bold">
             no any data to show
         </p>
@@ -292,5 +307,13 @@ async function deleteData() {
 
 .custom-checkbox:indeterminate {
     accent-color: var(--bulma-dark);
+}
+
+.text-link {
+    color: var(--bulma-dark);
+    cursor: pointer;
+}
+.text-link:hover {
+    text-decoration: underline;
 }
 </style>

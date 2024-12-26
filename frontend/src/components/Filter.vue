@@ -1,5 +1,6 @@
 <script setup>
-import RelationalFieldSelect from "./RelationalFieldSelect.vue";
+// import RelationalFieldSelect from "./RelationalFieldSelect.vue";
+import DynamicSelect from "./DynamicSelect.vue";
 import { trimFormObject } from "@/views/employee/forms";
 import { useRouter, useRoute } from "vue-router";
 const props = defineProps({
@@ -56,16 +57,16 @@ function resetForm() {
 <template>
     <form novalidate @submit="handleSumbit">
         <div class="columns is-multiline">
-            <div class="column is-3" v-for="item in props.filter">
+            <div class="column is-2" v-for="item in props.filter">
                 <!-- render text search -->
                 <div class="field" v-if="item.type === 'text_search'">
-                    <label class="label" :for="item.name">{{
-                        item.label
-                    }}</label>
+                    <label class="label" :for="item.name">
+                        <small> {{ item.label }}</small></label
+                    >
                     <div class="control">
                         <input
                             :id="item.name"
-                            class="input"
+                            class="input is-small"
                             :name="item.name"
                             :value="route.query.text_search"
                             type="text"
@@ -78,12 +79,16 @@ function resetForm() {
                 <!-- render select -->
                 <!-- select -->
                 <div class="field" v-if="item.type === 'select'">
-                    <label class="label" :for="item.name">{{
-                        item.label
-                    }}</label>
+                    <label class="label" :for="item.name">
+                        <small> {{ item.label }}</small></label
+                    >
                     <div class="control">
-                        <div class="select">
-                            <select :name="item.name" :id="item.name">
+                        <div class="select is-small" style="width: 100%">
+                            <select
+                                :name="item.name"
+                                :id="item.name"
+                                style="width: 100%"
+                            >
                                 <option
                                     v-for="option in item.options"
                                     :value="option.value"
@@ -103,22 +108,10 @@ function resetForm() {
 
                 <!-- relational field options -->
 
-                <div
-                    class="field"
+                <DynamicSelect
                     v-if="item.type === 'relational_field_select'"
-                >
-                    <label class="label" :for="item.name">{{
-                        item.label
-                    }}</label>
-                    <div class="control">
-                        <RelationalFieldSelect
-                            :name="item.name"
-                            :collection="item.collection"
-                            :labelField="item.labelField"
-                            :firstOption="item.firstOption"
-                        />
-                    </div>
-                </div>
+                    :item="item"
+                />
 
                 <!-- relational field options -->
             </div>

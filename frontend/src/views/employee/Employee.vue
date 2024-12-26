@@ -9,12 +9,22 @@ const listHeader = [
         label: "SN",
         type: "serial_number",
     },
-
     {
         name: "full_name",
         label: "Full Name",
         type: "combined",
+        link: true,
         combinedField: ["first_name", "middle_name", "last_name"],
+    },
+    {
+        name: "gender",
+        label: "Gender",
+        type: "text",
+    },
+    {
+        name: "date_of_birth_ad",
+        label: "Date of birth (AD)",
+        type: "text",
     },
 ];
 
