@@ -3,10 +3,14 @@ import { ref } from "vue";
 import { formDetails } from "./forms";
 import RenderForms from "@/components/RenderForms.vue";
 import BreadCrumb from "@/components/BreadCrumb.vue";
+import Swal from "sweetalert2";
+import { useRouter } from "vue-router";
+import { client } from "@/api/pocketbase";
 import { validationSchema } from "./forms";
 import { validateForm } from "./forms";
 import { getErrorTab } from "./forms";
 import { trimFormObject } from "./forms";
+const router = useRouter();
 const tabs = ref([
     {
         name: "personal_details",
@@ -43,10 +47,8 @@ async function handleSubmit(event) {
     const form = new FormData(target);
     let formObject = Object.fromEntries(form.entries());
     formObject = trimFormObject(formObject);
-    console.log(formObject);
     const validate = await validateForm(formObject, validationSchema);
     if (validate != true) {
-        console.log(validate);
         formErrors.value = validate;
         const errorTab = getErrorTab(
             activeFormTab.value,
@@ -56,6 +58,26 @@ async function handleSubmit(event) {
         if (errorTab != undefined) {
             activeFormTab.value = errorTab;
         }
+        return;
+    }
+
+    try {
+        const record = await client.collection("employee").create(formObject);
+        console.log(record);
+        Swal.fire({
+            title: "Success!",
+            text: "Successfully create employee",
+            icon: "success",
+        });
+        router.push("/employee");
+    } catch (error) {
+        const errMessage = error.data.message;
+        Swal.fire({
+            title: "Error!",
+            text: errMessage,
+            icon: "error",
+        });
+        // router.push("/employee");
     }
 }
 </script>

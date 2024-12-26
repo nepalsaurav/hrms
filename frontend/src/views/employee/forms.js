@@ -25,8 +25,8 @@ export const formDetails = {
       required: true,
     },
     {
-      name: "date_of_birth",
-      label: "Date of Birth",
+      name: "date_of_birth_ad",
+      label: "Date of Birth (AD)",
       placeholder: "1990-01-01",
       type: "date",
       required: false,
@@ -100,14 +100,15 @@ export const formDetails = {
     {
       name: "designation",
       label: "Designation",
-      placeholder: "e.g., Software Engineer",
-      type: "text",
+      collection: "designation",
+      labelField: "name",
+      firstOption: "e.g., Software Engineer",
+      type: "relational_field_select",
       required: false,
     },
     {
       name: "department",
       label: "Department",
-      placeholder: "e.g., IT",
       collection: "department",
       labelField: "name",
       firstOption: "Select Department",
@@ -182,7 +183,7 @@ export const validationSchema = yup.object().shape({
   first_name: yup.string().required("first name should be required"),
   last_name: yup.string().required("last name is required"),
   email: yup.string().email("invalid email address"),
-  date_of_birth: yup
+  date_of_birth_ad: yup
     .string()
     .matches(/^\d{4}-\d{2}-\d{2}$/, "Date must be in the format yyyy-mm-dd"),
   joining_date: yup

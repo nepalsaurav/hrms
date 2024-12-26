@@ -1,5 +1,5 @@
 import Pocketbase from "pocketbase";
 
-const client = new Pocketbase("http://127.0.0.1:8080");
+const client = new Pocketbase("http://192.168.200.22:8080");
 
 export { client };

@@ -2,6 +2,91 @@
 import { RouterLink } from "vue-router";
 import ListDisplay from "@/components/ListDisplay.vue";
 import BreadCrumb from "@/components/BreadCrumb.vue";
+
+const listHeader = [
+    {
+        name: "sn",
+        label: "SN",
+        type: "serial_number",
+    },
+
+    {
+        name: "full_name",
+        label: "Full Name",
+        type: "combined",
+        combinedField: ["first_name", "middle_name", "last_name"],
+    },
+];
+
+const filter = [
+    {
+        name: "text_search",
+        label: "Search",
+        type: "text_search",
+        fields: ["first_name", "middle_name", "last_name"],
+        placeholder: "search",
+    },
+    {
+        name: "gender",
+        label: "Gender",
+        type: "select",
+        options: [
+            {
+                label: "Select Gender",
+                value: "",
+            },
+            {
+                label: "Male",
+                value: "Male",
+            },
+            {
+                label: "Female",
+                value: "Female",
+            },
+            {
+                label: "Other",
+                value: "Other",
+            },
+        ],
+    },
+
+    {
+        name: "maritial_status",
+        label: "Maritial Status",
+        type: "select",
+        options: [
+            {
+                label: "Select Maritial Status",
+                value: "",
+            },
+            {
+                label: "Single",
+                value: "Single",
+            },
+            {
+                label: "Married",
+                value: "Married",
+            },
+            {
+                label: "Divorced",
+                value: "Divorced",
+            },
+            {
+                label: "Widowed",
+                value: "Widowed",
+            },
+        ],
+    },
+
+    {
+        name: "department",
+        label: "Department",
+        type: "relational_field_select",
+        collection: "department",
+        labelField: "name",
+        firstOption: "Select Department",
+    },
+];
 </script>
 
 <template>
@@ -28,7 +113,11 @@ import BreadCrumb from "@/components/BreadCrumb.vue";
                 </RouterLink>
             </div>
             <div class="mt-5">
-                <ListDisplay />
+                <ListDisplay
+                    :listHeader="listHeader"
+                    collection="employee"
+                    :filter="filter"
+                />
             </div>
         </div>
     </div>

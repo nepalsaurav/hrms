@@ -6,10 +6,6 @@ import BreadCrumb from "./components/BreadCrumb.vue";
 <template>
     <TopNav />
     <div class="container" style="margin-top: 80px">
-        <router-view v-slot="{ Component }">
-            <transition name="slide-left">
-                <component :is="Component" ref="mainContent" />
-            </transition>
-        </router-view>
+        <router-view> </router-view>
     </div>
 </template>

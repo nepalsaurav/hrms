@@ -23,6 +23,9 @@ importers:
       pocketbase:
         specifier: ^0.24.0
         version: 0.24.0
+      sweetalert2:
+        specifier: ^11.15.3
+        version: 11.15.3
       trix:
         specifier: ^2.1.12
         version: 2.1.12
@@ -1017,6 +1020,9 @@ packages:
 
   svg-tags@1.0.0:
     resolution: {integrity: sha512-ovssysQTa+luh7A5Weu3Rta6FJlFBBbInjOh722LIt6klpU2/HtdUbszju/G4devcvk8PGt7FCLv5wftu3THUA==}
+
+  sweetalert2@11.15.3:
+    resolution: {integrity: sha512-+0imNg+XYL8tKgx8hM0xoiXX3KfgxHDmiDc8nTJFO89fQEEhJlkecSdyYOZ3IhVMcUmoNte4fTIwWiugwkPU6w==}
 
   sync-child-process@1.0.2:
     resolution: {integrity: sha512-8lD+t2KrrScJ/7KXCSyfhT3/hRq78rC0wBFqNJXv3mZyn6hW2ypM05JmlSvtqRbeq6jqA94oHbxAr2vYsJ8vDA==}
@@ -2065,6 +2071,8 @@ snapshots:
       has-flag: 4.0.0
 
   svg-tags@1.0.0: {}
+
+  sweetalert2@11.15.3: {}
 
   sync-child-process@1.0.2:
     dependencies:
