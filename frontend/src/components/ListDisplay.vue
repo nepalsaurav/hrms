@@ -7,6 +7,7 @@ import LoadingSkeleton from "./LoadingSkeleton.vue";
 import Filter from "./Filter.vue";
 import Pagination from "./Pagination.vue";
 import Swal from "sweetalert2";
+import { RouterLink } from "vue-router";
 
 const router = useRouter();
 const route = useRoute();
@@ -22,6 +23,10 @@ const props = defineProps({
     listHeader: Array,
     collection: String,
     filter: Array,
+    detailViewLink: String,
+    routeBack: {
+        type: String,
+    },
 });
 
 async function fetchData(
@@ -69,7 +74,7 @@ function parseQuery(query) {
         filter.value = query["filter"];
     }
     if (query["reset"] !== undefined) {
-        router.push("/employee");
+        router.push(route.path);
         fetchData(1);
     }
 }
@@ -107,7 +112,7 @@ function changePerPage(event) {
     const query_obj = {};
     query_obj["perPage"] = selectedValues;
     router.push({
-        path: "/employee",
+        path: props.routeBack,
         query: query_obj,
     });
 }
@@ -161,7 +166,7 @@ async function deleteData() {
 }
 
 function detailViewClick(item) {
-    console.log(item);
+    router.push(`${props.detailViewLink}/${item.id}`);
 }
 </script>
 
@@ -170,7 +175,7 @@ function detailViewClick(item) {
     <div v-if="!loading && error === null && listData">
         <!-- filter tab -->
         <div class="box">
-            <Filter :filter="props.filter" />
+            <Filter :filter="props.filter" :routeBack="props.routeBack" />
         </div>
         <!-- filter tab -->
         <!-- action tab -->
@@ -248,6 +253,26 @@ function detailViewClick(item) {
                             {{ renderCombineField(item, header.combinedField) }}
                         </span>
                         <!-- render combine field  -->
+
+                        <!-- render date -->
+                        <span v-if="header.type === 'date'">
+                            {{ item[header.name].split(" ")[0] }}
+                        </span>
+                        <!-- render date -->
+
+                        <!-- render action -->
+                        <span v-if="header.type === 'action'">
+                            <RouterLink
+                                class="button is-dark"
+                                style="width: 10px; height: 20px"
+                                :to="`/employee/edit/${item.id}`"
+                                ><i
+                                    class="bi bi-pencil"
+                                    style="font-size: 10px"
+                                ></i
+                            ></RouterLink>
+                        </span>
+                        <!-- render action -->
                     </td>
                     <!-- <td>1</td>
                     <td>{{ item.first_name }}</td> -->

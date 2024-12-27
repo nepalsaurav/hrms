@@ -35,7 +35,25 @@ export const formDetails = {
       name: "gender",
       label: "Gender",
       type: "select",
-      options: ["Select Gender", "Male", "Female", "Other"],
+      options: [
+        {
+          value: "",
+          label: "Select Marital Status",
+        },
+        {
+          value: "Male",
+          label: "Male",
+        },
+        {
+          value: "Female",
+          label: "Female",
+        },
+        {
+          value: "Other",
+          label: "Other",
+        },
+      ],
+
       required: false,
     },
     {
@@ -43,12 +61,28 @@ export const formDetails = {
       label: "Marital Status",
       type: "select",
       options: [
-        "Select Marital Status",
-        "Single",
-        "Married",
-        "Divorced",
-        "Widowed",
+        {
+          value: "",
+          label: "Select Marital Status",
+        },
+        {
+          value: "Single",
+          label: "Single",
+        },
+        {
+          value: "Married",
+          label: "Married",
+        },
+        {
+          value: "Divorced",
+          label: "Divorced",
+        },
+        {
+          value: "Widowed",
+          label: "Widowed",
+        },
       ],
+
       required: false,
     },
     {
@@ -126,7 +160,25 @@ export const formDetails = {
       name: "employment_type",
       label: "Employment Type",
       type: "select",
-      options: ["Select Employment Type", "Full-Time", "Part-Time", "Contract"],
+      options: [
+        {
+          value: "",
+          label: "Select Employment Type",
+        },
+        {
+          value: "Full-Time",
+          label: "Full-Time",
+        },
+        {
+          value: "Part-Time",
+          label: "Part-Time",
+        },
+        {
+          value: "Contract",
+          label: "Contract",
+        },
+      ],
+
       required: false,
     },
     {
@@ -140,7 +192,24 @@ export const formDetails = {
       name: "role",
       label: "System Role",
       type: "select",
-      options: ["Select Role", "Admin", "HR", "Employee"],
+      options: [
+        {
+          value: "",
+          label: "Select Role",
+        },
+        {
+          value: "Admin",
+          label: "Admin",
+        },
+        {
+          value: "HR",
+          label: "HR",
+        },
+        {
+          value: "Employee",
+          label: "Employee",
+        },
+      ],
       required: false,
     },
   ],

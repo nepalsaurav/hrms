@@ -1,6 +1,5 @@
 <script setup>
 import TopNav from "./components/nav/TopNav.vue";
-import BreadCrumb from "./components/BreadCrumb.vue";
 </script>
 
 <template>

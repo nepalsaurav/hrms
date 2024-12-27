@@ -15,6 +15,11 @@ const router = createRouter({
       component: () => import("../views/AboutView.vue"),
     },
     {
+      path: "/print",
+      name: "print",
+      component: () => import("../views/Print.vue"),
+    },
+    {
       path: "/employee",
       name: "employee",
       children: [
@@ -27,6 +32,33 @@ const router = createRouter({
           path: "add",
           name: "add_employee",
           component: () => import("../views/employee/Add.vue"),
+        },
+        {
+          path: "edit/:id",
+          name: "edit_employee",
+          component: () => import("../views/employee/Edit.vue"),
+        },
+        {
+          path: "view/:id",
+          name: "view_employee",
+          component: () => import("../views/employee/View.vue"),
+        },
+      ],
+    },
+    {
+      path: "/settings",
+      name: "settings",
+      component: () => import("../views/settings/Setting.vue"),
+      children: [
+        {
+          path: "user",
+          name: "user",
+          component: () => import("../views/settings/user/User.vue"),
+        },
+        {
+          path: "user/add",
+          name: "add_user",
+          component: () => import("../views/settings/user/Add.vue"),
         },
       ],
     },

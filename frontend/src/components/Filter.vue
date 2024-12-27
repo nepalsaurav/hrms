@@ -5,16 +5,23 @@ import { trimFormObject } from "@/views/employee/forms";
 import { useRouter, useRoute } from "vue-router";
 const props = defineProps({
     filter: Array,
+    routeBack: {
+        type: String,
+        default: "/employee",
+    },
 });
 
 const router = useRouter();
 const route = useRoute();
 
-console.log(props.filter);
-
 function getCombineField() {
     const items = props.filter.filter((e) => e.name === "text_search");
     return items[0].fields;
+}
+
+function getItemByKey(key, array) {
+    const items = array.filter((e) => e.name === key);
+    return items[0];
 }
 
 async function handleSumbit(event) {
@@ -39,19 +46,24 @@ async function handleSumbit(event) {
     for (const [key, value] of Object.entries(formObject)) {
         if (key != "text_search" && value != "") {
             query_obj[key] = value;
-            filter.push(`${key}?~'${value}'`);
+            const item = getItemByKey(key, props.filter);
+            if (item.type === "select") {
+                filter.push(`${key}="${value}"`);
+            } else {
+                filter.push(`${key}?~"${value}"`);
+            }
         }
     }
     const filter_string = filter.join("||");
     query_obj["filter"] = filter_string;
     router.push({
-        path: "/employee",
+        path: props.routeBack,
         query: query_obj,
     });
 }
 
 function resetForm() {
-    router.push("/employee?reset=1");
+    router.push(`${props.routeBack}?reset=1`);
 }
 </script>
 <template>

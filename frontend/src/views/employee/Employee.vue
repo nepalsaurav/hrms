@@ -24,7 +24,12 @@ const listHeader = [
     {
         name: "date_of_birth_ad",
         label: "Date of birth (AD)",
-        type: "text",
+        type: "date",
+    },
+    {
+        name: "action",
+        label: "Action",
+        type: "action",
     },
 ];
 
@@ -61,8 +66,8 @@ const filter = [
     },
 
     {
-        name: "maritial_status",
-        label: "Maritial Status",
+        name: "marital_status",
+        label: "Marital Status",
         type: "select",
         options: [
             {
@@ -127,6 +132,7 @@ const filter = [
                     :listHeader="listHeader"
                     collection="employee"
                     :filter="filter"
+                    detailViewLink="/employee/view"
                 />
             </div>
         </div>

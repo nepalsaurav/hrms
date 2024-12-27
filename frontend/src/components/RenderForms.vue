@@ -4,7 +4,11 @@ import RichText from "./RichText.vue";
 import { ref } from "vue";
 import { watchEffect, computed } from "vue";
 import RelationalFieldSelect from "./RelationalFieldSelect.vue";
-const props = defineProps(["form", "errors"]);
+const props = defineProps({
+    form: { type: Object },
+    errors: { type: Object, default: () => ({}) },
+    defaultValue: { type: String, default: "" },
+});
 const form = props.form;
 const filename = ref("");
 function updateFile(event) {
@@ -13,6 +17,7 @@ function updateFile(event) {
         filename.value = file.name;
     }
 }
+console.log(props.defaultValue, props.form.name);
 </script>
 
 <template>
@@ -29,10 +34,24 @@ function updateFile(event) {
                 :name="form.name"
                 class="input"
                 type="text"
+                :value="props.defaultValue"
                 :placeholder="form.placeholder"
                 :required="form.required"
             />
             <!-- text input -->
+
+            <!-- password input -->
+            <input
+                v-if="form.type === 'password'"
+                :id="form.name"
+                :name="form.name"
+                class="input"
+                type="password"
+                :value="props.defaultValue"
+                :placeholder="form.placeholder"
+                :required="form.required"
+            />
+            <!-- password input -->
 
             <!-- date input -->
 
@@ -41,6 +60,7 @@ function updateFile(event) {
                 :placeholder="form.placeholder"
                 :required="form.required"
                 :name="form.name"
+                :value="props.defaultValue.split(' ')[0]"
             />
             <!-- date input -->
 
@@ -51,6 +71,7 @@ function updateFile(event) {
                 :name="form.name"
                 class="input"
                 type="tel"
+                :value="props.defaultValue"
                 :placeholder="form.placeholder"
                 :required="form.required"
             />
@@ -63,6 +84,7 @@ function updateFile(event) {
                 :name="form.name"
                 class="input"
                 type="email"
+                :value="props.defaultValue"
                 :placeholder="form.placeholder"
                 :required="form.required"
             />
@@ -71,8 +93,12 @@ function updateFile(event) {
             <!-- select -->
             <div class="select" v-if="form.type === 'select'">
                 <select :name="form.name">
-                    <option v-for="option in form.options" :value="option">
-                        {{ option }}
+                    <option
+                        v-for="option in form.options"
+                        :value="option.value"
+                        :selected="option.value === props.defaultValue"
+                    >
+                        {{ option.label }}
                     </option>
                 </select>
             </div>
@@ -82,7 +108,7 @@ function updateFile(event) {
             <RichText
                 v-if="form.type === 'rich_text'"
                 :name="form.name"
-                :initialContent="form.initialContent"
+                :initialContent="props.defaultValue"
             />
             <!-- rich text -->
 
@@ -92,9 +118,10 @@ function updateFile(event) {
                 class="textarea"
                 :name="form.name"
                 :placeholder="form.placeholder"
-                :value="form.initialContent"
+                :value="props.defaultValue"
             >
             </textarea>
+            <!-- text area -->
 
             <!-- file input -->
             <div class="file has-name" v-if="form.type === 'file'">
@@ -125,6 +152,7 @@ function updateFile(event) {
                 :collection="form.collection"
                 :labelField="form.labelField"
                 :firstOption="form.firstOption"
+                :selected="props.defaultValue"
             />
 
             <p
