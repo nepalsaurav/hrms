@@ -51,14 +51,19 @@ const router = createRouter({
       component: () => import("../views/settings/Setting.vue"),
       children: [
         {
-          path: "user",
-          name: "user",
-          component: () => import("../views/settings/user/User.vue"),
+          path: "/settings/collection/:id",
+          name: "settings_collection",
+          component: () => import("../views/settings/collection/List.vue"),
         },
         {
-          path: "user/add",
-          name: "add_user",
-          component: () => import("../views/settings/user/Add.vue"),
+          path: "/settings/collection/:id/add",
+          name: "settings_collection_add",
+          component: () => import("../views/settings/collection/Add.vue"),
+        },
+        {
+          path: "/settings/collection/:id/edit/:collectionID",
+          name: "settings_collection_edit",
+          component: () => import("../views/settings/collection/Edit.vue"),
         },
       ],
     },

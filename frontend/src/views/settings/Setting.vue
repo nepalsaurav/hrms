@@ -1,25 +1,34 @@
 <script setup>
 import { RouterLink } from "vue-router";
 import { useRoute } from "vue-router";
+
 let menus = [
     {
-        path: "/settings/user",
+        path: "/settings/collection/users",
+        name: "user",
         label: "User",
         icon: null,
     },
     {
-        path: "/settings/company",
+        path: "/settings/collection/company",
+        name: "company",
         label: "Company",
         icon: null,
     },
     {
-        path: "/settings/department",
-        label: "Deparyment",
+        path: "/settings/collection/department",
+        name: "department",
+        label: "Department",
+        icon: null,
+    },
+    {
+        path: `/settings/collection/branch?expand=company&expand_label=name`,
+        name: "branch",
+        label: "Branch",
         icon: null,
     },
 ];
 const route = useRoute();
-console.log(route.path);
 </script>
 
 <template>
@@ -32,7 +41,7 @@ console.log(route.path);
                         <RouterLink
                             :to="item.path"
                             :class="
-                                route.path.includes(item.path) &&
+                                route.path.includes(item.name) &&
                                 'is-active-nav'
                             "
                             >{{ item.label }}</RouterLink

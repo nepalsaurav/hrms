@@ -1,24 +1,38 @@
 <script setup>
 import { ref } from "vue";
 import { RouterLink } from "vue-router";
+import { useRoute } from "vue-router";
+const route = useRoute();
 const menus = ref({
     start: [
         {
             name: "dashboard",
             label: "Dashboard",
             href: "/",
+            isActive: () => {
+                if (route.path === "/") return true;
+                return false;
+            },
             isChild: false,
         },
         {
             name: "employee",
             label: "Employee",
             href: "/employee",
+            isActive: () => {
+                if (route.path.includes("/employee")) return true;
+                return false;
+            },
             isChild: false,
         },
         {
             name: "settings",
             label: "Settings",
-            href: "/settings/user",
+            href: "/settings/collection/users",
+            isActive: () => {
+                if (route.path.includes("/settings/collection")) return true;
+                return false;
+            },
             isChild: false,
         },
     ],
@@ -45,7 +59,7 @@ const menus = ref({
                 <RouterLink
                     v-for="item in menus.start"
                     class="navbar-item"
-                    activeClass="is-active-nav"
+                    :class="item.isActive() && 'is-active-nav'"
                     :to="item.href"
                 >
                     {{ item.label }}

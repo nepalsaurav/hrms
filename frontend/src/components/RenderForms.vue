@@ -7,17 +7,33 @@ import RelationalFieldSelect from "./RelationalFieldSelect.vue";
 const props = defineProps({
     form: { type: Object },
     errors: { type: Object, default: () => ({}) },
-    defaultValue: { type: String, default: "" },
+    defaultValue: { default: "" },
 });
 const form = props.form;
 const filename = ref("");
+const defaultCheckboxValue = ref("checkbox_off");
 function updateFile(event) {
     const file = event.target.files[0];
     if (file) {
         filename.value = file.name;
     }
 }
-console.log(props.defaultValue, props.form.name);
+
+function checkChekboxChecked(val) {
+    if (val === "") {
+        return false;
+    }
+    return val;
+}
+
+function handleCheckbox(event) {
+    const target = event.target;
+    if (target.checked) {
+        defaultCheckboxValue.value = "checkbox_on";
+    } else {
+        defaultCheckboxValue.value = "checkbox_off";
+    }
+}
 </script>
 
 <template>
@@ -29,7 +45,7 @@ console.log(props.defaultValue, props.form.name);
         <div class="control">
             <!-- text input -->
             <input
-                v-if="form.type === 'text'"
+                v-if="form.type === 'text' || form.type === 'url'"
                 :id="form.name"
                 :name="form.name"
                 class="input"
@@ -106,7 +122,7 @@ console.log(props.defaultValue, props.form.name);
 
             <!-- rich text -->
             <RichText
-                v-if="form.type === 'rich_text'"
+                v-if="form.type === 'rich_text' || form.type === 'editor'"
                 :name="form.name"
                 :initialContent="props.defaultValue"
             />
@@ -145,6 +161,24 @@ console.log(props.defaultValue, props.form.name);
             </div>
             <!-- file input -->
 
+            <!-- bool input -->
+            <input
+                type="hidden"
+                :name="form.name"
+                v-if="form.type === 'bool'"
+                v-model="defaultCheckboxValue"
+            />
+            <input
+                v-if="form.type === 'bool'"
+                :id="form.name"
+                :checked="checkChekboxChecked(props.defaultValue)"
+                @change="handleCheckbox"
+                value="off"
+                type="checkbox"
+                class="checkbox custom-checkbox"
+            />
+            <!-- bool input -->
+
             <!-- relational field options -->
             <RelationalFieldSelect
                 v-if="form.type === 'relational_field_select'"
@@ -164,3 +198,13 @@ console.log(props.defaultValue, props.form.name);
         </div>
     </div>
 </template>
+
+<style scoped>
+.custom-checkbox {
+    transform: scale(1.2);
+}
+
+.custom-checkbox:checked {
+    accent-color: var(--bulma-dark);
+}
+</style>

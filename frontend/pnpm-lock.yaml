@@ -14,6 +14,9 @@ importers:
       bulma:
         specifier: ^1.0.2
         version: 1.0.2
+      maska:
+        specifier: ^3.0.4
+        version: 3.0.4
       pikaday:
         specifier: ^1.8.2
         version: 1.8.2
@@ -35,6 +38,9 @@ importers:
       vue:
         specifier: ^3.5.13
         version: 3.5.13
+      vue-input-facade:
+        specifier: ^2.2.0
+        version: 2.2.0
       vue-router:
         specifier: ^4.4.5
         version: 4.5.0(vue@3.5.13)
@@ -759,6 +765,9 @@ packages:
   magic-string@0.30.17:
     resolution: {integrity: sha512-sNPKHvyjVf7gyjwS4xGTaW/mCnF8wnjtifKBEhxfZ7E/S8tQ0rssrwGNn6q8JH/ohItJfSQp9mBtQYuTlH5QnA==}
 
+  maska@3.0.4:
+    resolution: {integrity: sha512-+lXmPLXRM8oDvAi91UoU8OBrBjFf9n9ZH+Wn3kCWRqAJQbxeeFTq3QC2SDfr/BpBo25+vrMpoFf/r338aISpNQ==}
+
   mitt@3.0.1:
     resolution: {integrity: sha512-vKivATfr97l2/QBCYAkXYDbrIWPM2IIKEl7YPhjCvKlG3kE2gm+uBo6nEXK3M5/Ffh/FLpKExzOQ3JJoJGFKBw==}
 
@@ -1151,6 +1160,9 @@ packages:
     peerDependenciesMeta:
       '@vue/composition-api':
         optional: true
+
+  vue-input-facade@2.2.0:
+    resolution: {integrity: sha512-t3Rpr9ErzYX2RBWbnLNFOnIy873fP6Xlhbq2cZIoLbg1GirC2TK8PE5u/K8BktsPGOV31ERZpJEUdS9V5tHTaw==}
 
   vue-router@4.5.0:
     resolution: {integrity: sha512-HDuk+PuH5monfNuY+ct49mNmkCRK4xJAV9Ts4z9UFc4rzdDnxQLyCMGGc8pKhZhHTVzfanpNwB/lwqevcBwI4w==}
@@ -1859,6 +1871,8 @@ snapshots:
     dependencies:
       '@jridgewell/sourcemap-codec': 1.5.0
 
+  maska@3.0.4: {}
+
   mitt@3.0.1: {}
 
   mrmime@2.0.0: {}
@@ -2177,6 +2191,8 @@ snapshots:
   vue-demi@0.14.10(vue@3.5.13):
     dependencies:
       vue: 3.5.13
+
+  vue-input-facade@2.2.0: {}
 
   vue-router@4.5.0(vue@3.5.13):
     dependencies:

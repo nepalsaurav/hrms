@@ -25,8 +25,10 @@ onMounted(async () => {
             .getFullList({});
         options.value = records;
         if (selected.value != "") {
-            const filtered_option = records.filter(
-                (e) => e.id === props.selected[0],
+            const filtered_option = records.filter((e) =>
+                e.id === Array.isArray(props.selected)
+                    ? props.selected[0]
+                    : props.selected,
             );
             selected_label.value = filtered_option[0][props.labelField];
         }

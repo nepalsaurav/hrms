@@ -3,6 +3,7 @@ import Pikaday from "pikaday";
 import { useTemplateRef, onMounted } from "vue";
 const dateInput = useTemplateRef("date-input");
 const props = defineProps(["placeholder", "required", "name"]);
+import { vMaska } from "maska/vue";
 onMounted(() => {
     const elm = dateInput.value;
     const _ = new Pikaday({
@@ -22,6 +23,7 @@ onMounted(() => {
         type="text"
         ref="date-input"
         class="input"
+        v-maska="'####-##-##'"
         :placeholder="props.placeholder"
         :required="props.required"
         :name="props.name"
