@@ -92,6 +92,12 @@ export const formDetails = {
       type: "text",
       required: false,
     },
+    {
+      name: "photo",
+      label: "Profile Picture",
+      type: "file",
+      required: false,
+    },
   ],
   contact_details: [
     {
@@ -279,7 +285,7 @@ export function trimFormObject(formObject) {
     if (removeOption.includes(value)) {
       delete cpObject[key];
     }
-    if (value === "") {
+    if (value === "" && key != "bio") {
       delete cpObject[key];
     }
 

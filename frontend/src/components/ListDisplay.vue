@@ -27,6 +27,10 @@ const props = defineProps({
     routeBack: {
         type: String,
     },
+    expand: {
+        type: String,
+        default: "",
+    },
 });
 
 async function fetchData(
@@ -42,6 +46,7 @@ async function fetchData(
             .getList(page, page_size, {
                 filter: filter,
                 sort: sort,
+                expand: props.expand,
             });
         loading.value = false;
         listData.value = record;
@@ -84,6 +89,7 @@ watchEffect(() => {
 });
 
 function renderCombineField(item, fields) {
+    console.log(fields, "sdasdd");
     let texts = [];
     for (let i = 0; i < fields.length; i++) {
         if (item[fields[i]] !== "") {
@@ -259,6 +265,18 @@ function detailViewClick(item) {
                             {{ item[header.name].split(" ")[0] }}
                         </span>
                         <!-- render date -->
+
+                        <!-- expand -->
+                        <tempalte v-if="header.type === 'expand'">
+                            <span v-if="header.isCombinedField">
+                                {{
+                                    renderCombineField(
+                                        item.expand[header.expandCollection],
+                                        header.fields,
+                                    )
+                                }}
+                            </span>
+                        </tempalte>
 
                         <!-- render action -->
                         <span v-if="header.type === 'action'">

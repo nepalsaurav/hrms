@@ -26,6 +26,16 @@ const menus = ref({
             isChild: false,
         },
         {
+            name: "leave",
+            label: "Leave",
+            href: "/leave",
+            isActive: () => {
+                if (route.path.includes("/leave")) return true;
+                return false;
+            },
+            isChild: false,
+        },
+        {
             name: "settings",
             label: "Settings",
             href: "/settings/collection/users",

@@ -10,14 +10,13 @@ export function trimFormObject(formObject) {
 
   Object.entries(formObject).forEach(([key, value]) => {
     if (!(value instanceof File) && value != "") {
-      cpObject.append(key, value);
-    }
-
-    if (value === "checkbox_on") {
-      cpObject.append(key, "true");
-    }
-    if (value === "checkbox_off") {
-      cpObject.append(key, "false");
+      if (value === "checkbox_on") {
+        cpObject.append(key, true);
+      } else if (value === "checkbox_off") {
+        cpObject.append(key, false);
+      } else {
+        cpObject.append(key, value);
+      }
     }
     if (value instanceof File) {
       if (value.size !== 0) {

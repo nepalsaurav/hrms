@@ -7,6 +7,7 @@ import { convertUtcToLocalDate } from "../utils";
 import { convertCamelToProper } from "../utils";
 import { useRouter, useRoute } from "vue-router";
 import Swal from "sweetalert2";
+import Avatar from "./Avatar.vue";
 const props = defineProps({
     schema: Object,
     expand: {
@@ -226,6 +227,16 @@ function editData(item) {
                                         ]
                                     }}
                                 </span>
+
+                                <!-- for avatar -->
+                                <span v-else-if="header.name === 'avatar'">
+                                    <Avatar
+                                        :filename="item[header.name]"
+                                        :record="item"
+                                        size="64x64"
+                                    />
+                                </span>
+                                <!-- span -->
                                 <span v-else>
                                     {{ item[header.name] }}
                                 </span>

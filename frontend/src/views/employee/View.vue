@@ -21,6 +21,11 @@ const breadcrumbLink = ref([
 
 const viewList = [
     {
+        name: "photo",
+        label: "PP",
+        type: "profile_photo",
+    },
+    {
         name: "first_name",
         label: "First Name",
         type: "text",

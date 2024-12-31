@@ -27,6 +27,18 @@ let menus = [
         label: "Branch",
         icon: null,
     },
+    {
+        path: "/settings/collection/roles",
+        name: "roles",
+        label: "Roles",
+        icon: null,
+    },
+    {
+        path: "/settings/collection/permissions",
+        name: "permissions",
+        label: "Permissions",
+        icon: null,
+    },
 ];
 const route = useRoute();
 </script>

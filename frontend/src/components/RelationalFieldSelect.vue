@@ -24,11 +24,12 @@ onMounted(async () => {
             .collection(props.collection)
             .getFullList({});
         options.value = records;
+        const selected_val = Array.isArray(props.selected)
+            ? props.selected[0]
+            : props.selected;
         if (selected.value != "") {
-            const filtered_option = records.filter((e) =>
-                e.id === Array.isArray(props.selected)
-                    ? props.selected[0]
-                    : props.selected,
+            const filtered_option = records.filter(
+                (e) => e.id === selected_val,
             );
             selected_label.value = filtered_option[0][props.labelField];
         }

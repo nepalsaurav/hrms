@@ -7,6 +7,7 @@ import { client } from "@/api/pocketbase";
 import LoadingSkeleton from "./LoadingSkeleton.vue";
 import { setPrintContent } from "@/stores/print";
 import { url } from "@/api/config";
+import Avatar from "./Avatar.vue";
 
 const props = defineProps({
     collection: String,
@@ -68,40 +69,50 @@ function printDocument() {
             </button>
         </div>
 
-        <div class="card" id="contentToPrint">
-            <div class="card-content">
-                <div class="columns is-multiline">
-                    <div
-                        class="column"
-                        v-for="item in viewList"
-                        :class="item.type === 'rich_text' ? 'is-12' : 'is-6'"
-                    >
-                        <div class="field is-grouped">
-                            <div class="control">
-                                <p class="has-text-grey">{{ item.label }}:</p>
-                            </div>
-                            <div class="control">
-                                <p v-if="item.type === 'text'">
-                                    {{ data[item.name] }}
-                                </p>
-
-                                <p v-if="item.type === 'date'">
-                                    {{ data[item.name].split(" ")[0] }}
-                                </p>
-
-                                <div v-if="item.type === 'textarea'">
-                                    {{ data[item.name] }}
-                                </div>
-
-                                <div
-                                    class="box"
-                                    style="width: 60rem"
-                                    v-if="item.type === 'rich_text'"
-                                    v-html="data[item.name]"
-                                />
-                            </div>
-                        </div>
+        <!-- main content -->
+        <div id="contentToPrint">
+            <template v-for="item in viewList">
+                <div class="pl-6" v-if="item.type === 'profile_photo'">
+                    <Avatar
+                        :filename="data[item.name]"
+                        :record="data"
+                        size="128x128"
+                    />
+                </div>
+            </template>
+            <div class="card mt-4">
+                <div class="card-content">
+                    <!-- tabular content -->
+                    <div class="columns is-multiline">
+                        <table class="table is-bordered">
+                            <tbody>
+                                <tr v-for="item in viewList">
+                                    <template v-if="item.type === 'text'">
+                                        <td>{{ item.label }}</td>
+                                        <td>
+                                            <input
+                                                type="text"
+                                                class="input"
+                                                :value="data[item.name]"
+                                                readonly
+                                                disabled
+                                            />
+                                        </td>
+                                    </template>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
+
+                    <!-- tabular content -->
+                    <template v-for="item in viewList">
+                        <div
+                            class="box"
+                            style="width: 60rem"
+                            v-if="item.type === 'rich_text'"
+                            v-html="data[item.name]"
+                        />
+                    </template>
                 </div>
             </div>
         </div>
