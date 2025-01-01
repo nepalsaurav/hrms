@@ -9,6 +9,10 @@ const props = defineProps({
         type: String,
         default: "/employee",
     },
+    resetList: {
+        type: Function,
+        default: null,
+    },
 });
 
 const router = useRouter();
@@ -56,20 +60,24 @@ async function handleSumbit(event) {
     }
     const filter_string = filter.join("||");
     query_obj["filter"] = filter_string;
+    console.log(route.path);
     router.push({
-        path: props.routeBack,
+        path: route.path,
         query: query_obj,
     });
 }
 
 function resetForm() {
-    router.push(`${props.routeBack}?reset=1`);
+    router.push(route.path);
+    if (props.resetList !== null) {
+        props.resetList();
+    }
 }
 </script>
 <template>
     <form novalidate @submit="handleSumbit">
         <div class="columns is-multiline">
-            <div class="column is-2" v-for="item in props.filter">
+            <div class="column is-3" v-for="item in props.filter">
                 <!-- render text search -->
                 <div class="field" v-if="item.type === 'text_search'">
                     <label class="label" :for="item.name">

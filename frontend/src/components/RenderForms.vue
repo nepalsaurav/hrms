@@ -187,6 +187,8 @@ function handleCheckbox(event) {
                 :labelField="form.labelField"
                 :firstOption="form.firstOption"
                 :selected="props.defaultValue"
+                :isCombinedField="form.isCombinedField"
+                :combinedFields="form.combinedFields"
             />
 
             <p

@@ -14,7 +14,7 @@ onMounted(async () => {
         const records = await client
             .collection(props.item.collection)
             .getFullList({});
-        console.log(records);
+
         options.value = records;
     } catch (err) {
         console.log(err.data);

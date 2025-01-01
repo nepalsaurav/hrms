@@ -72,6 +72,11 @@ const router = createRouter({
       name: "leave",
       component: () => import("../views/leave/Leave.vue"),
     },
+    {
+      path: "/leave/add",
+      name: "leave_add",
+      component: () => import("../views/leave/Add.vue"),
+    },
   ],
 });
 

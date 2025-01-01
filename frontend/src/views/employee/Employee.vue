@@ -5,11 +5,6 @@ import BreadCrumb from "@/components/BreadCrumb.vue";
 
 const listHeader = [
     {
-        name: "sn",
-        label: "SN",
-        type: "serial_number",
-    },
-    {
         name: "full_name",
         label: "Full Name",
         type: "combined",

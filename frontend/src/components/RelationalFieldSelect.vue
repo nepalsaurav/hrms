@@ -14,6 +14,8 @@ const props = defineProps({
     labelField: String,
     firstOption: String,
     selected: String,
+    combinedFields: Array,
+    isCombinedField: Boolean,
 });
 
 onMounted(async () => {
@@ -41,6 +43,16 @@ onMounted(async () => {
 function setSelected(value) {
     selected.value = value.id;
 }
+
+function renderCombineField(item, fields) {
+    let texts = [];
+    for (let i = 0; i < fields.length; i++) {
+        if (item[fields[i]] !== "") {
+            texts.push(item[fields[i]]);
+        }
+    }
+    return texts.join(" ");
+}
 </script>
 
 <template>
@@ -55,7 +67,12 @@ function setSelected(value) {
             @option:selected="setSelected"
         >
             <template v-slot:option="option">
-                {{ option[props.labelField] }}
+                <span v-if="props.isCombinedField !== undefined">
+                    {{ renderCombineField(option, props.combinedFields) }}
+                </span>
+                <span v-else>
+                    {{ option[props.labelField] }}
+                </span>
             </template>
         </vSelect>
     </div>

@@ -1,0 +1,1 @@
+import{g as e}from"./print-Dy9ZJ0iI.js";import{b as n,c as o,o as r}from"./index-7R5MiFNN.js";const m={__name:"Print",setup(c){return n(()=>{const t=e();document.getElementById("app").innerHTML=t}),(t,a)=>(r(),o("h1",null,"print view"))}};export{m as default};
