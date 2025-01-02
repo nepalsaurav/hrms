@@ -201,6 +201,7 @@ function editData(item) {
             v-infinite-scroll="onLoadMore"
             v-if="post.items.length > 0"
         >
+            <p class="has-text-grey">Total Items: {{ post.totalItems }}</p>
             <table class="table is-fullwidth is-striped">
                 <thead>
                     <tr>
