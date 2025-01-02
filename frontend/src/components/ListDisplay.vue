@@ -78,6 +78,10 @@ watchEffect(() => {
     fetchData(page.value, sort.value, filter.value, isPush.value);
 });
 
+function reloadData() {
+    fetchData(page.value, sort.value, filter.value, isPush.value);
+}
+
 function onLoadMore() {
     if (page.value < listData.value.totalPages) {
         page.value += 1;
@@ -244,9 +248,11 @@ function detailViewClick(item) {
                                 "
                             />
                         </th>
-                        <th v-for="item in props.listHeader">
-                            {{ item.label }}
-                        </th>
+                        <template v-for="item in props.listHeader">
+                            <th v-if="!(item.can === false)">
+                                {{ item.label }}
+                            </th>
+                        </template>
                     </tr>
                 </thead>
                 <tbody>
@@ -308,12 +314,28 @@ function detailViewClick(item) {
                                 </span>
                             </tempalte>
 
+                            <!-- custom element -->
+
+                            <template
+                                v-if="
+                                    header.type === 'custom_component' &&
+                                    !(header.can === false)
+                                "
+                            >
+                                <component
+                                    :item="item"
+                                    :header="header"
+                                    :reloadData="reloadData"
+                                    :is="header.component"
+                                />
+                            </template>
+
                             <!-- render action -->
                             <span v-if="header.type === 'action'">
                                 <RouterLink
                                     class="button is-dark"
                                     style="width: 10px; height: 20px"
-                                    :to="`/employee/edit/${item.id}`"
+                                    :to="`${route.path}/edit/${item.id}`"
                                     ><i
                                         class="bi bi-pencil"
                                         style="font-size: 10px"

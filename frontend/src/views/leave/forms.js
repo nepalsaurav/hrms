@@ -1,3 +1,4 @@
+import * as yup from "yup";
 export const formDetails = [
   {
     name: "employee",
@@ -31,20 +32,16 @@ export const formDetails = [
     required: false,
     options: [
       {
-        label: "Select Status",
-        value: "",
-      },
-      {
         label: "Pending",
         value: "pending",
       },
       {
-        label: "Accept",
-        value: "accept",
+        label: "Accepted",
+        value: "accepted",
       },
       {
-        label: "Reject",
-        value: "reject",
+        label: "Rejected",
+        value: "rejected",
       },
     ],
   },
@@ -60,3 +57,24 @@ export const formDetails = [
     type: "rich_text",
   },
 ];
+
+export const validationSchema = yup.object().shape({
+  employee: yup.string().required("employee is a required field"),
+  reasons: yup.string().required("reasons is a requred field"),
+  leave_from: yup
+    .string()
+    .matches(/^\d{4}-\d{2}-\d{2}$/, "Date must be in the format yyyy-mm-dd")
+    .required("leave_from is a required field"),
+  leave_to: yup
+    .string()
+    .matches(/^\d{4}-\d{2}-\d{2}$/, "Date must be in the format yyyy-mm-dd")
+    .required("leave_to is a required field")
+    .test(
+      "is-greater",
+      "leave_to must be equal or greater than leave_from",
+      function (value) {
+        const { leave_from } = this.parent;
+        return !leave_from || !value || new Date(value) >= new Date(leave_from);
+      },
+    ),
+});

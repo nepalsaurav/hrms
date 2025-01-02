@@ -8,17 +8,20 @@ let menus = [
         name: "user",
         label: "User",
         icon: null,
+        hasChild: false,
     },
     {
         path: "/settings/collection/company",
         name: "company",
         label: "Company",
         icon: null,
+        hasChild: false,
     },
     {
         path: "/settings/collection/department",
         name: "department",
         label: "Department",
+        hasChild: false,
         icon: null,
     },
     {
@@ -26,19 +29,34 @@ let menus = [
         name: "branch",
         label: "Branch",
         icon: null,
+        hasChild: false,
     },
     {
-        path: "/settings/collection/roles",
-        name: "roles",
-        label: "Roles",
+        name: "leave_setting",
+        label: "Leave",
+        hasChild: true,
         icon: null,
+        children: [
+            {
+                path: "/settings/collection/leave_type",
+                name: "leave_type",
+                label: "Leave Type",
+                icon: null,
+            },
+        ],
     },
-    {
-        path: "/settings/collection/permissions",
-        name: "permissions",
-        label: "Permissions",
-        icon: null,
-    },
+    // {
+    //     path: "/settings/collection/roles",
+    //     name: "roles",
+    //     label: "Roles",
+    //     icon: null,
+    // },
+    // {
+    //     path: "/settings/collection/permissions",
+    //     name: "permissions",
+    //     label: "Permissions",
+    //     icon: null,
+    // },
 ];
 const route = useRoute();
 </script>
@@ -51,13 +69,26 @@ const route = useRoute();
                 <ul class="menu-list">
                     <li v-for="item in menus">
                         <RouterLink
-                            :to="item.path"
+                            :to="!item.hasChild && item.path"
                             :class="
                                 route.path.includes(item.name) &&
                                 'is-active-nav'
                             "
                             >{{ item.label }}</RouterLink
                         >
+
+                        <ul v-if="item.hasChild">
+                            <li v-for="child in item.children">
+                                <RouterLink
+                                    :to="child.path"
+                                    :class="
+                                        route.path.includes(child.name) &&
+                                        'is-active-nav'
+                                    "
+                                    >{{ child.label }}</RouterLink
+                                >
+                            </li>
+                        </ul>
                     </li>
                 </ul>
             </aside>

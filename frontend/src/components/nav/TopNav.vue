@@ -30,7 +30,7 @@ const menus = ref({
             label: "Leave",
             href: "/leave",
             isActive: () => {
-                if (route.path.includes("/leave")) return true;
+                if (route.path.startsWith("/leave")) return true;
                 return false;
             },
             isChild: false,

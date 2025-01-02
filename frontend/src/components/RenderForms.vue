@@ -56,6 +56,19 @@ function handleCheckbox(event) {
             />
             <!-- text input -->
 
+            <!-- number input -->
+
+            <input
+                v-if="form.type === 'number'"
+                :id="form.name"
+                :name="form.name"
+                class="input"
+                type="number"
+                :value="props.defaultValue"
+                :placeholder="form.placeholder"
+                :required="form.required"
+            />
+
             <!-- password input -->
             <input
                 v-if="form.type === 'password'"
@@ -189,6 +202,7 @@ function handleCheckbox(event) {
                 :selected="props.defaultValue"
                 :isCombinedField="form.isCombinedField"
                 :combinedFields="form.combinedFields"
+                :multiple="form.multiple !== undefined ? form.multiple : false"
             />
 
             <p

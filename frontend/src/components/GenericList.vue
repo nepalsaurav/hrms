@@ -4,7 +4,7 @@ import { ref } from "vue";
 import { client } from "@/api/pocketbase";
 import LoadingSkeleton from "./LoadingSkeleton.vue";
 import { convertUtcToLocalDate } from "../utils";
-import { convertCamelToProper } from "../utils";
+import { snakeToProperCase } from "../utils";
 import { useRouter, useRoute } from "vue-router";
 import { watch, watchEffect } from "vue";
 import { vInfiniteScroll } from "@vueuse/components";
@@ -111,7 +111,8 @@ function parseQuery(query) {
 }
 
 function hideCol(header) {
-    if (!header.hidden && header.name != "id") {
+    const hiddenFields = ["id", "created", "updated"];
+    if (!header.hidden && !hiddenFields.includes(header.name)) {
         return true;
     } else {
         return false;
@@ -195,11 +196,12 @@ function editData(item) {
         </div>
 
         <!-- action tab -->
-        <div class="scroll-div" v-infinite-scroll="onLoadMore">
-            <table
-                class="table is-fullwidth is-striped"
-                v-if="post.items.length > 0"
-            >
+        <div
+            class="scroll-div"
+            v-infinite-scroll="onLoadMore"
+            v-if="post.items.length > 0"
+        >
+            <table class="table is-fullwidth is-striped">
                 <thead>
                     <tr>
                         <th>
@@ -221,7 +223,7 @@ function editData(item) {
                             :key="header.name"
                         >
                             <th v-if="hideCol(header)">
-                                {{ convertCamelToProper(header.name) }}
+                                {{ snakeToProperCase(header.name) }}
                             </th>
                         </template>
                     </tr>

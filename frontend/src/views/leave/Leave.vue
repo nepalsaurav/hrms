@@ -1,7 +1,10 @@
-<script setup>
+<script setup lang="jsx">
 import { RouterLink } from "vue-router";
 import ListDisplay from "@/components/ListDisplay.vue";
 import BreadCrumb from "@/components/BreadCrumb.vue";
+import Status from "@/components/Status.vue";
+import { defineComponent } from "vue";
+import AcceptorReject from "@/components/AcceptorReject.vue";
 
 const listHeader = [
     {
@@ -16,7 +19,37 @@ const listHeader = [
         expandCollection: "employee",
         expandLabel: "name",
         isCombinedField: true,
+        link: true,
         fields: ["first_name", "middle_name", "last_name"],
+    },
+    {
+        name: "leave_from",
+        label: "Leave From",
+        type: "date",
+    },
+    {
+        name: "leave_to",
+        label: "Leave To",
+        type: "date",
+    },
+    {
+        name: "status",
+        label: "Status",
+        type: "custom_component",
+        component: Status,
+    },
+    {
+        name: "action",
+        label: "Action",
+        type: "custom_component",
+        collection: "leave",
+        component: AcceptorReject,
+        can: true,
+    },
+    {
+        name: "edit",
+        label: "Edit",
+        type: "action",
     },
 ];
 

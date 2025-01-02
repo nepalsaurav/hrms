@@ -4,8 +4,7 @@ import { client } from "@/api/pocketbase";
 import { useRoute } from "vue-router";
 import { ref } from "vue";
 import LoadingSkeleton from "@/components/LoadingSkeleton.vue";
-import { convertCamelToLowerCase } from "../../../utils";
-import { convertCamelToProper } from "../../../utils";
+import { snakeToProperCase } from "../../../utils";
 import { genericTrimFormObject } from "../../../utils";
 import { useRouter } from "vue-router";
 import Swal from "sweetalert2";
@@ -39,7 +38,7 @@ watchEffect(() => {
             isActive: false,
         },
         {
-            label: convertCamelToProper(route.params.id),
+            label: snakeToProperCase(route.params.id),
             path: `/settings/collection/${route.params.id}`,
             isActive: false,
         },
@@ -69,7 +68,7 @@ async function fetchCollectioSchema() {
 
 function mappedFormList(list) {
     let data = list.map((e) => {
-        e.label = convertCamelToProper(e.name);
+        e.label = snakeToProperCase(e.name);
         e.placeholder = e.name;
         if (e.type === "relation") {
             e.type = "relational_field_select";
@@ -135,7 +134,7 @@ async function handleSubmit(event) {
             <div class="card-content">
                 <form novalidate @submit="handleSubmit">
                     <legend class="has-text-weight-bold">
-                        Add {{ convertCamelToLowerCase(route.params.id) }}
+                        Add {{ snakeToProperCase(route.params.id) }}
                     </legend>
                     <div class="is-flex is-flex-direction-row-reverse">
                         <button class="button is-dark" type="submit">

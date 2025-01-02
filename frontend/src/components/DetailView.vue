@@ -14,6 +14,10 @@ const props = defineProps({
     breadcrumb: Object,
     breadcrumbLabel: String,
     viewList: Object,
+    expand: {
+        type: String,
+        default: "",
+    },
 });
 
 const loading = ref(false);
@@ -28,6 +32,7 @@ onMounted(() => {
 
 watch(() => route.params.id, fetchData, { immediate: true });
 
+console.log(props.expand);
 async function fetchData(id) {
     error.value = null;
     data.value = null;
@@ -35,12 +40,18 @@ async function fetchData(id) {
     try {
         const record = await client
             .collection(props.collection)
-            .getOne(route.params.id);
-        breadCrumbLink.value.push({
-            label: record[props.breadcrumbLabel],
-            path: `/employee/view/${record.id}`,
-            isActive: true,
-        });
+            .getOne(route.params.id, {
+                expand: props.expand,
+            });
+
+        if (props.breadcrumbLabel !== undefined) {
+            breadCrumbLink.value.push({
+                label: record[props.breadcrumbLabel],
+                path: `/${route.path}/${record.id}`,
+                isActive: true,
+            });
+        }
+
         data.value = record;
         console.log(record);
     } catch (error) {
@@ -84,34 +95,61 @@ function printDocument() {
                 <div class="card-content">
                     <!-- tabular content -->
                     <div class="columns is-multiline">
-                        <table class="table is-bordered">
-                            <tbody>
-                                <tr v-for="item in viewList">
-                                    <template v-if="item.type === 'text'">
-                                        <td>{{ item.label }}</td>
-                                        <td>
-                                            <input
-                                                type="text"
-                                                class="input"
-                                                :value="data[item.name]"
-                                                readonly
-                                                disabled
-                                            />
-                                        </td>
-                                    </template>
-                                </tr>
-                            </tbody>
-                        </table>
+                        <template v-for="item in viewList">
+                            <template v-if="item.type === 'text'">
+                                <div class="column is-4">
+                                    <p class="mb-2">{{ item.label }}</p>
+                                    <input
+                                        type="text"
+                                        class="input"
+                                        :value="data[item.name]"
+                                        readonly
+                                        disabled
+                                    />
+                                </div>
+                            </template>
+
+                            <template v-if="item.type === 'date'">
+                                <div class="column is-4">
+                                    <p class="mb-2">{{ item.label }}</p>
+                                    <input
+                                        type="text"
+                                        class="input"
+                                        :value="data[item.name].split(' ')[0]"
+                                        readonly
+                                        disabled
+                                    />
+                                </div>
+                            </template>
+
+                            <template v-if="item.type === 'text_component'">
+                                <div class="column is-4">
+                                    <p class="mb-2">{{ item.label }}</p>
+                                    <component
+                                        :is="item.component"
+                                        :item="data"
+                                        :header="item"
+                                    />
+                                </div>
+                            </template>
+                        </template>
                     </div>
 
                     <!-- tabular content -->
                     <template v-for="item in viewList">
-                        <div
-                            class="box"
-                            style="width: 60rem"
-                            v-if="item.type === 'rich_text'"
-                            v-html="data[item.name]"
-                        />
+                        <template
+                            v-if="
+                                item.type === 'rich_text' &&
+                                data[item.name] !== ''
+                            "
+                        >
+                            <p class="mb-2">{{ item.label }}</p>
+                            <div
+                                class="box"
+                                style="width: 60rem"
+                                v-html="data[item.name]"
+                            />
+                        </template>
                     </template>
                 </div>
             </div>

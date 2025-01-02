@@ -7,8 +7,7 @@ import { RouterLink } from "vue-router";
 import LoadingSkeleton from "@/components/LoadingSkeleton.vue";
 import GenericList from "@/components/GenericList.vue";
 import BreadCrumb from "@/components/BreadCrumb.vue";
-import { convertCamelToLowerCase } from "../../../utils";
-import { convertCamelToProper } from "../../../utils";
+import { snakeToProperCase } from "../../../utils";
 import { watchEffect } from "vue";
 const loading = ref(false);
 const post = ref(null);
@@ -29,7 +28,7 @@ watchEffect(() => {
             isActive: false,
         },
         {
-            label: convertCamelToProper(route.params.id),
+            label: snakeToProperCase(route.params.id),
             path: `/settings/collection/${route.params.id}`,
             isActive: true,
         },
@@ -67,7 +66,7 @@ async function fetchCollectioSchema() {
                 :to="`/settings/collection/${route.params.id}/add`"
                 class="button is-dark"
                 ><i class="bi bi-plus-circle px-1"></i> Add
-                {{ convertCamelToLowerCase(route.params.id) }}</RouterLink
+                {{ snakeToProperCase(route.params.id) }}</RouterLink
             >
         </div>
         <div class="card mt-3">

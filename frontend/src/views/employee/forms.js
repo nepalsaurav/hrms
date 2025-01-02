@@ -147,6 +147,16 @@ export const formDetails = {
       required: false,
     },
     {
+      name: "leave_type",
+      label: "Leave Type",
+      collection: "leave_type",
+      labelField: "name",
+      firstOption: "select leave type",
+      type: "relational_field_select",
+      required: false,
+      multiple: true,
+    },
+    {
       name: "department",
       label: "Department",
       collection: "department",

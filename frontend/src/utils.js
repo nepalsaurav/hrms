@@ -1,3 +1,5 @@
+import * as yup from "yup";
+
 export function trimFormObject(formObject) {
   const removeOption = [
     "Select Gender",
@@ -15,6 +17,7 @@ export function trimFormObject(formObject) {
       } else if (value === "checkbox_off") {
         cpObject.append(key, false);
       } else {
+        console.log(key, value);
         cpObject.append(key, value);
       }
     }
@@ -60,6 +63,13 @@ export function convertUtcToLocalDate(utcString) {
   return localString;
 }
 
+export function snakeToProperCase(snakeCaseString) {
+  return snakeCaseString
+    .split("_") // Split the string by underscores
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()) // Capitalize each word
+    .join(" "); // Join the words with spaces
+}
+
 export function convertCamelToProper(input) {
   return input
     .replace(/([a-z])([A-Z])/g, "$1 $2") // Add space between camel case
@@ -71,4 +81,23 @@ export function convertCamelToLowerCase(input) {
   return input
     .replace(/([a-z])([A-Z])/g, "$1 $2") // Add space between camel case
     .toLowerCase(); // Convert all to lowercase
+}
+
+export async function validateForm(data, schema) {
+  const isValid = await schema.isValid(data);
+  if (isValid) {
+    return isValid;
+  } else {
+    try {
+      await schema.validate(data, { abortEarly: false });
+    } catch (error) {
+      if (error instanceof yup.ValidationError) {
+        const errObj = error.inner.reduce((acc, curr) => {
+          acc[curr.path] = curr.message;
+          return acc;
+        }, {});
+        return errObj;
+      }
+    }
+  }
 }

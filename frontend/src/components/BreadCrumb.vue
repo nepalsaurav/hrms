@@ -8,7 +8,7 @@ import { RouterLink } from "vue-router";
             <li v-for="link in props.links">
                 <RouterLink
                     class="has-text-dark"
-                    :class="link.isActive && 'has-text-weight-bold'"
+                    :class="link.isActive && 'has-text-weight-bold disabled'"
                     :area-current="link.isActive && 'page'"
                     :to="link.path"
                 >
@@ -22,5 +22,10 @@ import { RouterLink } from "vue-router";
 <style scoped>
 a:hover {
     text-decoration: underline;
+}
+
+a.disabled {
+    pointer-events: none;
+    cursor: default;
 }
 </style>

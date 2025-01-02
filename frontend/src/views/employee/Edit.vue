@@ -9,7 +9,7 @@ import RenderForms from "@/components/RenderForms.vue";
 import { validationSchema } from "./forms";
 import { validateForm } from "./forms";
 import { getErrorTab } from "./forms";
-import { trimFormObject } from "./forms";
+import { trimFormObject } from "@/utils";
 import { useRouter } from "vue-router";
 import Swal from "sweetalert2";
 
@@ -77,7 +77,6 @@ async function fetchData(id) {
             isActive: true,
         });
         data.value = record;
-        console.log(record);
     } catch (error) {
         error.value = error.data.message;
     } finally {
@@ -95,7 +94,10 @@ async function handleSumbit(event) {
     const form = new FormData(target);
     let formObject = Object.fromEntries(form.entries());
     formObject = trimFormObject(formObject);
-    const validate = await validateForm(formObject, validationSchema);
+    const validate = await validateForm(
+        Object.fromEntries(formObject.entries()),
+        validationSchema,
+    );
     if (validate != true) {
         formErrors.value = validate;
         const errorTab = getErrorTab(
@@ -112,12 +114,13 @@ async function handleSumbit(event) {
     try {
         const record = await client
             .collection("employee")
-            .update(route.params.id, formObject);
+            .update(route.params.id, form);
         console.log(record);
         Swal.fire({
             title: "Success!",
             text: "Successfully edited employee",
             icon: "success",
+            confirmButtonColor: "#171717",
         });
         router.push("/employee");
     } catch (error) {
