@@ -36,6 +36,16 @@ const menus = ref({
             isChild: false,
         },
         {
+            name: "payroll",
+            label: "Payroll",
+            href: "/payroll/collection/salary_component",
+            isActive: () => {
+                if (route.path.startsWith("/payroll")) return true;
+                return false;
+            },
+            isChild: false,
+        },
+        {
             name: "settings",
             label: "Settings",
             href: "/settings/collection/users",

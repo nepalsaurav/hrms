@@ -136,59 +136,65 @@ async function handleSumbit(event) {
 </script>
 
 <template>
-    <BreadCrumb :links="breadcrumbLink" />
+    <div class="container">
+        <BreadCrumb :links="breadcrumbLink" />
 
-    <div class="card">
-        <div class="card-content">
-            <!-- for loading conditiom -->
-            <LoadingSkeleton v-if="loading" />
-            <!-- for loading conditiom -->
+        <div class="card">
+            <div class="card-content">
+                <!-- for loading conditiom -->
+                <LoadingSkeleton v-if="loading" />
+                <!-- for loading conditiom -->
 
-            <form novalidate v-if="data != null" @submit="handleSumbit">
-                <legend class="has-text-weight-bold">Add Employee</legend>
-                <div class="is-flex is-flex-direction-row-reverse">
-                    <button class="button is-dark" type="submit">Save</button>
-                </div>
-                <!-- tabs -->
-                <div class="tabs">
-                    <ul>
-                        <li
-                            v-for="tab in tabs"
-                            :class="tab.name === activeFormTab && 'is-active'"
-                        >
-                            <a v-on:click="changeTab(tab.name)">{{
-                                tab.label
-                            }}</a>
-                        </li>
-                    </ul>
-                </div>
-                <!-- tabs -->
+                <form novalidate v-if="data != null" @submit="handleSumbit">
+                    <legend class="has-text-weight-bold">Add Employee</legend>
+                    <div class="is-flex is-flex-direction-row-reverse">
+                        <button class="button is-dark" type="submit">
+                            Save
+                        </button>
+                    </div>
+                    <!-- tabs -->
+                    <div class="tabs">
+                        <ul>
+                            <li
+                                v-for="tab in tabs"
+                                :class="
+                                    tab.name === activeFormTab && 'is-active'
+                                "
+                            >
+                                <a v-on:click="changeTab(tab.name)">{{
+                                    tab.label
+                                }}</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <!-- tabs -->
 
-                <!-- main form content -->
-                <div v-for="tab in tabs">
-                    <div
-                        class="columns is-multiline"
-                        v-show="tab.name === activeFormTab"
-                    >
+                    <!-- main form content -->
+                    <div v-for="tab in tabs">
                         <div
-                            class="column"
-                            :class="
-                                form.type === 'rich_text' ? 'is-12' : 'is-4'
-                            "
-                            v-for="form in formDetails[tab.name]"
+                            class="columns is-multiline"
+                            v-show="tab.name === activeFormTab"
                         >
-                            <RenderForms
-                                :form="form"
-                                :errors="formErrors"
-                                :defaultValue="data[form.name]"
-                            />
+                            <div
+                                class="column"
+                                :class="
+                                    form.type === 'rich_text' ? 'is-12' : 'is-4'
+                                "
+                                v-for="form in formDetails[tab.name]"
+                            >
+                                <RenderForms
+                                    :form="form"
+                                    :errors="formErrors"
+                                    :defaultValue="data[form.name]"
+                                />
+                            </div>
                         </div>
                     </div>
-                </div>
-                <!-- main form content -->
-            </form>
+                    <!-- main form content -->
+                </form>
 
-            <p v-if="error != null">{{ error }}</p>
+                <p v-if="error != null">{{ error }}</p>
+            </div>
         </div>
     </div>
 </template>

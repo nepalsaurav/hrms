@@ -26,6 +26,22 @@ export const formDetails = [
     placeholder: "1900-01-01",
   },
   {
+    name: "leave_type",
+    label: "Leave Type",
+    collection: "leave_type",
+    labelField: "name",
+    firstOption: "select leave type",
+    type: "relational_field_select",
+    required: true,
+  },
+
+  {
+    name: "is_half",
+    label: "Half Day",
+    type: "bool",
+  },
+
+  {
     name: "status",
     label: "Status",
     type: "select",
@@ -75,6 +91,23 @@ export const validationSchema = yup.object().shape({
       function (value) {
         const { leave_from } = this.parent;
         return !leave_from || !value || new Date(value) >= new Date(leave_from);
+      },
+    ),
+  is_half: yup
+    .boolean()
+    .test(
+      "is-half-logic",
+      "is_half must be false if leave_to is greater than leave_from",
+      function (value) {
+        const { leave_from, leave_to } = this.parent;
+        if (
+          leave_from &&
+          leave_to &&
+          new Date(leave_to) > new Date(leave_from)
+        ) {
+          return value === false;
+        }
+        return true; // Allow any value if the condition is not met
       },
     ),
 });

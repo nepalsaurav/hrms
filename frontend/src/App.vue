@@ -4,7 +4,7 @@ import TopNav from "./components/nav/TopNav.vue";
 
 <template>
     <TopNav />
-    <div class="container" style="margin-top: 80px">
+    <div class="p-5" style="margin-top: 80px">
         <router-view> </router-view>
     </div>
 </template>

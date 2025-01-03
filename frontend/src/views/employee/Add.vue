@@ -83,67 +83,76 @@ async function handleSubmit(event) {
 </script>
 
 <template>
-    <BreadCrumb
-        :links="[
-            {
-                label: 'Dashboard',
-                path: '/',
-                isActive: false,
-            },
-            {
-                label: 'Employee',
-                path: '/employee',
-                isActive: false,
-            },
-            {
-                label: 'Add',
-                path: '/employee/add',
-                isActive: true,
-            },
-        ]"
-    />
+    <div class="container">
+        <BreadCrumb
+            :links="[
+                {
+                    label: 'Dashboard',
+                    path: '/',
+                    isActive: false,
+                },
+                {
+                    label: 'Employee',
+                    path: '/employee',
+                    isActive: false,
+                },
+                {
+                    label: 'Add',
+                    path: '/employee/add',
+                    isActive: true,
+                },
+            ]"
+        />
 
-    <div class="card">
-        <div class="card-content">
-            <form novalidate v-on:submit="handleSubmit">
-                <legend class="has-text-weight-bold">Add Employee</legend>
-                <div class="is-flex is-flex-direction-row-reverse">
-                    <button class="button is-dark" type="submit">Save</button>
-                </div>
-                <!-- tabs -->
-                <div class="tabs">
-                    <ul>
-                        <li
-                            v-for="tab in tabs"
-                            :class="tab.name === activeFormTab && 'is-active'"
-                        >
-                            <a v-on:click="changeTab(tab.name)">{{
-                                tab.label
-                            }}</a>
-                        </li>
-                    </ul>
-                </div>
-                <!-- tabs -->
+        <div class="card">
+            <div class="card-content">
+                <form novalidate v-on:submit="handleSubmit">
+                    <legend class="has-text-weight-bold">Add Employee</legend>
+                    <div class="is-flex is-flex-direction-row-reverse">
+                        <button class="button is-dark" type="submit">
+                            Save
+                        </button>
+                    </div>
+                    <!-- tabs -->
+                    <div class="tabs">
+                        <ul>
+                            <li
+                                v-for="tab in tabs"
+                                :class="
+                                    tab.name === activeFormTab && 'is-active'
+                                "
+                            >
+                                <a v-on:click="changeTab(tab.name)">{{
+                                    tab.label
+                                }}</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <!-- tabs -->
 
-                <!-- main form content -->
-                <div v-for="tab in tabs">
-                    <div
-                        class="columns is-multiline"
-                        v-show="tab.name === activeFormTab"
-                    >
+                    <!-- main form content -->
+                    <div v-for="tab in tabs">
                         <div
-                            class="column"
-                            :class="
-                                form.type === 'rich_text' ? 'is-12' : 'is-4'
-                            "
-                            v-for="form in formDetails[tab.name]"
+                            class="columns is-multiline"
+                            v-show="tab.name === activeFormTab"
                         >
-                            <RenderForms :form="form" :errors="formErrors" />
+                            <div
+                                class="column"
+                                :class="
+                                    form.type === 'rich_text' ? 'is-12' : 'is-4'
+                                "
+                                v-for="form in formDetails[tab.name]"
+                            >
+                                <RenderForms
+                                    :form="form"
+                                    :errors="formErrors"
+                                />
+                            </div>
                         </div>
                     </div>
-                </div>
-                <!-- main form content -->
-            </form>
+                    <!-- main form content -->
+                </form>
+            </div>
         </div>
     </div>
 </template>

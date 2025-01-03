@@ -53,17 +53,29 @@ const router = createRouter({
         {
           path: "/settings/collection/:id",
           name: "settings_collection",
-          component: () => import("../views/settings/collection/List.vue"),
+          component: () => import("../views/collection/List.vue"),
+          props: {
+            parentRoute: "settings",
+            label: "Settings",
+          },
         },
         {
           path: "/settings/collection/:id/add",
           name: "settings_collection_add",
-          component: () => import("../views/settings/collection/Add.vue"),
+          component: () => import("../views/collection/Add.vue"),
+          props: {
+            parentRoute: "settings",
+            label: "Settings",
+          },
         },
         {
           path: "/settings/collection/:id/edit/:collectionID",
           name: "settings_collection_edit",
-          component: () => import("../views/settings/collection/Edit.vue"),
+          component: () => import("../views/collection/Edit.vue"),
+          props: {
+            parentRoute: "settings",
+            label: "Settings",
+          },
         },
       ],
     },
@@ -86,6 +98,58 @@ const router = createRouter({
       path: "/leave/view/:id",
       name: "leave_view",
       component: () => import("../views/leave/View.vue"),
+    },
+    {
+      path: "/payroll",
+      name: "payroll",
+      component: () => import("../views/payroll/Payrolls.vue"),
+      children: [
+        {
+          path: "salary_structure",
+          name: "salary_structure",
+          component: () =>
+            import("../views/payroll/salary_structures/SalaryStructure.vue"),
+        },
+
+        {
+          path: "salary_structure/add",
+          name: "salary_structure_add",
+          component: () => import("../views/payroll/salary_structures/Add.vue"),
+        },
+        {
+          path: "salary_structure/edit/:id",
+          name: "salary_structure_edit",
+          component: () =>
+            import("../views/payroll/salary_structures/Edit.vue"),
+        },
+        {
+          path: "collection/:id",
+          name: "payroll_setting_collection",
+          component: () => import("../views/collection/List.vue"),
+          props: {
+            parentRoute: "payroll",
+            label: "Payroll",
+          },
+        },
+        {
+          path: "collection/:id/add",
+          name: "payroll_setting_collection_add",
+          component: () => import("../views/collection/Add.vue"),
+          props: {
+            parentRoute: "payroll",
+            label: "Payroll",
+          },
+        },
+        {
+          path: "collection/:id/edit/:collectionID",
+          name: "payroll_setting_collection_edit",
+          component: () => import("../views/collection/Edit.vue"),
+          props: {
+            parentRoute: "payroll",
+            label: "Payroll",
+          },
+        },
+      ],
     },
   ],
 });

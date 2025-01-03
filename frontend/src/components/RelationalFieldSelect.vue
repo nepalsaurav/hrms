@@ -24,8 +24,13 @@ const props = defineProps({
 
 onMounted(async () => {
     // const div = vselect.value.querySelector("#vs2__combobox");
-    console.log(props.selected);
-    selected.value = props.selected;
+    if (props.selected !== "") {
+        if (Array.isArray(props.selected)) {
+            selected.value = props.selected;
+        } else {
+            selected.value.push(props.selected);
+        }
+    }
     try {
         const records = await client
             .collection(props.collection)

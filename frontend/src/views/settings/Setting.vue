@@ -1,6 +1,7 @@
 <script setup>
 import { RouterLink } from "vue-router";
 import { useRoute } from "vue-router";
+import SideNav from "@/components/nav/SideNav.vue";
 
 let menus = [
     {
@@ -45,18 +46,6 @@ let menus = [
             },
         ],
     },
-    // {
-    //     path: "/settings/collection/roles",
-    //     name: "roles",
-    //     label: "Roles",
-    //     icon: null,
-    // },
-    // {
-    //     path: "/settings/collection/permissions",
-    //     name: "permissions",
-    //     label: "Permissions",
-    //     icon: null,
-    // },
 ];
 const route = useRoute();
 </script>
@@ -65,33 +54,7 @@ const route = useRoute();
     <div class="columns">
         <div class="column is-2 box">
             <!-- setting side nav -->
-            <aside class="menu">
-                <ul class="menu-list">
-                    <li v-for="item in menus">
-                        <RouterLink
-                            :to="!item.hasChild && item.path"
-                            :class="
-                                route.path.includes(item.name) &&
-                                'is-active-nav'
-                            "
-                            >{{ item.label }}</RouterLink
-                        >
-
-                        <ul v-if="item.hasChild">
-                            <li v-for="child in item.children">
-                                <RouterLink
-                                    :to="child.path"
-                                    :class="
-                                        route.path.includes(child.name) &&
-                                        'is-active-nav'
-                                    "
-                                    >{{ child.label }}</RouterLink
-                                >
-                            </li>
-                        </ul>
-                    </li>
-                </ul>
-            </aside>
+            <SideNav :menus="menus" />
             <!-- setting side nav -->
         </div>
         <div class="column is-10 ml-4">
@@ -99,17 +62,3 @@ const route = useRoute();
         </div>
     </div>
 </template>
-
-<style scoped>
-.navbar {
-    height: 40px !important;
-}
-
-.is-active-nav {
-    background-color: var(--bulma-dark);
-    color: var(--bulma-light);
-}
-.navbar-border-bottom {
-    border-bottom: 0.1mm solid var(--bulma-dark);
-}
-</style>

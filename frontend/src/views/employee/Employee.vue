@@ -100,35 +100,37 @@ const filter = [
 </script>
 
 <template>
-    <BreadCrumb
-        :links="[
-            {
-                label: 'Dashboard',
-                path: '/',
-                isActive: false,
-            },
-            {
-                label: 'Employee',
-                path: '/employee',
-                isActive: true,
-            },
-        ]"
-    />
+    <div class="container">
+        <BreadCrumb
+            :links="[
+                {
+                    label: 'Dashboard',
+                    path: '/',
+                    isActive: false,
+                },
+                {
+                    label: 'Employee',
+                    path: '/employee',
+                    isActive: true,
+                },
+            ]"
+        />
 
-    <div class="card">
-        <div class="card-content">
-            <div class="is-flex is-flex-direction-row-reverse">
-                <RouterLink to="/employee/add" class="button is-dark">
-                    <i class="bi bi-plus-circle px-1"></i>Add Employee
-                </RouterLink>
-            </div>
-            <div class="mt-5">
-                <ListDisplay
-                    :listHeader="listHeader"
-                    collection="employee"
-                    :filter="filter"
-                    detailViewLink="/employee/view"
-                />
+        <div class="card">
+            <div class="card-content">
+                <div class="is-flex is-flex-direction-row-reverse">
+                    <RouterLink to="/employee/add" class="button is-dark">
+                        <i class="bi bi-plus-circle px-1"></i>Add Employee
+                    </RouterLink>
+                </div>
+                <div class="mt-5">
+                    <ListDisplay
+                        :listHeader="listHeader"
+                        collection="employee"
+                        :filter="filter"
+                        detailViewLink="/employee/view"
+                    />
+                </div>
             </div>
         </div>
     </div>

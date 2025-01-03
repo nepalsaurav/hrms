@@ -77,54 +77,61 @@ async function handleSubmit(event) {
 </script>
 
 <template>
-    <BreadCrumb
-        :links="[
-            {
-                label: 'Dashboard',
-                path: '/',
-                isActive: false,
-            },
-            {
-                label: 'Leave',
-                path: '/leave',
-                isActive: false,
-            },
-            {
-                label: 'Edit',
-                path: '/leave/edit',
-                isActive: true,
-            },
-        ]"
-    />
+    <div class="container">
+        <BreadCrumb
+            :links="[
+                {
+                    label: 'Dashboard',
+                    path: '/',
+                    isActive: false,
+                },
+                {
+                    label: 'Leave',
+                    path: '/leave',
+                    isActive: false,
+                },
+                {
+                    label: 'Edit',
+                    path: '/leave/edit',
+                    isActive: true,
+                },
+            ]"
+        />
 
-    <div class="card">
-        <div class="card-content">
-            <LoadingSkeleton v-if="loading" />
-            <form
-                novalidate
-                @submit="handleSubmit"
-                v-if="!loading && post !== null"
-            >
-                <fieldset :disabled="formProcessing">
-                    <legend class="has-text-weight-bold">Add Employee</legend>
-                    <div class="is-flex is-flex-direction-row-reverse">
-                        <button class="button is-dark" type="submit">
-                            Save
-                        </button>
-                    </div>
-                    <div class="columns is-multiline">
-                        <div class="column is-4" v-for="item in formDetails">
-                            <RenderForms
-                                :form="item"
-                                :errors="formErrors"
-                                :defaultValue="post[item.name]"
-                            />
+        <div class="card">
+            <div class="card-content">
+                <LoadingSkeleton v-if="loading" />
+                <form
+                    novalidate
+                    @submit="handleSubmit"
+                    v-if="!loading && post !== null"
+                >
+                    <fieldset :disabled="formProcessing">
+                        <legend class="has-text-weight-bold">
+                            Add Employee
+                        </legend>
+                        <div class="is-flex is-flex-direction-row-reverse">
+                            <button class="button is-dark" type="submit">
+                                Save
+                            </button>
                         </div>
-                    </div>
-                </fieldset>
-            </form>
+                        <div class="columns is-multiline">
+                            <div
+                                class="column is-4"
+                                v-for="item in formDetails"
+                            >
+                                <RenderForms
+                                    :form="item"
+                                    :errors="formErrors"
+                                    :defaultValue="post[item.name]"
+                                />
+                            </div>
+                        </div>
+                    </fieldset>
+                </form>
 
-            <p v-if="error != null">{{ error }}</p>
+                <p v-if="error != null">{{ error }}</p>
+            </div>
         </div>
     </div>
 </template>

@@ -147,6 +147,15 @@ export const formDetails = {
       required: false,
     },
     {
+      name: "salary_structure",
+      label: "Salary Structure",
+      collection: "salary_structure",
+      labelField: "name",
+      firstOption: "select salary structure",
+      type: "relational_field_select",
+      required: false,
+    },
+    {
       name: "leave_type",
       label: "Leave Type",
       collection: "leave_type",
