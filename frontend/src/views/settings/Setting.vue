@@ -26,7 +26,7 @@ let menus = [
         icon: null,
     },
     {
-        path: `/settings/collection/branch?expand=company&expand_label=name`,
+        path: `/settings/collection/branch`,
         name: "branch",
         label: "Branch",
         icon: null,
@@ -42,6 +42,20 @@ let menus = [
                 path: "/settings/collection/leave_type",
                 name: "leave_type",
                 label: "Leave Type",
+                icon: null,
+            },
+        ],
+    },
+    {
+        name: "attendance_setting",
+        label: "Attendance",
+        hasChild: true,
+        icon: null,
+        children: [
+            {
+                path: "/settings/collection/attendance",
+                name: "attendance",
+                label: "Attendance",
                 icon: null,
             },
         ],

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"hrms/router"
 	"log"
 	"net/http"
 	"os"
@@ -102,6 +103,11 @@ func main() {
 
 	// GitHub selfupdate
 	ghupdate.MustRegister(app, app.RootCmd, ghupdate.Config{})
+
+	app.OnServe().BindFunc(func(se *core.ServeEvent) error {
+		router.Router(se)
+		return se.Next()
+	})
 
 	// static route to serves files from the provided public dir
 	// (if publicDir exists and the route path is not already defined)

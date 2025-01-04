@@ -92,7 +92,16 @@ async function handleSumbit(event) {
     event.preventDefault();
     const target = event.target;
     const form = new FormData(target);
+
     let formObject = Object.fromEntries(form.entries());
+    const fullName = [
+        formObject.first_name,
+        formObject.middle_name,
+        formObject.last_name,
+    ]
+        .filter((name) => name !== "")
+        .join(" ");
+    form.append("full_name", fullName);
     formObject = trimFormObject(formObject);
     const validate = await validateForm(
         Object.fromEntries(formObject.entries()),

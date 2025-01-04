@@ -1,0 +1,1 @@
+import{_ as e,o as u,c as o,a as l}from"./index-C7IYLqTz.js";const s={},i={class:"skeleton-lines"};function t(d,n){return u(),o("div",i,n[0]||(n[0]=[l("div",null,null,-1),l("div",null,null,-1),l("div",null,null,-1),l("div",null,null,-1),l("div",null,null,-1),l("div",null,null,-1),l("div",null,null,-1),l("div",null,null,-1)]))}const r=e(s,[["render",t]]);export{r as L};

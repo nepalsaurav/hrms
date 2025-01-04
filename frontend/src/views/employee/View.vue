@@ -89,10 +89,12 @@ const viewList = [
 </script>
 
 <template>
-    <DetailView
-        collection="employee"
-        :breadcrumb="breadcrumbLink"
-        breadcrumbLabel="first_name"
-        :viewList="viewList"
-    />
+    <div class="container">
+        <DetailView
+            collection="employee"
+            :breadcrumb="breadcrumbLink"
+            breadcrumbLabel="first_name"
+            :viewList="viewList"
+        />
+    </div>
 </template>

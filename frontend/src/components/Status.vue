@@ -5,6 +5,9 @@ const props = defineProps({
 });
 </script>
 <template>
+    <span class="tag is-success" v-if="props.item.status === 'present'">
+        Present
+    </span>
     <span class="tag is-warning" v-if="props.item.status === 'pending'">
         Pending
     </span>

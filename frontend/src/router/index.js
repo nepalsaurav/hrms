@@ -151,6 +151,31 @@ const router = createRouter({
         },
       ],
     },
+    {
+      path: "/attendance",
+      name: "attendance",
+      component: () => import("../views/attendance/Attendance.vue"),
+    },
+    {
+      path: "/attendance/checkin",
+      name: "attendance_checkin",
+      component: () => import("../views/attendance/CheckIn.vue"),
+    },
+    {
+      path: "/attendance/checkout",
+      name: "attendance_checkout",
+      component: () => import("../views/attendance/CheckOut.vue"),
+    },
+    {
+      path: "/import",
+      name: "import",
+      component: () => import("../views/import/Import.vue"),
+    },
+    {
+      path: "/import/:collection",
+      name: "import_add",
+      component: () => import("../views/import/Add.vue"),
+    },
   ],
 });
 

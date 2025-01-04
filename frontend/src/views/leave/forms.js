@@ -4,7 +4,7 @@ export const formDetails = [
     name: "employee",
     label: "Employee",
     collection: "employee",
-    labelField: "first_name",
+    labelField: "full_name",
     firstOption: "select employee",
     type: "relational_field_select",
     isCombinedField: true,

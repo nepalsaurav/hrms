@@ -83,10 +83,15 @@ function mappedFormList(list) {
         if (e.type === "relation") {
             e.type = "relational_field_select";
             e.collection = e.name;
-            e.labelField = "name";
+            if (e.collection === "employee") {
+                e.isCombinedField = true;
+                e.combinedFields = ["first_name", "middle_name", "last_name"];
+                e.labelField = "first_name";
+            } else {
+                e.labelField = "name";
+            }
             e.firstOption = `select ${e.name}`;
         }
-        console.log(e);
         return e;
     });
     data = data.filter((e) => {

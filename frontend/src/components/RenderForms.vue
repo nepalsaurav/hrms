@@ -53,6 +53,7 @@ function handleCheckbox(event) {
                 :value="props.defaultValue"
                 :placeholder="form.placeholder"
                 :required="form.required"
+                :disabled="form.disabled"
             />
             <!-- text input -->
 

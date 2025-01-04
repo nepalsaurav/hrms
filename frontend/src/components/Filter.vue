@@ -43,6 +43,7 @@ async function handleSumbit(event) {
         const val = formObject["text_search"];
         query_obj["text_search"] = val;
         const combineFields = getCombineField();
+
         combineFields.forEach((e) => {
             filter.push(`${e}~'${val}'`);
         });
@@ -77,7 +78,11 @@ function resetForm() {
 <template>
     <form novalidate @submit="handleSumbit">
         <div class="columns is-multiline">
-            <div class="column is-3" v-for="item in props.filter">
+            <div
+                class="column"
+                v-for="item in props.filter"
+                :class="props.filter.length === 1 ? 'is-6' : 'is-3'"
+            >
                 <!-- render text search -->
                 <div class="field" v-if="item.type === 'text_search'">
                     <label class="label" :for="item.name">

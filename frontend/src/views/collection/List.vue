@@ -9,6 +9,9 @@ import GenericList from "@/components/GenericList.vue";
 import BreadCrumb from "@/components/BreadCrumb.vue";
 import { snakeToProperCase } from "@/utils";
 import { watchEffect } from "vue";
+import Filter from "@/components/Filter.vue";
+import { makeTextSearchFields } from "./setting";
+
 const loading = ref(false);
 const post = ref(null);
 const error = ref(null);
@@ -19,6 +22,8 @@ const props = defineProps({
     parentRoute: String,
     label: String,
 });
+
+const filterList = ref([]);
 
 watchEffect(() => {
     const link = [
@@ -52,6 +57,18 @@ async function fetchCollectioSchema() {
         const record = await client.send(
             `/api/get_collection/${route.params.id}`,
         );
+        const searchFields = makeTextSearchFields(record.collection);
+        console.log(searchFields);
+        filterList.value = [
+            {
+                name: "text_search",
+                label: "Search",
+                type: "text_search",
+                fields: searchFields,
+                placeholder: "search",
+            },
+        ];
+        filterList.value.fields = searchFields;
         post.value = record.collection;
     } catch (err) {
         error.value = "something bad occured";
@@ -76,11 +93,10 @@ async function fetchCollectioSchema() {
         </div>
         <div class="card mt-3">
             <div class="card-content">
-                <GenericList
-                    :schema="post"
-                    :expand="route.query.expand"
-                    :expandLabel="route.query.expand_label"
-                />
+                <div class="mb-4">
+                    <Filter :filter="filterList" />
+                </div>
+                <GenericList :schema="post" />
             </div>
         </div>
     </div>

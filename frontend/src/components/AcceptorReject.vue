@@ -17,6 +17,24 @@ async function handleClick(item, condition) {
         confirmButtonText: `Yes, ${condition} it!`,
     });
     if (!prompt.isConfirmed) return;
+    if (props.header.collection === "check_in") {
+        if (props.item.check_in_time === "") {
+            Swal.fire({
+                title: "Error!",
+                text: "please! check in first",
+                icon: "error",
+            });
+            return;
+        }
+        if (props.item.check_out_time === "") {
+            Swal.fire({
+                title: "Error!",
+                text: "please! check out first",
+                icon: "error",
+            });
+            return;
+        }
+    }
     try {
         client.collection(props.header.collection).update(props.item.id, {
             status: condition,

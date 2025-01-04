@@ -1,0 +1,10 @@
+{
+  "check_in_time": {
+    "type": "time",
+    "value": "09:45:00"
+  },
+  "check_out_time": {
+    "type": "time",
+    "value": "05:30:00"
+  }
+}

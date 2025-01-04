@@ -1,0 +1,116 @@
+<script setup>
+import BreadCrumb from "@/components/BreadCrumb.vue";
+import RenderForms from "@/components/RenderForms.vue";
+import { ref } from "vue";
+import { getCurrentTime, getCurrentDate } from "@/utils";
+import Swal from "sweetalert2";
+import { useRouter } from "vue-router";
+import { client } from "@/api/pocketbase";
+
+const formList = [
+    {
+        name: "employee",
+        label: "Employee",
+        collection: "employee",
+        labelField: "first_name",
+        firstOption: "select employee",
+        type: "relational_field_select",
+        isCombinedField: true,
+        combinedFields: ["first_name", "middle_name", "last_name"],
+        required: true,
+    },
+    {
+        name: "check_in_time",
+        label: "Check In Time",
+        type: "text",
+        disabled: true,
+    },
+];
+const formProcessing = ref(false);
+const formErrors = ref({});
+const router = useRouter();
+const defaultValue = {
+    check_in_time: getCurrentTime(),
+};
+
+async function handleSubmit(event) {
+    const target = event.target;
+    const form = new FormData(target);
+    let formObject = Object.fromEntries(form.entries());
+    formObject.date = getCurrentDate();
+    formObject.check_in_time = getCurrentTime();
+    formObject.status = "pending";
+    formProcessing.value = true;
+    try {
+        await client.collection("check_in").create(formObject);
+        Swal.fire({
+            title: "success!",
+            text: "check in added",
+            icon: "success",
+        });
+        router.push("/attendance");
+    } catch (error) {
+        if (error.data.data) {
+            const errObject = {};
+            Object.entries(error.data.data).forEach(([key, value]) => {
+                errObject[key] = value.message;
+            });
+            formErrors.value = errObject;
+        }
+    } finally {
+        formProcessing.value = false;
+    }
+}
+</script>
+
+<template>
+    <div class="container">
+        <BreadCrumb
+            :links="[
+                {
+                    path: '/',
+                    label: 'Dashboard',
+                    isActive: false,
+                },
+                {
+                    path: '/attendance',
+                    label: 'Attendance',
+                    isActive: false,
+                },
+                {
+                    path: '/attendance/checkin',
+                    label: 'Check In',
+                    isActive: true,
+                },
+            ]"
+        />
+
+        <div class="card">
+            <div class="card-content">
+                <form novalidate @submit.prevent="handleSubmit">
+                    <fieldset :disabled="formProcessing">
+                        <legend class="has-text-weight-bold">
+                            Add Check In
+                        </legend>
+                        <div class="is-flex is-flex-direction-row-reverse">
+                            <button class="button is-dark" type="submit">
+                                Save
+                            </button>
+                        </div>
+                        <div class="columns is-multiline">
+                            <template v-for="item in formList">
+                                <div class="column is-4">
+                                    <RenderForms
+                                        :form="item"
+                                        :errors="formErrors"
+                                        :defaultValue="defaultValue[item.name]"
+                                    />
+                                </div>
+                            </template>
+                        </div>
+                    </fieldset>
+                </form>
+            </div>
+        </div>
+    </div>
+</template>

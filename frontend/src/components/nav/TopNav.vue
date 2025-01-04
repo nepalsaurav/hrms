@@ -20,7 +20,7 @@ const menus = ref({
             label: "Employee",
             href: "/employee",
             isActive: () => {
-                if (route.path.includes("/employee")) return true;
+                if (route.path.startsWith("/employee")) return true;
                 return false;
             },
             isChild: false,
@@ -36,11 +36,31 @@ const menus = ref({
             isChild: false,
         },
         {
+            name: "attendance",
+            label: "Attendance",
+            href: "/attendance",
+            isActive: () => {
+                if (route.path.startsWith("/attendance")) return true;
+                return false;
+            },
+            isChild: false,
+        },
+        {
             name: "payroll",
             label: "Payroll",
             href: "/payroll/collection/salary_component",
             isActive: () => {
                 if (route.path.startsWith("/payroll")) return true;
+                return false;
+            },
+            isChild: false,
+        },
+        {
+            name: "import",
+            label: "Import",
+            href: "/import",
+            isActive: () => {
+                if (route.path.startsWith("/import")) return true;
                 return false;
             },
             isChild: false,

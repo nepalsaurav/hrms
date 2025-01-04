@@ -101,3 +101,46 @@ export async function validateForm(data, schema) {
     }
   }
 }
+
+export function getCurrentTime() {
+  const now = new Date();
+  const hours = String(now.getHours()).padStart(2, "0");
+  const minutes = String(now.getMinutes()).padStart(2, "0");
+  const seconds = String(now.getSeconds()).padStart(2, "0");
+  return `${hours}:${minutes}:${seconds}`;
+}
+
+export function getCurrentDate() {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, "0"); // Months are 0-based
+  const day = String(now.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+export function isEmployeePresent(
+  check_in_time,
+  check_out_time,
+  employee_check_in,
+  employee_check_out,
+) {
+  // Parse the check-in and check-out times
+  console.log(
+    check_in_time,
+    check_out_time,
+    employee_check_in,
+    employee_check_out,
+  );
+  const checkInTime = new Date(`1970-01-01T${check_in_time}Z`);
+  const checkOutTime = new Date(`1970-01-01T${check_out_time}Z`);
+  const employeeCheckIn = new Date(`1970-01-01T${employee_check_in}Z`);
+  const employeeCheckOut = new Date(`1970-01-01T${employee_check_out}Z`);
+  // Check if the employee's check-in time is within the working hours
+  //
+  console.log(checkInTime, checkOutTime, employeeCheckIn, employeeCheckOut);
+  if (employeeCheckIn <= checkInTime && employeeCheckIn >= checkOutTime) {
+    return "Present";
+  } else {
+    return "Absent";
+  }
+}

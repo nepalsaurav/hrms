@@ -8,7 +8,7 @@ import { snakeToProperCase } from "../utils";
 import { useRouter, useRoute } from "vue-router";
 import { watch, watchEffect } from "vue";
 import { vInfiniteScroll } from "@vueuse/components";
-import { faker } from "@faker-js/faker";
+import Status from "./Status.vue";
 
 import Swal from "sweetalert2";
 import Avatar from "./Avatar.vue";
@@ -36,6 +36,11 @@ const page = ref(1);
 const filter = ref("");
 const sort = ref("-created");
 
+const expandLabel = {
+    employee: "full_name",
+    company: "name",
+};
+
 async function fetchData(
     page = 1,
     sort = "-created",
@@ -48,13 +53,17 @@ async function fetchData(
     }
 
     try {
+        const expand = props.schema.fields
+            .filter((e) => e.type === "relation")
+            .map((e) => e.name)
+            .join(",");
         const collectionName = props.schema.name;
         const record = await client
             .collection(collectionName)
             .getList(page, 50, {
                 sort: sort,
                 filter: filter,
-                expand: props.expand,
+                expand: expand,
             });
         post.value = record;
         if (isPush) {
@@ -79,14 +88,6 @@ function onLoadMore() {
 }
 
 onMounted(() => {
-    // const batch = client.createBatch();
-    // for (let i = 0; i < 200; i++) {
-    //     const name = faker.person.lastName();
-    //     batch.collection("department").create({
-    //         name: name,
-    //     });
-    // }
-    // batch.send();
     parseQuery(route.query);
 });
 
@@ -270,15 +271,11 @@ function editData(item) {
                                     </span>
 
                                     <span
-                                        v-else-if="
-                                            header.type === 'relation' &&
-                                            props.expand !== '' &&
-                                            props.expandLabel != ''
-                                        "
+                                        v-else-if="header.type === 'relation'"
                                     >
                                         {{
                                             item.expand[header.name][
-                                                props.expandLabel
+                                                expandLabel[header.name]
                                             ]
                                         }}
                                     </span>
@@ -291,7 +288,15 @@ function editData(item) {
                                             size="64x64"
                                         />
                                     </span>
-                                    <!-- span -->
+
+                                    <span v-else-if="header.type === 'date'">
+                                        {{ item[header.name].split(" ")[0] }}
+                                    </span>
+
+                                    <span v-else-if="header.name === 'status'">
+                                        <Status :item="item" :header="header" />
+                                    </span>
+
                                     <span v-else>
                                         {{ item[header.name] }}
                                     </span>
