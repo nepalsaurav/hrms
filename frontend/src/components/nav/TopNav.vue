@@ -48,7 +48,7 @@ const menus = ref({
         {
             name: "payroll",
             label: "Payroll",
-            href: "/payroll/collection/salary_component",
+            href: "/payroll/payroll_list",
             isActive: () => {
                 if (route.path.startsWith("/payroll")) return true;
                 return false;

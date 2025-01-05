@@ -3,6 +3,13 @@ import SideNav from "@/components/nav/SideNav.vue";
 
 let menus = [
     {
+        path: "/payroll/payroll_list",
+        name: "payroll_list",
+        label: "Payroll",
+        icon: null,
+        hasChild: false,
+    },
+    {
         path: "/payroll/collection/salary_component",
         name: "salary_component",
         label: "Salary Component",

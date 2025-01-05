@@ -1,0 +1,25 @@
+{
+  "fy_year": {
+    "from_date": {
+      "type": "date",
+      "value": "2024-07-16"
+    },
+    "to_date": {
+      "type": "date",
+      "value": "2025-07-15"
+    }
+  },
+  "check_in_time": {
+    "type": "time",
+    "value": "09:45:00"
+  },
+  "check_out_time": {
+    "type": "time",
+    "value": "05:30:00"
+  },
+  "weekly_off": {
+    "type": "list",
+    "value": ["SAT"]
+  },
+  "salary_deduction": "working_days"
+}

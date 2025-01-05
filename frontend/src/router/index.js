@@ -105,6 +105,17 @@ const router = createRouter({
       component: () => import("../views/payroll/Payrolls.vue"),
       children: [
         {
+          path: "payroll_list",
+          name: "payroll_main",
+          component: () => import("../views/payroll/Main.vue"),
+        },
+
+        {
+          path: "add",
+          name: "payroll_add",
+          component: () => import("../views/payroll/Add.vue"),
+        },
+        {
           path: "salary_structure",
           name: "salary_structure",
           component: () =>

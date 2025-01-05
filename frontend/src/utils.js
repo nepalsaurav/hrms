@@ -144,3 +144,16 @@ export function isEmployeePresent(
     return "Absent";
   }
 }
+
+export function isWeekDay(dateStr, daysArray) {
+  // Convert the string to a Date object
+  let date = new Date(dateStr);
+
+  // Get the day of the week in string format (e.g., "Mon", "Tue", ..., "Sat")
+  let dayOfWeek = date
+    .toLocaleString("en-us", { weekday: "short" })
+    .toUpperCase();
+
+  // Check if the day is in the provided array
+  return daysArray.includes(dayOfWeek);
+}
