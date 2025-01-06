@@ -157,3 +157,50 @@ export function isWeekDay(dateStr, daysArray) {
   // Check if the day is in the provided array
   return daysArray.includes(dayOfWeek);
 }
+
+export function calculateDays(startDate, endDate) {
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+
+  // Calculate the difference in time
+  const differenceInTime = end - start;
+
+  // Convert the time difference from milliseconds to days
+  const differenceInDays = differenceInTime / (1000 * 3600 * 24) + 1;
+
+  return differenceInDays;
+}
+
+export function getDaysBetweenDates(startDateStr, endDateStr) {
+  const startDate = new Date(startDateStr);
+  const endDate = new Date(endDateStr);
+  const diffInMs = endDate - startDate;
+  return diffInMs / (1000 * 60 * 60 * 24) + 1;
+}
+
+export function calculateWeekdaysInRange(startDate, endDate, daysArray) {
+  let count = 0;
+
+  // Convert startDate and endDate to Date objects (if they are in string form)
+  let start = new Date(startDate);
+  let end = new Date(endDate);
+
+  // Ensure the start date is before or equal to the end date
+  if (start > end) {
+    throw new Error("startDate must be before or equal to endDate.");
+  }
+
+  // Loop through the date range
+  let currentDate = new Date(start);
+  while (currentDate <= end) {
+    // Check if the current date is a weekday in the daysArray
+    if (!isWeekDay(currentDate.toISOString(), daysArray)) {
+      count++;
+    }
+
+    // Move to the next day
+    currentDate.setDate(currentDate.getDate() + 1);
+  }
+
+  return count;
+}

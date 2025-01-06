@@ -5,6 +5,7 @@ import SinglePayroll from "./SinglePayroll.vue";
 import { watch, ref } from "vue";
 import { useRoute } from "vue-router";
 import { client } from "@/api/pocketbase";
+
 const route = useRoute();
 const settings = ref(null);
 const error = ref(null);

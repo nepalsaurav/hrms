@@ -8,6 +8,7 @@ import { validationSchema } from "./forms";
 import { client } from "@/api/pocketbase";
 import Swal from "sweetalert2";
 import { useRouter } from "vue-router";
+import { getDaysBetweenDates } from "@/utils";
 
 const formErrors = ref({});
 const formProcessing = ref(false);
@@ -28,6 +29,17 @@ async function handleSubmit(event) {
     }
     formProcessing.value = true;
     formErrors.value = {};
+    if (formObject.get("is_half") === "true") {
+        formObject.append("days", 0.5);
+    } else {
+        formObject.append(
+            "days",
+            getDaysBetweenDates(
+                formObject.get("leave_from"),
+                formObject.get("leave_to"),
+            ),
+        );
+    }
     try {
         await client.collection("leave").create(formObject);
     } catch (err) {

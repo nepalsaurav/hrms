@@ -58,8 +58,7 @@ const listHeader = [
     {
         name: "days",
         label: "Days",
-        type: "custom_component",
-        component: NumberOfLeave,
+        type: "text",
     },
     {
         name: "is_half",

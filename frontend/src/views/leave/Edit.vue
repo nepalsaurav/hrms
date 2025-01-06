@@ -10,6 +10,7 @@ import Swal from "sweetalert2";
 import { useRouter, useRoute } from "vue-router";
 import { watch } from "vue";
 import LoadingSkeleton from "@/components/LoadingSkeleton.vue";
+import { getDaysBetweenDates } from "@/utils";
 
 const formErrors = ref({});
 const formProcessing = ref(false);
@@ -56,6 +57,18 @@ async function handleSubmit(event) {
     }
     formProcessing.value = true;
     formErrors.value = {};
+    if (formObject.get("is_half") === "true") {
+        formObject.append("days", 0.5);
+    } else {
+        formObject.append(
+            "days",
+            getDaysBetweenDates(
+                formObject.get("leave_from"),
+                formObject.get("leave_to"),
+            ),
+        );
+    }
+    console.log(formObject.get("is_half"));
     try {
         await client.collection("leave").update(route.params.id, formObject);
     } catch (err) {

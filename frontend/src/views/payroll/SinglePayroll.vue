@@ -1,9 +1,11 @@
 <script setup>
 import LoadingSkeleton from "@/components/LoadingSkeleton.vue";
 import { onMounted } from "vue";
-import { ref } from "vue";
+import { ref, watchEffect, computed } from "vue";
 import { client } from "@/api/pocketbase";
 import { isWeekDay } from "@/utils";
+import { calculateDays, calculateWeekdaysInRange } from "@/utils";
+import { getTotalLeavesTaken } from "./payroll";
 const props = defineProps({
     query: Object,
     settings: Object,
@@ -11,6 +13,46 @@ const props = defineProps({
 const loading = ref(true);
 const error = ref([]);
 const salary = ref([]);
+const employee = ref(null);
+const days = ref({});
+const grossSalary = computed(() =>
+    salary.value
+        .filter((e) => e.type === "Addition")
+        .reduce((amt, e) => amt + e.amount, 0),
+);
+
+const netSalary = computed(() => {
+    console.log(grossSalary.value, "gross salary");
+    console.log(
+        salary.value
+            .filter((e) => e.type === "Subtraction")
+            .map((e) => e.amount),
+    );
+    return (
+        grossSalary.value -
+        salary.value
+            .filter((e) => e.type === "Subtraction")
+            .reduce((amt, e) => amt + e.amount, 0)
+    );
+});
+
+watchEffect(() => {
+    if (days.value.unpaid && days.value.unpaid > 0) {
+        const unpaidSalaryDecduction =
+            (grossSalary.value /
+                calculateDays(props.query.from_date, props.query.to_date)) *
+            days.value.unpaid;
+        salary.value.push({
+            name: "Unpaid Leave Deduction",
+            amount: parseFloat(unpaidSalaryDecduction.toFixed(2)),
+            type: "Subtraction",
+        });
+        console.log(
+            calculateDays(props.query.from_date, props.query.to_date),
+            "number of days",
+        );
+    }
+});
 
 onMounted(async () => {
     error.value = [];
@@ -22,37 +64,40 @@ onMounted(async () => {
                 filter: `employee="${props.query.employee}" && "${props.query.from_date} 00:00:00.000Z" <= date && "${props.query.to_date} 00:00:00.000Z" >= date`,
             });
         const fetchLeave = await client.collection("leave").getFullList({
-            filter: `employee="${props.query.employee}" && "${props.query.from_date} 00:00:00.000Z" <= leave_from && "${props.query.to_date} 00:00:00.000Z" >= leave_from && "${props.query.from_date} 00:00:00.000Z" <= leave_to && "${props.query.to_date} 00:00:00.000Z" >= leave_to`,
+            filter: `employee="${props.query.employee}" && "${props.query.from_date} 00:00:00.000Z" <= leave_from && "${props.query.to_date} 00:00:00.000Z" >= leave_to`,
         });
-        const totalLeaveTaken = (
-            await client.collection("leave").getList(1, 1, {
-                filter: `employee="${props.query.employee}" && status="accepted"  && "${props.settings.fy_year.from_date.value} 00:00:00.000Z" <= leave_from && "${props.settings.fy_year.to_date.value} 00:00:00.000Z" >= leave_from && "${props.settings.fy_year.from_date.value} 00:00:00.000Z" <= leave_to && "${props.settings.fy_year.to_date.value} 00:00:00.000Z" >= leave_to`,
-            })
-        ).totalItems;
-        let workingDays = 0;
+        // const totalLeaveTaken = (
+        //     await client.collection("leave").getList(1, 1, {
+        //         filter: `employee="${props.query.employee}" && status="accepted"  && "${props.settings.fy_year.from_date.value} 00:00:00.000Z" <= leave_from && "${props.settings.fy_year.to_date.value} 00:00:00.000Z" >= leave_to`,
+        //     })
+        // ).totalItems;
+        let workingDays = calculateWeekdaysInRange(
+            props.query.from_date,
+            props.query.to_date,
+            props.settings.weekly_off.value,
+        );
+        console.log(workingDays);
         let employeeWorkedDays = 0;
         fetchAttendance.forEach((attendance) => {
-            const chekWeekDay = isWeekDay(
-                attendance.date,
-                props.settings.weekly_off.value,
-            );
-            if (!chekWeekDay) {
-                workingDays += 1;
-            }
             if (attendance.status === "present") {
                 employeeWorkedDays += 1;
             }
         });
-        const absentDays = workingDays - employeeWorkedDays;
-        const acceptedLeaveDays = fetchLeave.filter(
-            (e) => e.status === "accepted",
-        ).length;
+        days.value.workingDays = workingDays;
+        days.value.present = employeeWorkedDays;
+        let absentDays = workingDays - employeeWorkedDays;
+        let acceptedLeaveDays = getTotalLeavesTaken(
+            fetchLeave,
+            props.query.from_date,
+            props.query.to_date,
+        );
+
         const employeeRecord = await client
             .collection("employee")
             .getOne(props.query.employee, {
                 expand: "leave_type,salary_structure",
             });
-
+        employee.value = employeeRecord;
         let unpaidLeave = absentDays;
         if (employeeRecord.expand.leave_type === undefined) {
             error.value.push("leave is not assigned to employee");
@@ -63,10 +108,18 @@ onMounted(async () => {
                 0,
             );
             if (acceptedLeaveDays <= allowedLeave) {
-                unpaidLeave = 0;
+                unpaidLeave = absentDays - acceptedLeaveDays;
             }
         }
-
+        fetchLeave.forEach((leave) => {
+            if (leave.is_half) {
+                absentDays -= 0.5;
+                unpaidLeave -= 0.5;
+            }
+        });
+        days.value.absentDays = absentDays;
+        days.value.acceptedLeave = acceptedLeaveDays;
+        days.value.unpaid = unpaidLeave;
         if (employeeRecord.expand.salary_structure === undefined) {
             error.value.push("salary structure is not assigned to employee");
         }
@@ -76,13 +129,15 @@ onMounted(async () => {
             salaryComponent.forEach((e) => {
                 salary.value.push({
                     name: e.name,
-                    amount: e.amount,
+                    amount: e.amount === "" ? e.finalAmount : e.amount,
+                    type: e.component[0].type,
                 });
             });
         }
 
         console.log(unpaidLeave);
-    } catch {
+    } catch (error) {
+        console.log(error);
     } finally {
         loading.value = false;
     }
@@ -93,17 +148,110 @@ onMounted(async () => {
     <LoadingSkeleton v-if="loading" />
     <div class="card">
         <div class="card-content">
+            <div class="columns is-multiline mb-1">
+                <div class="column is-3">
+                    <small class="has-text-grey">
+                        Employee: {{ employee?.full_name }}
+                    </small>
+                </div>
+                <div class="column is-3">
+                    <small class="has-text-grey">
+                        Salary Structure:
+                        {{ employee?.expand?.salary_structure.name }}
+                    </small>
+                </div>
+                <div class="column is-3">
+                    <small class="has-text-grey">
+                        From: {{ props.query.from_date }}
+                    </small>
+                </div>
+                <div class="column is-3">
+                    <small class="has-text-grey">
+                        To: {{ props.query.to_date }}
+                    </small>
+                </div>
+                <div class="column is-3">
+                    <small class="has-text-grey">
+                        Working Days: {{ days?.workingDays }}
+                    </small>
+                </div>
+                <div class="column is-3">
+                    <small class="has-text-grey">
+                        Present: {{ days?.present }}
+                    </small>
+                </div>
+                <div class="column is-3">
+                    <small class="has-text-grey">
+                        Absent: {{ days?.absentDays }}
+                    </small>
+                </div>
+                <div class="column is-3">
+                    <small class="has-text-grey">
+                        Accepted Leave: {{ days?.acceptedLeave }}
+                    </small>
+                </div>
+                <div class="column is-3">
+                    <small class="has-text-grey">
+                        Unpaid Leave: {{ days?.unpaid }}
+                    </small>
+                </div>
+            </div>
             <template v-if="salary.length > 0">
-                <div class="columns">
-                    <div class="column" v-for="item in salary">
-                        <label :for="item.name" class="label">{{
-                            item.name
-                        }}</label>
+                <div class="columns is-multiline">
+                    <template v-for="item in salary">
+                        <div
+                            class="column is-4"
+                            v-if="item.type === 'Addition'"
+                        >
+                            <label :for="item.name" class="label is-small"
+                                >{{ item.name }}
+                                <i class="bi bi-plus-circle-fill"></i
+                            ></label>
+                            <input
+                                :id="item.name"
+                                type="text"
+                                class="input is-small"
+                                :value="item.amount"
+                            />
+                        </div>
+                    </template>
+                    <div class="column is-4">
+                        <label for="gross_salary" class="label is-small"
+                            >Gross Salary</label
+                        >
                         <input
-                            :id="item.name"
+                            id="gross_salary"
                             type="text"
-                            class="input"
-                            :value="item.amount"
+                            class="input is-small"
+                            :value="grossSalary"
+                        />
+                    </div>
+                    <template v-for="item in salary">
+                        <div
+                            class="column is-4"
+                            v-if="item.type === 'Subtraction'"
+                        >
+                            <label :for="item.name" class="label is-small"
+                                >{{ item.name }}
+                                <i class="bi bi-dash-circle-fill"></i
+                            ></label>
+                            <input
+                                :id="item.name"
+                                type="text"
+                                class="input is-small"
+                                :value="item.amount"
+                            />
+                        </div>
+                    </template>
+                    <div class="column is-4">
+                        <label for="gross_salary" class="label is-small"
+                            >Net Salary</label
+                        >
+                        <input
+                            id="gross_salary"
+                            type="text"
+                            class="input is-small"
+                            :value="netSalary"
                         />
                     </div>
                 </div>
