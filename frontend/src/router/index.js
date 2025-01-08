@@ -121,7 +121,6 @@ const router = createRouter({
           component: () =>
             import("../views/payroll/salary_structures/SalaryStructure.vue"),
         },
-
         {
           path: "salary_structure/add",
           name: "salary_structure_add",
@@ -133,6 +132,22 @@ const router = createRouter({
           component: () =>
             import("../views/payroll/salary_structures/Edit.vue"),
         },
+        {
+          path: "salary_component",
+          name: "salary_component",
+          component: () => import("../views/payroll/salary_component/List.vue"),
+        },
+        {
+          path: "salary_component/add",
+          name: "salary_component_add",
+          component: () => import("../views/payroll/salary_component/Add.vue"),
+        },
+        {
+          path: "salary_component/edit/:id",
+          name: "salary_component_edit",
+          component: () => import("../views/payroll/salary_component/Edit.vue"),
+        },
+
         {
           path: "collection/:id",
           name: "payroll_setting_collection",

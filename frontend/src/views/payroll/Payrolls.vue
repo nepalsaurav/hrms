@@ -10,7 +10,7 @@ let menus = [
         hasChild: false,
     },
     {
-        path: "/payroll/collection/salary_component",
+        path: "/payroll/salary_component",
         name: "salary_component",
         label: "Salary Component",
         icon: null,

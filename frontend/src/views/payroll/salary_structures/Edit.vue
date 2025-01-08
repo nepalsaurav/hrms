@@ -2,8 +2,7 @@
 import BreadCrumb from "@/components/BreadCrumb.vue";
 import { ref } from "vue";
 import { client } from "@/api/pocketbase";
-import { onMounted } from "vue";
-import { useTemplateRef, watch } from "vue";
+import { onMounted, watch } from "vue";
 import { evaluate } from "mathjs";
 import Swal from "sweetalert2";
 import { useRouter, useRoute } from "vue-router";
@@ -11,7 +10,6 @@ import { useRouter, useRoute } from "vue-router";
 const salaryComponents = ref([]);
 
 const records = ref([]);
-const post = ref(null);
 const componentOptions = ref([]);
 const variable = ref({});
 const abbr = ref([]);
@@ -19,30 +17,18 @@ const errors = ref({});
 const formLoading = ref(false);
 const router = useRouter();
 const route = useRoute();
+const post = ref(null);
 
-watch(() => [route.params.id, route.params.query], fetchCollectioSchema, {
-    immediate: true,
-});
+watch(route.params, fetchData, { immediate: true });
 
-async function fetchCollectioSchema() {
+async function fetchData() {
     try {
         const record = await client
             .collection("salary_structure")
             .getOne(route.params.id);
         post.value = record;
-        record.components.forEach((e) => {
-            salaryComponents.value.push({
-                name: e.name,
-                amount: e.amount,
-                calculated: e.calculated,
-            });
 
-            if (e.calculated !== "") {
-                variable.value[e.component[0].abbreviation] = e.calculated;
-            } else {
-                variable.value[e.component[0].abbreviation] = e.amount;
-            }
-        });
+        salaryComponents.value.push(...record.components);
     } catch {}
 }
 
@@ -74,27 +60,10 @@ function addMoreRow() {
             componentOptions.value = options;
         }
     });
-
-    salaryComponents.value.forEach((e) => {
-        if (e.name !== "") {
-            console.log(e.name);
-            const abbr = checkAbbreviation(e.name);
-            if (abbr.length > 0) {
-                if (e.amount !== 0) {
-                    variable.value[abbr[0].abbreviation] = e.amount;
-                }
-                if (e.calculated !== "") {
-                    variable.value[abbr[0].abbreviation] = e.calculated;
-                }
-
-                console.log(variable.value);
-            }
-        }
-    });
     salaryComponents.value.push({
         name: "",
-        amount: undefined,
-        calculated: "",
+        amount: 0,
+        calculated: false,
     });
 }
 
@@ -104,65 +73,21 @@ function removeMoreRow(index) {
     }
 }
 
-function evaluateExpression(expr, variables) {
-    try {
-        const a = evaluate(expr, variables);
-        if (a["fixPrefix"] !== undefined) {
-            return [a["fixPrefix"], null];
-        }
-        return [true, a];
-    } catch {
-        return [false, null];
-    }
-}
-
-function changeCalculateValue(event) {
-    const target = event.target;
-    console.log(target.value);
-    const [isValid, value] = evaluateExpression(target.value, variable.value);
-    console.log(isValid, value, "expressiomn");
-}
-
 function handleSubmit(event) {
     const target = event.target;
     const form = new FormData(target);
     let formObject = Object.fromEntries(form.entries());
-    console.log(formObject);
+    console.log(formObject, salaryComponents.value);
     if (formObject.name === "") {
         errors.value["name"] = "required field";
     }
-
     const structures = [];
 
-    let error = false;
-    let errorAt = "";
     salaryComponents.value.forEach((e) => {
-        if (e.calculated !== "") {
-            const [isValid, value] = evaluateExpression(
-                e.calculated,
-                variable.value,
-            );
-            console.log(isValid, value, e.calculated, variable.value);
-            if (!isValid) {
-                error = true;
-                errorAt = e.name;
-                return;
-            }
-            e.finalAmount = value;
-        } else {
-            e.finalAmount = e.amount;
-        }
         e.component = checkAbbreviation(e.name);
         structures.push(e);
     });
-    if (error) {
-        Swal.fire({
-            title: "Error!",
-            text: `calculated formula error at ${errorAt}`,
-            icon: "error",
-        });
-        return;
-    }
+
     if (structures.length === 0) {
         errors.value["components"] = "required field";
     }
@@ -180,10 +105,9 @@ function handleSubmit(event) {
                 name: formObject.name,
                 components: mapped_structures,
             });
-        console.log(record);
         Swal.fire({
             title: "Success!",
-            text: "successfully created",
+            text: "successfully updated",
             icon: "success",
         });
         router.push("/payroll/salary_structure");
@@ -233,7 +157,7 @@ function handleSubmit(event) {
                                 class="input"
                                 id="name"
                                 name="name"
-                                :value="post && post.name"
+                                :value="post?.name"
                                 required
                             />
                             <p
@@ -281,13 +205,21 @@ function handleSubmit(event) {
                                     />
                                 </div>
                                 <div class="column">
-                                    <textarea
-                                        class="textarea has-text-success"
-                                        @change="changeCalculateValue"
-                                        v-model="component.calculated"
-                                        placeholder="formula for calculated amount"
-                                        required
-                                    ></textarea>
+                                    <label class="checkbox">
+                                        <input
+                                            type="checkbox"
+                                            class="custom-checkbox"
+                                            v-model="component.calculated"
+                                            @change="
+                                                (event) => {
+                                                    if (event.target.checked) {
+                                                        component.amount = 0;
+                                                    }
+                                                }
+                                            "
+                                        />
+                                        Based on formula
+                                    </label>
                                 </div>
                                 <div class="column is-narrow">
                                     <button
@@ -319,3 +251,17 @@ function handleSubmit(event) {
         </div>
     </div>
 </template>
+
+<style scoped>
+.custom-checkbox {
+    transform: scale(1.2);
+}
+
+.custom-checkbox:checked {
+    accent-color: var(--bulma-dark);
+}
+
+.custom-checkbox:indeterminate {
+    accent-color: var(--bulma-dark);
+}
+</style>

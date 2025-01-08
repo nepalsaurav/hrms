@@ -4,6 +4,7 @@ import RichText from "./RichText.vue";
 import { ref } from "vue";
 import { watchEffect, computed } from "vue";
 import RelationalFieldSelect from "./RelationalFieldSelect.vue";
+import CodeEditor from "./CodeEditor.vue";
 const props = defineProps({
     form: { type: Object },
     errors: { type: Object, default: () => ({}) },
@@ -56,6 +57,12 @@ function handleCheckbox(event) {
                 :disabled="form.disabled"
             />
             <!-- text input -->
+
+            <CodeEditor
+                v-if="form.type === 'formula'"
+                :value="props.defaultValue"
+                :form="form"
+            />
 
             <!-- number input -->
 

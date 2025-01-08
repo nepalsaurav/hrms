@@ -9,8 +9,12 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@codemirror/lang-javascript": "^6.2.2",
+    "@codemirror/lang-json": "^6.0.1",
+    "@codemirror/theme-one-dark": "^6.1.2",
     "@vueuse/components": "^12.2.0",
     "@vueuse/core": "^12.2.0",
+    "ace-builds": "^1.37.3",
     "bootstrap-icons": "^1.11.3",
     "bulma": "^1.0.2",
     "highlight.js": "^11.11.1",
@@ -24,9 +28,11 @@
     "sweetalert2": "^11.15.3",
     "trix": "^2.1.12",
     "vue": "^3.5.13",
+    "vue-codemirror": "^6.1.1",
     "vue-input-facade": "^2.2.0",
     "vue-router": "^4.4.5",
     "vue-select": "4.0.0-beta.6",
+    "vue3-ace-editor": "^2.2.4",
     "xlsx": "^0.18.5",
     "yup": "^1.6.1"
   },
