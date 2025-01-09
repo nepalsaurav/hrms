@@ -98,12 +98,12 @@ function renderCombineField(item, fields) {
             v-for="e in [...new Set(selected)]"
         />
 
-        <!-- <input
+        <input
             type="hidden"
             :name="props.name"
             :value="selected"
             v-if="!Array.isArray(selected)"
-        /> -->
+        /> 
 
         <vSelect
             :placeholder="props.firstOption"

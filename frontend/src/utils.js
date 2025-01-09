@@ -209,3 +209,44 @@ export function evalFunction(code, context) {
   const func = new Function("context", `with (context) { ${code}; }`);
   return func(context);
 }
+
+
+/**
+ * Generates an array of dates between two given dates (inclusive).
+ *
+ * @param {string} fromDate - The start date in "yyyy-mm-dd" format.
+ * @param {string} toDate - The end date in "yyyy-mm-dd" format.
+ * @returns {string[]} An array of dates in "yyyy-mm-dd" format within the range.
+ *
+ * @example
+ * // Example usage:
+ * const fromDate = "2025-01-01";
+ * const toDate = "2025-01-05";
+ * const result = getDateRange(fromDate, toDate);
+ * console.log(result); // Output: ["2025-01-01", "2025-01-02", "2025-01-03", "2025-01-04", "2025-01-05"]
+ *
+ * @throws {Error} If `fromDate` or `toDate` is not a valid date string.
+ */
+export function getDateRange(fromDate, toDate) {
+  // Convert the string dates to Date objects
+  const startDate = new Date(fromDate);
+  const endDate = new Date(toDate);
+
+  // Validate the dates
+  if (isNaN(startDate) || isNaN(endDate)) {
+      throw new Error("Invalid date format. Please use 'yyyy-mm-dd'.");
+  }
+
+  // Array to hold the dates
+  const dateArray = [];
+
+  // Loop through the range of dates
+  for (let current = new Date(startDate); current <= endDate; current.setDate(current.getDate() + 1)) {
+      // Format the date as "yyyy-mm-dd"
+      const formattedDate = current.toISOString().split("T")[0];
+      dateArray.push(formattedDate);
+  }
+
+  return dateArray;
+}
+

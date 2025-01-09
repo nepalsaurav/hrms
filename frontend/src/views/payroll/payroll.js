@@ -3,7 +3,6 @@ export function getTotalLeavesTaken(leaves, from_date, to_date) {
   leaves.forEach((leave) => {
     const fromDate = new Date(leave.leave_from);
     const toDate = new Date(leave.leave_to);
-    // Adjust the leave period to fit within the range 2024-11-14 to 2024-12-15
     const leaveStart = new Date(Math.max(fromDate, new Date(from_date)));
     const leaveEnd = new Date(Math.min(toDate, new Date(to_date)));
 
@@ -21,4 +20,28 @@ export function getTotalLeavesTaken(leaves, from_date, to_date) {
     }
   });
   return totalLeaveDays;
+}
+
+
+export function getLeavesDetail(leaves, date) {
+  let data = {
+    leaveDays: 0,
+    leave: null
+  }
+  leaves.forEach((leave) => {
+    const fromDate = new Date(leave.leave_from);
+    const toDate = new Date(leave.leave_to);
+    for (let currentDate = new Date(fromDate); currentDate <= toDate; currentDate.setDate(currentDate.getDate() + 1)) {
+      const day = currentDate.toISOString().split('T')[0];
+      if(day === date) {
+         if (leave.is_half) {
+           data.leaveDays =  data.leaveDays + 0.5
+         } else {
+            data.leaveDays =  data.leaveDays + 1
+         }
+         data.leave = leave
+      }
+    }
+  });
+  return data;
 }
