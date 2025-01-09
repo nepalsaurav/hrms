@@ -69,7 +69,7 @@ function handleSubmit(event) {
     const structures = [];
 
     salaryComponents.value.forEach((e) => {
-        e.component = checkAbbreviation(e.name);
+        e.component = checkAbbreviation(e.name)[0].id;
         structures.push(e);
     });
 

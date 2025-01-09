@@ -60,10 +60,12 @@ const viewList = [
 </script>
 
 <template>
+   <div class="container">
     <DetailView
         collection="leave"
         :breadcrumb="breadcrumbLink"
         :viewList="viewList"
         expand="employee"
     />
+   </div>
 </template>

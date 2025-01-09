@@ -41,6 +41,9 @@ importers:
       mathjs:
         specifier: ^14.0.1
         version: 14.0.1
+      number-to-words:
+        specifier: ^1.2.4
+        version: 1.2.4
       pikaday:
         specifier: ^1.8.2
         version: 1.8.2
@@ -77,6 +80,9 @@ importers:
       vue-select:
         specifier: 4.0.0-beta.6
         version: 4.0.0-beta.6(vue@3.5.13)
+      vue-to-print:
+        specifier: ^1.3.1
+        version: 1.3.1(vue@3.5.13)
       vue3-ace-editor:
         specifier: ^2.2.4
         version: 2.2.4(ace-builds@1.37.3)(vue@3.5.13)
@@ -1157,6 +1163,9 @@ packages:
     resolution: {integrity: sha512-9qny7Z9DsQU8Ou39ERsPU4OZQlSTP47ShQzuKZ6PRXpYLtIFgl/DEBYEXKlvcEa+9tHVcK8CF81Y2V72qaZhWA==}
     engines: {node: '>=18'}
 
+  number-to-words@1.2.4:
+    resolution: {integrity: sha512-/fYevVkXRcyBiZDg6yzZbm0RuaD6i0qRfn8yr+6D0KgBMOndFPxuW10qCHpzs50nN8qKuv78k8MuotZhcVX6Pw==}
+
   object-inspect@1.13.3:
     resolution: {integrity: sha512-kDCGIbxkDSXE3euJZZXzc6to7fCrKHNI/hSRQnRuQ+BWjFNzZwiFF8fj/6o2t2G9/jTj8PSIYTfCLelLZEeRpA==}
     engines: {node: '>= 0.4'}
@@ -1664,6 +1673,11 @@ packages:
     resolution: {integrity: sha512-K+zrNBSpwMPhAxYLTCl56gaMrWZGgayoWCLqe5rWwkB8aUbAUh7u6sXjIR7v4ckp2WKC7zEEUY27g6h1MRsIHw==}
     peerDependencies:
       vue: 3.x
+
+  vue-to-print@1.3.1:
+    resolution: {integrity: sha512-efCuvux+RebSv7H8I9iuxbboe+7S4p42sE5JNLrL2MbFxFcQLIojUY4vP+sHqI9S+ZC2wgucRs7W6VXL45EZgg==}
+    peerDependencies:
+      vue: ^3.0.0
 
   vue3-ace-editor@2.2.4:
     resolution: {integrity: sha512-FZkEyfpbH068BwjhMyNROxfEI8135Sc+x8ouxkMdCNkuj/Tuw83VP/gStFQqZHqljyX9/VfMTCdTqtOnJZGN8g==}
@@ -2790,6 +2804,8 @@ snapshots:
       path-key: 4.0.0
       unicorn-magic: 0.3.0
 
+  number-to-words@1.2.4: {}
+
   object-inspect@1.13.3: {}
 
   on-finished@2.4.1:
@@ -3241,6 +3257,10 @@ snapshots:
       vue: 3.5.13
 
   vue-select@4.0.0-beta.6(vue@3.5.13):
+    dependencies:
+      vue: 3.5.13
+
+  vue-to-print@1.3.1(vue@3.5.13):
     dependencies:
       vue: 3.5.13
 

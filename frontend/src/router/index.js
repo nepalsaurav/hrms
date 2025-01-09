@@ -149,6 +149,12 @@ const router = createRouter({
         },
 
         {
+          path: "payslip",
+          name: "payslip",
+          component: () => import("../views/payroll/Payslip.vue"),
+        },
+
+        {
           path: "collection/:id",
           name: "payroll_setting_collection",
           component: () => import("../views/collection/List.vue"),

@@ -39,10 +39,10 @@ function handleCheckbox(event) {
 
 <template>
     <div class="field">
-        <label :for="form.name" class="label">
+        <small :for="form.name" class="has-text-weight-bold">
             {{ form.label }}
             <span v-if="form.required" class="has-text-danger">*</span>
-        </label>
+        </small>
         <div class="control">
             <!-- text input -->
             <input

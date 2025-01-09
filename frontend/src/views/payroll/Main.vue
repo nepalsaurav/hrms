@@ -1,10 +1,14 @@
-<script setup>
+<script setup lang="jsx">
 import { ref } from "vue";
 import RenderForms from "@/components/RenderForms.vue";
 import { validateForm } from "@/utils";
 import { validationSchemaSingle } from "./form";
 import BreadCrumb from "@/components/BreadCrumb.vue";
 import { useRouter } from "vue-router";
+import ListDisplay from "@/components/ListDisplay.vue";
+import { defineComponent } from "vue";
+
+import { RouterLink } from "vue-router";
 
 const modalActive = ref(false);
 const formErrors = ref({});
@@ -12,6 +16,63 @@ const router = useRouter();
 function addPayroll() {
     modalActive.value = true;
 }
+
+const ViewPaySlip = defineComponent({
+    props: {
+        item: Object,
+        header: Object,
+    },
+    render() {
+        return (
+            <RouterLink
+                to={`/payroll/payslip?id=${this.item.id}&employee=${this.item.employee}`}
+                class="button is-small is-dark"
+            >
+                ⚲
+            </RouterLink>
+        );
+    },
+});
+
+const listHeader = ref([
+    {
+        name: "employee",
+        label: "Employee",
+        type: "expand",
+        expandCollection: "employee",
+        expandLabel: "full_name",
+    },
+    {
+        name: "from_date",
+        label: "From Date",
+        type: "date",
+    },
+    {
+        name: "to_date",
+        label: "To Date",
+        type: "date",
+    },
+    {
+        name: "view",
+        label: "View",
+        type: "custom_component",
+        component: ViewPaySlip,
+    },
+]);
+
+const filters = ref([
+    {
+        name: "text_search",
+        label: "Search",
+        type: "text_search",
+        fields: [
+            "employee.first_name",
+            "employee.middle_name",
+            "employee.last_name",
+        ],
+        placeholder: "search",
+    },
+]);
 
 const formList = ref([
     {
@@ -72,10 +133,21 @@ async function handleSubmit(event) {
             },
         ]"
     />
-    <div class="is-flex is-flex-direction-row-reverse">
+    <div class="is-flex is-flex-direction-row-reverse mb-4">
         <button class="button is-dark" @click="addPayroll">
             <i class="bi bi-plus-circle px-1"></i>Add Payroll
         </button>
+    </div>
+
+    <div class="card">
+        <div class="card-content">
+            <ListDisplay
+                :listHeader="listHeader"
+                :filter="filters"
+                expand="employee"
+                collection="payroll"
+            />
+        </div>
     </div>
 
     <!-- add_modal -->

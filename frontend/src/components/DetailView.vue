@@ -8,6 +8,7 @@ import LoadingSkeleton from "./LoadingSkeleton.vue";
 import { setPrintContent } from "@/stores/print";
 import { url } from "@/api/config";
 import Avatar from "./Avatar.vue";
+import { useVueToPrint } from "vue-to-print";
 
 const props = defineProps({
     collection: String,
@@ -25,6 +26,7 @@ const data = ref(null);
 const error = ref(null);
 const breadCrumbLink = ref(null);
 const route = useRoute();
+const componentRef = ref()
 
 onMounted(() => {
     breadCrumbLink.value = props.breadcrumb;
@@ -32,7 +34,8 @@ onMounted(() => {
 
 watch(() => route.params.id, fetchData, { immediate: true });
 
-console.log(props.expand);
+
+
 async function fetchData(id) {
     error.value = null;
     data.value = null;
@@ -61,11 +64,11 @@ async function fetchData(id) {
     }
 }
 
-function printDocument() {
-    var content = document.getElementById("contentToPrint").outerHTML;
-    setPrintContent(content);
-    window.open(`${url}/#print`, "_blank", "width=800,height=600");
-}
+
+const { handlePrint } = useVueToPrint({
+  content: componentRef,
+  documentTitle: "detail view",
+});
 </script>
 
 <template>
@@ -75,13 +78,13 @@ function printDocument() {
     <!-- for loading conditiom -->
     <div v-if="data != null">
         <div class="is-flex is-flex-direction-row-reverse mb-4">
-            <button class="button is-secondary" @click="printDocument">
+            <button class="button is-secondary" @click="handlePrint">
                 <i class="bi bi-printer"></i>
             </button>
         </div>
 
         <!-- main content -->
-        <div id="contentToPrint">
+        <div ref="componentRef">
             <template v-for="item in viewList">
                 <div class="pl-6" v-if="item.type === 'profile_photo'">
                     <Avatar
@@ -91,8 +94,8 @@ function printDocument() {
                     />
                 </div>
             </template>
-            <div class="card mt-4">
-                <div class="card-content">
+        
+                <div class="section">
                     <!-- tabular content -->
                     <div class="columns is-multiline">
                         <template v-for="item in viewList">
@@ -152,7 +155,7 @@ function printDocument() {
                         </template>
                     </template>
                 </div>
-            </div>
+           
         </div>
     </div>
 </template>

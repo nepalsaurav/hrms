@@ -93,7 +93,7 @@ const filter = [
 
         <div class="card">
             <div class="card-content">
-                <div class="is-flex is-flex-direction-row-reverse">
+                <div class="is-flex is-flex-direction-row-reverse mb-4">
                     <RouterLink
                         to="/attendance/checkout"
                         class="button is-danger ml-2"

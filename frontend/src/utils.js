@@ -204,3 +204,8 @@ export function calculateWeekdaysInRange(startDate, endDate, daysArray) {
 
   return count;
 }
+
+export function evalFunction(code, context) {
+  const func = new Function("context", `with (context) { ${code}; }`);
+  return func(context);
+}

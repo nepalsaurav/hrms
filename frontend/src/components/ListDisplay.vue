@@ -312,6 +312,13 @@ function detailViewClick(item) {
                                         )
                                     }}
                                 </span>
+                                <span v-else>
+                                    {{
+                                        item.expand[header.expandCollection][
+                                            header.expandLabel
+                                        ]
+                                    }}
+                                </span>
                             </tempalte>
 
                             <!-- custom element -->
