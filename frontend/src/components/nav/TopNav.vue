@@ -3,6 +3,10 @@ import { ref } from "vue";
 import { RouterLink } from "vue-router";
 import { useRoute } from "vue-router";
 const route = useRoute();
+
+const employee = JSON.parse(localStorage.getItem("employee"))
+
+
 const menus = ref({
     start: [
         {
@@ -14,6 +18,7 @@ const menus = ref({
                 return false;
             },
             isChild: false,
+            isAllowed: true
         },
         {
             name: "employee",
@@ -24,6 +29,7 @@ const menus = ref({
                 return false;
             },
             isChild: false,
+            isAllowed: true
         },
         {
             name: "leave",
@@ -34,6 +40,7 @@ const menus = ref({
                 return false;
             },
             isChild: false,
+            isAllowed: true
         },
         {
             name: "attendance",
@@ -44,6 +51,7 @@ const menus = ref({
                 return false;
             },
             isChild: false,
+            isAllowed: true
         },
         {
             name: "payroll",
@@ -54,6 +62,18 @@ const menus = ref({
                 return false;
             },
             isChild: false,
+            isAllowed: employee?.expand?.roles?.name === "Admin" ? true : false
+        },
+        {
+           name: "payslip_list",
+           label: "Payslip",
+           href: "/payslip_list",
+           isActive: () => {
+                if (route.path.startsWith("/payslip_list")) return true;
+                return false;
+           },
+           isChild: false,
+           isAllowed: true
         },
         {
             name: "import",
@@ -64,6 +84,7 @@ const menus = ref({
                 return false;
             },
             isChild: false,
+            isAllowed: employee?.expand?.roles?.name === "Admin" ? true : false
         },
         {
             name: "settings",
@@ -74,36 +95,28 @@ const menus = ref({
                 return false;
             },
             isChild: false,
+            isAllowed: employee?.expand?.roles?.name === "Admin" ? true : false
         },
     ],
 });
 </script>
 
 <template>
-    <nav
-        class="navbar has-border-bottom is-fixed-top navbar-border-bottom"
-        role="navigation"
-        aria-label="main navigation"
-    >
+    <nav class="navbar has-border-bottom is-fixed-top navbar-border-bottom" role="navigation"
+        aria-label="main navigation">
         <div class="navbar-brand">
             <a href="/" class="navbar-item">
-                <img
-                    style="margin-bottom: 10px"
-                    height="15"
-                    src="@/assets/logo/logo_transparent.png"
-                />
+                <img style="margin-bottom: 10px" height="15" src="@/assets/logo/logo_transparent.png" />
             </a>
         </div>
         <div id="navbarBasicExample" class="navbar-menu">
             <div class="navbar-start">
-                <RouterLink
-                    v-for="item in menus.start"
-                    class="navbar-item"
-                    :class="item.isActive() && 'is-active-nav'"
-                    :to="item.href"
-                >
-                    {{ item.label }}
-                </RouterLink>
+                <template v-for="item in menus.start">
+                    <RouterLink v-if="item.isAllowed" class="navbar-item" :class="item.isActive() && 'is-active-nav'"
+                        :to="item.href">
+                        {{ item.label }}
+                    </RouterLink>
+                </template>
             </div>
         </div>
     </nav>
@@ -118,6 +131,7 @@ const menus = ref({
     background-color: var(--bulma-dark);
     color: var(--bulma-light);
 }
+
 .navbar-border-bottom {
     border-bottom: 0.1mm solid var(--bulma-dark);
 }

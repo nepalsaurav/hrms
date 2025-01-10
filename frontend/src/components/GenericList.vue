@@ -112,7 +112,7 @@ function parseQuery(query) {
 }
 
 function hideCol(header) {
-    const hiddenFields = ["id", "created", "updated"];
+    const hiddenFields = ["id", "created", "updated", "address"];
     if (!header.hidden && !hiddenFields.includes(header.name)) {
         return true;
     } else {
@@ -274,14 +274,14 @@ function editData(item) {
                                         v-else-if="header.type === 'relation'"
                                     >
                                         {{
-                                            item.expand[header.name][
+                                            item.expand[header.name]?.[
                                                 expandLabel[header.name]
                                             ]
                                         }}
                                     </span>
 
                                     <!-- for avatar -->
-                                    <span v-else-if="header.name === 'avatar'">
+                                    <span v-else-if="header.name === 'avatar' || header.name === 'logo'">
                                         <Avatar
                                             :filename="item[header.name]"
                                             :record="item"

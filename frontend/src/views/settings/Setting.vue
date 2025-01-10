@@ -19,6 +19,13 @@ let menus = [
         hasChild: false,
     },
     {
+        path: "/settings/collection/roles",
+        name: "roles",
+        label: "Roles",
+        icon: null,
+        hasChild: false,
+    },
+    {
         path: "/settings/collection/department",
         name: "department",
         label: "Department",

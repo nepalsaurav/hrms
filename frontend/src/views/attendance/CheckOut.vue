@@ -50,6 +50,7 @@ async function handleSubmit(event) {
             .getFirstListItem(
                 `employee='${formObject.employee}'&&date='${formatedDate}'`,
             );
+        console.log(record)
         if (record.check_out_time !== "") {
             formErrors.value["employee"] = "already checkout";
             return;

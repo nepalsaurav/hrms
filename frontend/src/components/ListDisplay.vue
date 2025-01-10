@@ -33,6 +33,10 @@ const props = defineProps({
         type: String,
         default: "",
     },
+    checkBoxAllowed: {
+        type: Boolean,
+        default: true
+    }
 });
 
 async function fetchData(page, sort = "-created", filter = "", isPush = false) {
@@ -234,7 +238,7 @@ function detailViewClick(item) {
             <table class="table is-fullwidth is-striped">
                 <thead>
                     <tr>
-                        <th>
+                        <th v-if="props.checkBoxAllowed">
                             <input
                                 class="custom-checkbox"
                                 @click="selectAll"
@@ -257,7 +261,7 @@ function detailViewClick(item) {
                 </thead>
                 <tbody>
                     <tr v-for="(item, index) in recordItems" :key="item.id">
-                        <td>
+                        <td v-if="props.checkBoxAllowed">
                             <input
                                 v-model="selected"
                                 :value="item"

@@ -13,6 +13,11 @@ import { getDaysBetweenDates } from "@/utils";
 const formErrors = ref({});
 const formProcessing = ref(false);
 const router = useRouter();
+const employee = JSON.parse(localStorage.getItem("employee"))
+
+const defaultField = {
+     "employee": employee?.id
+}
 
 async function handleSubmit(event) {
     event.preventDefault();
@@ -42,21 +47,18 @@ async function handleSubmit(event) {
     }
     try {
         await client.collection("leave").create(formObject);
+        router.push("/leave");
     } catch (err) {
+        console.log(err.data)
         Swal.fire({
             title: "Error!",
             text: err.data.message,
             icon: "error",
         });
     } finally {
-        Swal.fire({
-            title: "Success!",
-            text: "Successfully create leave",
-            icon: "success",
-        });
-        router.push("/leave");
+        formProcessing.value = false;
     }
-    formProcessing.value = false;
+    
 }
 </script>
 
@@ -102,6 +104,7 @@ async function handleSubmit(event) {
                                 <RenderForms
                                     :form="item"
                                     :errors="formErrors"
+                                    :defaultValue="defaultField[item.name]"
                                 />
                             </div>
                         </div>

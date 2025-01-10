@@ -184,6 +184,10 @@ function handleCheckbox(event) {
             </div>
             <!-- file input -->
 
+            <template v-if="form.type === 'custom_component'">
+                 <component :is="form.component" :defaultValue:="props.defaultValue" :form="form"/>
+            </template>
+
             <!-- bool input -->
             <input
                 type="hidden"

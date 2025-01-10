@@ -100,6 +100,16 @@ const router = createRouter({
       component: () => import("../views/leave/View.vue"),
     },
     {
+      path: "/payslip_list",
+      name: "payslip_list",
+      component: () => import("../views/payslip/List.vue")
+    },
+    {
+      path: "/payslip_list/view_payslip",
+      name: "view_payslip",
+      component: () => import("../views/payroll/Payslip.vue")
+    },
+    {
       path: "/payroll",
       name: "payroll",
       component: () => import("../views/payroll/Payrolls.vue"),

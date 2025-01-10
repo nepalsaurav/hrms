@@ -214,27 +214,12 @@ export const formDetails = {
       required: false,
     },
     {
-      name: "role",
-      label: "System Role",
-      type: "select",
-      options: [
-        {
-          value: "",
-          label: "Select Role",
-        },
-        {
-          value: "Admin",
-          label: "Admin",
-        },
-        {
-          value: "HR",
-          label: "HR",
-        },
-        {
-          value: "Employee",
-          label: "Employee",
-        },
-      ],
+      name: "roles",
+      label: "Roles",
+      collection: "Roles",
+      labelField: "name",
+      firstOption: "select roles",
+      type: "relational_field_select",
       required: false,
     },
   ],

@@ -17,10 +17,14 @@ const formModal = ref({});
 async function fetchData() {
     settings.value = error.value = null;
     try {
-        if (route.query.employee !== undefined) {
+        if (route.query.employee !== "undefined") {
             formModal.value[route.query.employee] = null;
+        } else {
+             const employee = await client.collection("employee").getFullList()
+             employee.forEach((e) => {
+                formModal.value[e.id] = null
+             })
         }
-
         const record = await client.send("/api/get_settings/settings.json");
         settings.value = record;
     } catch (err) {
@@ -71,25 +75,23 @@ async function handleSubmit() {
 </script>
 
 <template>
-    <BreadCrumb
-        :links="[
-            {
-                path: '/',
-                label: 'Dashboard',
-                isActive: false,
-            },
-            {
-                path: '/payroll/payroll_list',
-                label: 'Payroll',
-                isActive: false,
-            },
-            {
-                path: '/payroll/add',
-                label: 'Add',
-                isActive: true,
-            },
-        ]"
-    />
+    <BreadCrumb :links="[
+        {
+            path: '/',
+            label: 'Dashboard',
+            isActive: false,
+        },
+        {
+            path: '/payroll/payroll_list',
+            label: 'Payroll',
+            isActive: false,
+        },
+        {
+            path: '/payroll/add',
+            label: 'Add',
+            isActive: true,
+        },
+    ]" />
 
     <LoadingSkeleton v-if="settings === null" />
     <template v-if="settings !== null">
@@ -101,12 +103,7 @@ async function handleSubmit() {
                     </button>
                 </div>
                 <template v-for="(_, key) in formModal">
-                    <SinglePayroll
-                        :employee="key"
-                        :query="route.query"
-                        :settings="settings"
-                        @update="handleUpdate"
-                    />
+                    <SinglePayroll :employee="key" :query="route.query" :settings="settings" @update="handleUpdate" />
                 </template>
             </fieldset>
         </form>

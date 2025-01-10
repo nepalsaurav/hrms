@@ -1,4 +1,7 @@
 import * as yup from "yup";
+import LeaveHalfDay from "@/components/LeaveHalfDay.vue";
+import CountLeaveDays from "@/components/CountLeaveDays.vue";
+
 export const formDetails = [
   {
     name: "employee",
@@ -26,6 +29,12 @@ export const formDetails = [
     placeholder: "1900-01-01",
   },
   {
+    name: "leave_days",
+    label: "Leave Day/ Balance Leave",
+    type: "custom_component",
+    component: CountLeaveDays
+  },
+  {
     name: "leave_type",
     label: "Leave Type",
     collection: "leave_type",
@@ -39,6 +48,12 @@ export const formDetails = [
     name: "is_half",
     label: "Half Day",
     type: "bool",
+  },
+  {
+    name: "half_day_type",
+    label: "Half Day Type",
+    type: "custom_component",
+    component: LeaveHalfDay
   },
 
   {
@@ -71,6 +86,7 @@ export const formDetails = [
     name: "reasons",
     label: "Reasons",
     type: "rich_text",
+    required: true
   },
 ];
 
@@ -110,4 +126,15 @@ export const validationSchema = yup.object().shape({
         return true; // Allow any value if the condition is not met
       },
     ),
+    half_day_type: yup.string().test(
+      "half_day_type",
+      "Half day type is required when 'is_half' is selected",
+      function (value) {
+        const { is_half } = this.parent;
+        if (is_half && value === undefined) {
+          return false; // return false to trigger validation error
+        }
+        return true; // otherwise, validation passes
+      }
+    )
 });

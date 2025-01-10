@@ -3,6 +3,7 @@ import { RouterLink } from "vue-router";
 import ListDisplay from "@/components/ListDisplay.vue";
 import BreadCrumb from "@/components/BreadCrumb.vue";
 
+
 const listHeader = [
     {
         name: "full_name",

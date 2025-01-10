@@ -36,9 +36,11 @@ async function handleClick(item, condition) {
         }
     }
     try {
-        client.collection(props.header.collection).update(props.item.id, {
+        const _ = await client.collection(props.header.collection).update(props.item.id, {
             status: condition,
         });
+        
+       
     } catch (err) {
         Swal.fire({
             title: "Error!",
@@ -46,11 +48,6 @@ async function handleClick(item, condition) {
             icon: "error",
         });
     } finally {
-        Swal.fire({
-            title: "Success!",
-            text: "successfully updated",
-            icon: "success",
-        });
         if (props.reloadData !== undefined) {
             props.reloadData();
         }

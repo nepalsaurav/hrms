@@ -66,8 +66,8 @@ async function fetchData(id) {
 
 
 const { handlePrint } = useVueToPrint({
-  content: componentRef,
-  documentTitle: "detail view",
+    content: componentRef,
+    documentTitle: "detail view",
 });
 </script>
 
@@ -87,75 +87,50 @@ const { handlePrint } = useVueToPrint({
         <div ref="componentRef">
             <template v-for="item in viewList">
                 <div class="pl-6" v-if="item.type === 'profile_photo'">
-                    <Avatar
-                        :filename="data[item.name]"
-                        :record="data"
-                        size="128x128"
-                    />
+                    <Avatar :filename="data[item.name]" :record="data" size="128x128" />
                 </div>
             </template>
-        
-                <div class="section">
-                    <!-- tabular content -->
-                    <div class="columns is-multiline">
-                        <template v-for="item in viewList">
-                            <template v-if="item.type === 'text'">
-                                <div class="column is-4">
-                                    <p class="mb-2">{{ item.label }}</p>
-                                    <input
-                                        type="text"
-                                        class="input"
-                                        :value="data[item.name]"
-                                        readonly
-                                        disabled
-                                    />
-                                </div>
-                            </template>
 
-                            <template v-if="item.type === 'date'">
-                                <div class="column is-4">
-                                    <p class="mb-2">{{ item.label }}</p>
-                                    <input
-                                        type="text"
-                                        class="input"
-                                        :value="data[item.name].split(' ')[0]"
-                                        readonly
-                                        disabled
-                                    />
-                                </div>
-                            </template>
-
-                            <template v-if="item.type === 'text_component'">
-                                <div class="column is-4">
-                                    <p class="mb-2">{{ item.label }}</p>
-                                    <component
-                                        :is="item.component"
-                                        :item="data"
-                                        :header="item"
-                                    />
-                                </div>
-                            </template>
-                        </template>
-                    </div>
-
-                    <!-- tabular content -->
+            <div class="section">
+                <!-- tabular content -->
+                <div class="columns is-multiline">
                     <template v-for="item in viewList">
-                        <template
-                            v-if="
-                                item.type === 'rich_text' &&
-                                data[item.name] !== ''
-                            "
-                        >
-                            <p class="mb-2">{{ item.label }}</p>
-                            <div
-                                class="box"
-                                style="width: 60rem"
-                                v-html="data[item.name]"
-                            />
+                        <template v-if="item.type === 'text'">
+                            <div class="column is-4">
+                                <p class="mb-2">{{ item.label }}</p>
+                                <input type="text" class="input" :value="data[item.name]" readonly disabled />
+                            </div>
+                        </template>
+
+                        <template v-if="item.type === 'date'">
+                            <div class="column is-4">
+                                <p class="mb-2">{{ item.label }}</p>
+                                <input type="text" class="input" :value="data[item.name].split(' ')[0]" readonly
+                                    disabled />
+                            </div>
+                        </template>
+
+                        <template v-if="item.type === 'text_component'">
+                            <div class="column is-4">
+                                <p class="mb-2">{{ item.label }}</p>
+                                <component :is="item.component" :item="data" :header="item" />
+                            </div>
                         </template>
                     </template>
                 </div>
-           
+
+                <!-- tabular content -->
+                <template v-for="item in viewList">
+                    <template v-if="
+                        item.type === 'rich_text' &&
+                        data[item.name] !== ''
+                    ">
+                        <p class="mb-2">{{ item.label }}</p>
+                        <div class="box" style="width: 60rem" v-html="data[item.name]" />
+                    </template>
+                </template>
+            </div>
+
         </div>
     </div>
 </template>

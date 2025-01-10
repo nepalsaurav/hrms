@@ -38,12 +38,7 @@ onMounted(async () => {
         options.value = records;
 
         if (Array.isArray(props.selected)) {
-            // if (selected.value != "") {
-            //     // const filtered_option = records.filter(
-            //     //     (e) => e.id === selected_val,
-            //     // );
-            //     selected_label.value = ["Sick Leave", "Emergency Leave"];
-            // }
+          
             if (selected.value !== "") {
                 const _selected = [];
                 props.selected.forEach((val) => {
