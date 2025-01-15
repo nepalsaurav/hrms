@@ -84,17 +84,17 @@ Start the frontend server
 
 ## Screenshots
 
-![employee]("/screenshot/employee.png?raw=true")
-![add employee]("/screenshot/employee_add.png?raw=true")
-![employee detail view]("/screenshot/employee_view.png?raw=true")
-![leave]("/screenshot/leave.png?raw=true")
-![add leave]("/screenshot/leave_add.png?raw=true")
-![payroll]("/screenshot/payroll.png?raw=true")
-![payslip]("/screenshot/payslip.png?raw=true")
-![salary structure]("/screenshot/salary_structure.png?raw=true")
-![salary component]("/screenshot/salary_component.png?raw=true")
-![settings]["/screenshot/settings.png?raw=true"]
-![dashboard]["/screenshot/dashboard.png?raw=true"]
+![employee](screenshot/employee.png?raw=true)
+![add employee](screenshot/employee_add.png?raw=true)
+![employee_detail_view](screenshot/employee_view.png?raw=true)
+![leave](screenshot/leave.png?raw=true)
+![add leave](screenshot/leave_add.png?raw=true)
+![payroll](screenshot/payroll.png?raw=true)
+![payslip](screenshot/payslip.png?raw=true)
+![salary structure](screenshot/salary_structure.png?raw=true)
+![salary component](screenshot/salary_component.png?raw=true)
+![settings](screenshot/settings.png?raw=true)
+![dashboard](screenshot/dashboard.png?raw=true)
 
 
 
