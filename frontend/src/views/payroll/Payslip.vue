@@ -17,6 +17,12 @@ const company = ref(null)
 const employee = JSON.parse(localStorage.getItem("employee"))
 let breadcrumbLinks = []
 
+let className = ""
+
+if(route.path === "/payslip_list/view_payslip") {
+    className = "margin_for_payslip"
+}
+
 if (employee.expand.roles.name === "Admin") {
     breadcrumbLinks = [
         {
@@ -115,7 +121,7 @@ const { handlePrint } = useVueToPrint({
             <div class="is-flex is-flex-direction-row-reverse">
                 <button class="button is-light mb-2 mr-4" @click="handlePrint"><i class="bi bi-printer"></i></button>
             </div>
-            <div class="card" ref="componentRef">
+            <div class="card" ref="componentRef" :class="className">
                 <div class="card-content">
                     <!-- company details -->
                     <div class="columns ">
@@ -216,4 +222,8 @@ const { handlePrint } = useVueToPrint({
 
 <style scoped>
 /* You can add custom styling here */
+
+.margin_for_payslip {
+    width: 72rem;
+}
 </style>

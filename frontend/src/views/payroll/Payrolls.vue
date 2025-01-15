@@ -23,6 +23,13 @@ let menus = [
         icon: null,
         hasChild: false,
     },
+    {
+        path: "/payroll/collection/advance_salary",
+        name: "advance_salary",
+        label: "Advance Salary",
+        icon: null,
+        hasChild: false
+    },
 ];
 </script>
 

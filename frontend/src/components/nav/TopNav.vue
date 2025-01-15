@@ -2,9 +2,16 @@
 import { ref } from "vue";
 import { RouterLink } from "vue-router";
 import { useRoute } from "vue-router";
+import { isAllow } from "@/api/role";
+import DropdownNav from "./DropdownNav.vue";
+import { useStorage } from "@vueuse/core";
+import { client } from "@/api/pocketbase";
+import Avatar from "../Avatar.vue";
+
 const route = useRoute();
 
-const employee = JSON.parse(localStorage.getItem("employee"))
+let employee = useStorage("employee")
+employee = JSON.parse(employee.value)
 
 
 const menus = ref({
@@ -62,18 +69,20 @@ const menus = ref({
                 return false;
             },
             isChild: false,
-            isAllowed: employee?.expand?.roles?.name === "Admin" ? true : false
+            isAllowed: isAllow({
+                type: "navigation"
+            })
         },
         {
-           name: "payslip_list",
-           label: "Payslip",
-           href: "/payslip_list",
-           isActive: () => {
+            name: "payslip_list",
+            label: "Payslip",
+            href: "/payslip_list",
+            isActive: () => {
                 if (route.path.startsWith("/payslip_list")) return true;
                 return false;
-           },
-           isChild: false,
-           isAllowed: true
+            },
+            isChild: false,
+            isAllowed: true
         },
         {
             name: "import",
@@ -84,7 +93,9 @@ const menus = ref({
                 return false;
             },
             isChild: false,
-            isAllowed: employee?.expand?.roles?.name === "Admin" ? true : false
+            isAllowed: isAllow({
+                type: "navigation"
+            })
         },
         {
             name: "settings",
@@ -95,10 +106,16 @@ const menus = ref({
                 return false;
             },
             isChild: false,
-            isAllowed: employee?.expand?.roles?.name === "Admin" ? true : false
+            isAllowed: isAllow({
+                type: "navigation"
+            })
         },
     ],
 });
+
+function handleLogOut() {
+     client.authStore.clear()
+}
 </script>
 
 <template>
@@ -117,6 +134,21 @@ const menus = ref({
                         {{ item.label }}
                     </RouterLink>
                 </template>
+            </div>
+            <div class="navbar-end">
+                <DropdownNav>
+                    <template #label>
+                        <span>{{ client.authStore.record.name.split(" ")[0] }}</span>
+                        <Avatar :filename="employee?.photo" :record="employee" size="25x24" />
+                    </template>
+                    <template #dropdown>
+                        <div class="navbar-dropdown is-boxed">
+                            <a class="navbar-item" @click="handleLogOut">
+                                Log out
+                            </a>
+                        </div>
+                    </template>
+                </DropdownNav>
             </div>
         </div>
     </nav>

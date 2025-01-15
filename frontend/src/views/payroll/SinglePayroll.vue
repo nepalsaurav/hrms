@@ -130,6 +130,8 @@ onMounted(async () => {
                 type: component.type,
             });
         }
+        
+        //calculate advance salary
     } catch (err) {
         error.value.push("An error occurred while fetching data.");
     } finally {

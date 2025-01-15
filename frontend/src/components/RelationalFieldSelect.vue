@@ -1,19 +1,20 @@
 <script setup>
-import { ref } from "vue";
-import { onMounted } from "vue";
+import { ref, onMounted, watch } from "vue";
 import { client } from "@/api/pocketbase";
 import vSelect from "vue-select";
 import "vue-select/dist/vue-select.css";
-const options = ref([]);
-const selected_label = ref("");
-const error = ref(null);
-const selected = ref([]);
+import { useFormModel } from "@/stores/form";
+import { storeToRefs } from "pinia";
+import Avatar from "./Avatar.vue";
+
+const { formModel } = storeToRefs(useFormModel())
+
 const props = defineProps({
     name: String,
     collection: String,
     labelField: String,
     firstOption: String,
-    selected: String,
+    selected: [String, Array],
     combinedFields: Array,
     isCombinedField: Boolean,
     multiple: {
@@ -22,100 +23,74 @@ const props = defineProps({
     },
 });
 
-onMounted(async () => {
-    // const div = vselect.value.querySelector("#vs2__combobox");
-    if (props.selected !== "") {
-        if (Array.isArray(props.selected)) {
-            selected.value = props.selected;
-        } else {
-            selected.value.push(props.selected);
-        }
-    }
-    try {
-        const records = await client
-            .collection(props.collection)
-            .getFullList({});
-        options.value = records;
+const options = ref([]);
+const selected = ref(Array.isArray(props.selected) ? props.selected : [props.selected]);
+const selectedLabel = ref([]);
+const error = ref(null);
 
-        if (Array.isArray(props.selected)) {
-          
-            if (selected.value !== "") {
-                const _selected = [];
-                props.selected.forEach((val) => {
-                    const filtered_option = records.filter((e) => e.id === val);
-                    _selected.push(filtered_option[0][props.labelField]);
-                });
-                selected_label.value = _selected;
-            }
-        } else {
-            if (selected.value !== "") {
-                const filtered_option = records.filter(
-                    (e) => e.id === props.selected,
-                );
-                selected_label.value = filtered_option[0][props.labelField];
-            }
-        }
+watch(selected, (newValue) => {
+
+    formModel.value[props.name] = newValue;
+}, { immediate: true });
+
+const fetchOptions = async () => {
+    try {
+        const records = await client.collection(props.collection).getFullList({});
+        options.value = records;
+        updateSelectedLabel(records);
     } catch {
         error.value = true;
     }
-});
+};
 
-function setSelected(value) {
-    if (Array.isArray(value)) {
-        value.forEach((e) => {
-            if (typeof e === "object") {
-                selected.value.push(e.id);
-            }
-        });
+const updateSelectedLabel = (records) => {
+    if (Array.isArray(props.selected)) {
+        selectedLabel.value = props.selected.map(id =>
+            records.find(record => record.id === id)?.[props.labelField] || ''
+        );
     } else {
-        selected.value.push(value.id);
+        const record = records.find(record => record.id === props.selected);
+        selectedLabel.value = record ? [record[props.labelField]] : [];
     }
-}
+};
 
-function renderCombineField(item, fields) {
-    let texts = [];
-    for (let i = 0; i < fields.length; i++) {
-        if (item[fields[i]] !== "") {
-            texts.push(item[fields[i]]);
-        }
+const setSelected = (value) => {
+    if (Array.isArray(value)) {
+        selected.value = value.map(item => item.id);
+    } else {
+        const setSelected = new Set(selected.value)
+        setSelected.add(value.id)
+        selected.value = Array.from(setSelected)
     }
-    return texts.join(" ");
-}
+};
+
+const renderCombineField = (item, fields) => {
+    return fields.map(field => item[field]).filter(value => value).join(" ");
+};
+
+onMounted(fetchOptions);
+
 </script>
 
 <template>
     <div style="width: 100%">
-        <input
-            type="hidden"
-            :name="props.name"
-            :value="e"
-            v-if="Array.isArray(selected)"
-            v-for="e in [...new Set(selected)]"
-        />
+        <input type="hidden" :name="props.name" :value="e" v-if="Array.isArray(selected)"
+            v-for="e in [...new Set(selected)]" />
 
-        <input
-            type="hidden"
-            :name="props.name"
-            :value="selected"
-            v-if="!Array.isArray(selected)"
-        /> 
-
-        <vSelect
-            :placeholder="props.firstOption"
-            :options="options"
-            :label="props.labelField"
-            :value="props.selected"
-            :multiple="props.multiple"
-            v-model="selected_label"
-            @option:selected="setSelected"
-        >
+        <vSelect :placeholder="props.firstOption" :options="options" :label="props.labelField" v-model="selectedLabel"
+            :multiple="props.multiple" :value="props.selected" @option:selected="setSelected">
             <template v-slot:option="option">
-                <span v-if="props.isCombinedField !== undefined">
-                    {{ renderCombineField(option, props.combinedFields) }}
-                </span>
-                <span v-else>
-                    {{ option[props.labelField] }}
-                </span>
+                <div class="is-flex">
+                    <span v-if="props.isCombinedField">
+                        {{ renderCombineField(option, props.combinedFields) }}
+                    </span>
+                    <span v-else>
+                        {{ option[props.labelField] }}
+                    </span>
+                    <span v-if="props.collection === 'employee'" class="ml-2">
+                        <Avatar :filename="option.photo" :record="option" size="24x24" />
+                    </span>
+                </div>
             </template>
         </vSelect>
     </div>

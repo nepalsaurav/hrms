@@ -12,7 +12,7 @@ onMounted(async () => {
     const setting = await client.send("/api/get_settings/attendance.json", {
         $autoCancel: false,
     });
-    console.log(setting);
+
     const status = isEmployeePresent(
         setting.check_in_time.value,
         setting.check_out_time.value,
@@ -21,7 +21,6 @@ onMounted(async () => {
     );
     presentStatus.value = status;
 });
-console.log(presentStatus.value);
 </script>
 
 <template>

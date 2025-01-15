@@ -13,6 +13,7 @@ const props = defineProps({
         type: Function,
         default: null,
     },
+    filterFuntion: Function
 });
 
 const router = useRouter();
@@ -61,7 +62,6 @@ async function handleSumbit(event) {
     }
     const filter_string = filter.join("||");
     query_obj["filter"] = filter_string;
-    console.log(route.path);
     router.push({
         path: route.path,
         query: query_obj,

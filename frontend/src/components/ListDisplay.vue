@@ -3,7 +3,6 @@ import { client } from "@/api/pocketbase";
 import { ref } from "vue";
 import { onMounted, watchEffect, watch } from "vue";
 import { useRouter, useRoute } from "vue-router";
-import { computed } from "vue";
 import LoadingSkeleton from "./LoadingSkeleton.vue";
 import Filter from "./Filter.vue";
 import Swal from "sweetalert2";
@@ -36,7 +35,8 @@ const props = defineProps({
     checkBoxAllowed: {
         type: Boolean,
         default: true
-    }
+    },
+    filterFuntion: Function
 });
 
 async function fetchData(page, sort = "-created", filter = "", isPush = false) {
@@ -202,11 +202,8 @@ function detailViewClick(item) {
     <div v-if="!loading && listData">
         <!-- filter tab -->
         <div class="box">
-            <Filter
-                :filter="props.filter"
-                :routeBack="props.routeBack"
-                :resetList="resetList"
-            />
+            <Filter :filter="props.filter" :routeBack="props.routeBack" :resetList="resetList"
+                :filterFuntion="props.filterFuntion" />
         </div>
 
         <!-- filter tab -->
@@ -218,10 +215,7 @@ function detailViewClick(item) {
                     {{ recordItems.length }}
                 </p>
 
-                <button
-                    class="button is-danger is-small ml-4"
-                    @click="deleteData"
-                >
+                <button class="button is-danger is-small ml-4" @click="deleteData">
                     <i class="bi bi-archive pr-1"></i>
                     Delete
                 </button>
@@ -229,28 +223,16 @@ function detailViewClick(item) {
         </div>
 
         <!-- action tab -->
-        <div
-            v-infinite-scroll="onLoadMore"
-            class="scroll-div"
-            v-if="recordItems.length > 0"
-        >
+        <div v-infinite-scroll="onLoadMore" class="scroll-div" v-if="recordItems.length > 0">
             <p class="has-text-grey">Total Items: {{ listData.totalItems }}</p>
             <table class="table is-fullwidth is-striped">
                 <thead>
                     <tr>
                         <th v-if="props.checkBoxAllowed">
-                            <input
-                                class="custom-checkbox"
-                                @click="selectAll"
-                                type="checkbox"
-                                :checked="
-                                    selected.length === recordItems.length
-                                "
-                                :indeterminate="
-                                    selected.length > 0 &&
+                            <input class="custom-checkbox" @click="selectAll" type="checkbox" :checked="selected.length === recordItems.length
+                                " :indeterminate="selected.length > 0 &&
                                     selected.length < recordItems.length
-                                "
-                            />
+                                    " />
                         </th>
                         <template v-for="item in props.listHeader">
                             <th v-if="!(item.can === false)">
@@ -262,19 +244,11 @@ function detailViewClick(item) {
                 <tbody>
                     <tr v-for="(item, index) in recordItems" :key="item.id">
                         <td v-if="props.checkBoxAllowed">
-                            <input
-                                v-model="selected"
-                                :value="item"
-                                class="custom-checkbox"
-                                type="checkbox"
-                            />
+                            <input v-model="selected" :value="item" class="custom-checkbox" type="checkbox" />
                         </td>
 
-                        <td
-                            v-for="header in props.listHeader"
-                            :class="{ 'text-link': header.link }"
-                            @click="header.link && detailViewClick(item)"
-                        >
+                        <td v-for="header in props.listHeader" :class="{ 'text-link': header.link }"
+                            @click="header.link && detailViewClick(item)">
                             <!-- render serial number -->
                             <span v-if="header.type === 'serial_number'">
                                 {{ calculateSerialNumber(index) }}
@@ -310,7 +284,7 @@ function detailViewClick(item) {
                                     {{
                                         renderCombineField(
                                             item.expand[
-                                                header.expandCollection
+                                            header.expandCollection
                                             ],
                                             header.fields,
                                         )
@@ -319,7 +293,7 @@ function detailViewClick(item) {
                                 <span v-else>
                                     {{
                                         item.expand[header.expandCollection][
-                                            header.expandLabel
+                                        header.expandLabel
                                         ]
                                     }}
                                 </span>
@@ -327,31 +301,20 @@ function detailViewClick(item) {
 
                             <!-- custom element -->
 
-                            <template
-                                v-if="
-                                    header.type === 'custom_component' &&
-                                    !(header.can === false)
-                                "
-                            >
-                                <component
-                                    :item="item"
-                                    :header="header"
-                                    :reloadData="reloadData"
-                                    :is="header.component"
-                                />
+                            <template v-if="
+                                header.type === 'custom_component' &&
+                                !(header.can === false)
+                            ">
+                                <component :item="item" :header="header" :reloadData="reloadData"
+                                    :is="header.component" />
                             </template>
 
                             <!-- render action -->
                             <span v-if="header.type === 'action'">
-                                <RouterLink
-                                    class="button is-dark"
-                                    style="width: 10px; height: 20px"
-                                    :to="`${route.path}/edit/${item.id}`"
-                                    ><i
-                                        class="bi bi-pencil"
-                                        style="font-size: 10px"
-                                    ></i
-                                ></RouterLink>
+                                <RouterLink class="button is-dark" style="width: 10px; height: 20px"
+                                    :to="`${route.path}/edit/${item.id}`"><i class="bi bi-pencil"
+                                        style="font-size: 10px"></i>
+                                </RouterLink>
                             </span>
                             <!-- render action -->
                         </td>
@@ -377,6 +340,7 @@ function detailViewClick(item) {
     height: 350px;
     overflow-y: scroll;
 }
+
 .custom-checkbox {
     transform: scale(1.2);
 }
@@ -393,6 +357,7 @@ function detailViewClick(item) {
     color: var(--bulma-dark);
     cursor: pointer;
 }
+
 .text-link:hover {
     text-decoration: underline;
 }

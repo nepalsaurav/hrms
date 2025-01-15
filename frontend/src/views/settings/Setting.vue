@@ -39,6 +39,7 @@ let menus = [
         icon: null,
         hasChild: false,
     },
+    
     {
         name: "leave_setting",
         label: "Leave",

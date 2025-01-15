@@ -2,9 +2,11 @@
 import { RouterLink } from "vue-router";
 import ListDisplay from "@/components/ListDisplay.vue";
 import BreadCrumb from "@/components/BreadCrumb.vue";
+import { isAllow } from "@/api/role";
 
 
-const listHeader = [
+const doEditAllow = isAllow({ type: "add" })
+let listHeader = [
     {
         name: "full_name",
         label: "Full Name",
@@ -28,6 +30,8 @@ const listHeader = [
         type: "action",
     },
 ];
+
+
 
 const filter = [
     {
@@ -102,35 +106,29 @@ const filter = [
 
 <template>
     <div class="container">
-        <BreadCrumb
-            :links="[
-                {
-                    label: 'Dashboard',
-                    path: '/',
-                    isActive: false,
-                },
-                {
-                    label: 'Employee',
-                    path: '/employee',
-                    isActive: true,
-                },
-            ]"
-        />
+        <BreadCrumb :links="[
+            {
+                label: 'Dashboard',
+                path: '/',
+                isActive: false,
+            },
+            {
+                label: 'Employee',
+                path: '/employee',
+                isActive: true,
+            },
+        ]" />
 
         <div class="card">
             <div class="card-content">
-                <div class="is-flex is-flex-direction-row-reverse">
+                <div class="is-flex is-flex-direction-row-reverse" v-if="doEditAllow">
                     <RouterLink to="/employee/add" class="button is-dark">
                         <i class="bi bi-plus-circle px-1"></i>Add Employee
                     </RouterLink>
                 </div>
                 <div class="mt-5">
-                    <ListDisplay
-                        :listHeader="listHeader"
-                        collection="employee"
-                        :filter="filter"
-                        detailViewLink="/employee/view"
-                    />
+                    <ListDisplay :listHeader="listHeader" collection="employee" :filter="filter"
+                        detailViewLink="/employee/view" :checkBoxAllowed="doEditAllow" />
                 </div>
             </div>
         </div>

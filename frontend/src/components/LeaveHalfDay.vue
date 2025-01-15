@@ -2,6 +2,9 @@
 import { ref } from 'vue';
 import { onMounted } from 'vue';
 
+import { useFormModel } from '@/stores/form';
+import { watch } from 'vue';
+
 const el = ref(null)
 const toggleEl = ref(null)
 const props = defineProps({
@@ -11,46 +14,45 @@ const props = defineProps({
     }
 })
 const options = ref([
-     {
+    {
         label: "Select type",
         value: ""
-     },
-     {
-        label: "Morning",
-        value: "morning"
-     },
-     {
-        label: "Evening",
-        value: "evening"
-     }
+    },
+    {
+        label: "First-Half",
+        value: "First-Half"
+    },
+    {
+        label: "Second-Half",
+        value: "Second-Half"
+    }
 ])
 
+const { formModel } = useFormModel()
+
+watch(formModel, (newValue, _) => {
+    if (toggleEl.value) {
+        if (newValue.is_half) {
+            toggleEl.value.style.display = "block"
+        } else {
+            toggleEl.value.style.display = "none"
+        }
+    }
+}, { immediate: true });
+
 onMounted(() => {
-     const node = document.querySelector("#is_half");
-     toggleEl.value = el.value.parentElement.parentElement.parentElement
-     toggleEl.value.style.display = "none"
-     if (node) {
-        node.addEventListener('change', (event) => {
-             if(event.target.checked) {
-                toggleEl.value.style.display = "block"
-             } else {
-                toggleEl.value.style.display = "none"
-             }
-        })
-     }
+    toggleEl.value = el.value.parentElement.parentElement.parentElement
+    toggleEl.value.style.display = "none"
 })
+
 </script>
 
 <template>
     <div class="select" ref="el">
-                <select :name="form.name">
-                    <option
-                        v-for="option in options"
-                        :value="option.value"
-                        :selected="option.value === props.defaultValue"
-                    >
-                        {{ option.label }}
-                    </option>
-                </select>
-            </div>
+        <select :name="form.name">
+            <option v-for="option in options" :value="option.value" :selected="option.value === props.defaultValue">
+                {{ option.label }}
+            </option>
+        </select>
+    </div>
 </template>

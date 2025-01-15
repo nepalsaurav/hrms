@@ -1,29 +1,22 @@
 <script setup>
-import { onMounted } from "vue";
-import { ref } from "vue";
+import { ref, onMounted, watch } from "vue";
 import { client } from "@/api/pocketbase";
 import LoadingSkeleton from "./LoadingSkeleton.vue";
-import { convertUtcToLocalDate } from "../utils";
-import { snakeToProperCase } from "../utils";
+import { convertUtcToLocalDate, snakeToProperCase } from "../utils";
 import { useRouter, useRoute } from "vue-router";
-import { watch, watchEffect } from "vue";
 import { vInfiniteScroll } from "@vueuse/components";
 import Status from "./Status.vue";
-
 import Swal from "sweetalert2";
 import Avatar from "./Avatar.vue";
+
+// Props
 const props = defineProps({
     schema: Object,
-    expand: {
-        type: String,
-        default: "",
-    },
-    expandLabel: {
-        type: String,
-        default: "",
-    },
+    expand: { type: String, default: "" },
+    expandLabel: { type: String, default: "" },
 });
 
+// Reactive variables
 const loading = ref(true);
 const post = ref(null);
 const error = ref(null);
@@ -36,47 +29,28 @@ const page = ref(1);
 const filter = ref("");
 const sort = ref("-created");
 
-const expandLabel = {
-    employee: "full_name",
-    company: "name",
-};
+// Labels for expanded fields
+const expandLabel = { employee: "full_name", company: "name" };
 
-async function fetchData(
-    page = 1,
-    sort = "-created",
-    filter = "",
-    isPush = false,
-) {
+// Destructure schema fields for easier access
+const { name, fields } = props.schema;
+
+
+async function fetchData(page = 1, sort = "-created", filter = "", isPush = false) {
     error.value = null;
-    if (!isPush) {
-        loading.value = true;
-    }
+    if (!isPush) loading.value = true;
 
     try {
-        const expand = props.schema.fields
-            .filter((e) => e.type === "relation")
-            .map((e) => e.name)
-            .join(",");
-        const collectionName = props.schema.name;
-        const record = await client
-            .collection(collectionName)
-            .getList(page, 50, {
-                sort: sort,
-                filter: filter,
-                expand: expand,
-            });
+        const expand = fields.filter(e => e.type === "relation").map(e => e.name).join(",");
+        const record = await client.collection(name).getList(page, 50, {
+            sort, filter, expand
+        });
         post.value = record;
-        if (isPush) {
-            recordItems.value.push(...record.items);
-        } else {
-            recordItems.value = record.items;
-        }
+        recordItems.value = isPush ? [...recordItems.value, ...record.items] : record.items;
     } catch (err) {
         error.value = err.data.message;
     } finally {
-        if (!isPush) {
-            loading.value = false;
-        }
+        if (!isPush) loading.value = false;
     }
 }
 
@@ -87,21 +61,15 @@ function onLoadMore() {
     }
 }
 
-onMounted(() => {
-    parseQuery(route.query);
-});
+onMounted(() => parseQuery(route.query));
 
 watch(
     () => route.query,
-    (newQuery, _) => {
-        parseQuery(newQuery);
-    },
-    { immediate: true },
+    (newQuery) => parseQuery(newQuery),
+    { immediate: true }
 );
 
-watchEffect(() => {
-    fetchData(page.value, sort.value, filter.value, isPush.value);
-});
+watch(() => [page.value, sort.value, filter.value], () => fetchData(page.value, sort.value, filter.value, isPush.value), { immediate: true });
 
 function parseQuery(query) {
     if (query["filter"] !== undefined) {
@@ -113,20 +81,11 @@ function parseQuery(query) {
 
 function hideCol(header) {
     const hiddenFields = ["id", "created", "updated", "address"];
-    if (!header.hidden && !hiddenFields.includes(header.name)) {
-        return true;
-    } else {
-        return false;
-    }
+    return !header.hidden && !hiddenFields.includes(header.name);
 }
 
 function selectAll(event) {
-    const selectElement = event.target;
-    if (selectElement.checked) {
-        selected.value = recordItems.value;
-    } else {
-        selected.value = [];
-    }
+    selected.value = event.target.checked ? [...recordItems.value] : [];
 }
 
 async function deleteData() {
@@ -137,33 +96,27 @@ async function deleteData() {
         showCancelButton: true,
         confirmButtonColor: "#171717",
         cancelButtonColor: "#808080",
-        confirmButtonText: "Yes, delete it!",
+        confirmButtonText: "Yes, delete it!"
     });
-    if (!confirm.isConfirmed) return;
-    if (selected.value.length === 0) return;
+    if (!confirm.isConfirmed || selected.value.length === 0) return;
+
     const batch = client.createBatch();
-    selected.value.forEach((e, index) => {
-        batch.collection(props.schema.name).delete(e.id);
-    });
+    selected.value.forEach(item => batch.collection(name).delete(item.id));
+
     const loading = Swal.fire({
         title: "Data is deleting ...",
         allowOutsideClick: false,
-        didOpen: () => {
-            Swal.showLoading();
-        },
+        didOpen: () => Swal.showLoading()
     });
+
     try {
         await batch.send();
         fetchData();
         selected.value = [];
         Swal.close();
-    } catch (error) {
+    } catch (err) {
         Swal.close();
-        Swal.fire({
-            title: "Error!",
-            text: error.data.message,
-            icon: "error",
-        });
+        Swal.fire({ title: "Error!", text: err.data.message, icon: "error" });
         selected.value = [];
     }
 }
@@ -174,57 +127,34 @@ function editData(item) {
 </script>
 
 <template>
-    <div v-if="loading && post === null">
+    <div v-if="loading && !post">
         <LoadingSkeleton />
     </div>
-    <div v-if="post !== null">
-        <!-- action tab -->
+
+    <div v-if="post">
         <div class="box" v-if="selected.length > 0">
             <div class="is-flex">
                 <p class="has-text-weight-bold">
-                    {{ selected.length }} selected out of
-                    {{ recordItems.length }}
+                    {{ selected.length }} selected out of {{ recordItems.length }}
                 </p>
-
-                <button
-                    class="button is-danger is-small ml-4"
-                    @click="deleteData"
-                >
-                    <i class="bi bi-archive pr-1"></i>
-                    Delete
+                <button class="button is-danger is-small ml-4" @click="deleteData">
+                    <i class="bi bi-archive pr-1"></i> Delete
                 </button>
             </div>
         </div>
 
-        <!-- action tab -->
-        <div
-            class="scroll-div"
-            v-infinite-scroll="onLoadMore"
-            v-if="post.items.length > 0"
-        >
+        <div v-infinite-scroll="onLoadMore" class="scroll-div" v-if="post.items.length > 0">
             <p class="has-text-grey">Total Items: {{ post.totalItems }}</p>
             <table class="table is-fullwidth is-striped">
                 <thead>
                     <tr>
                         <th>
-                            <input
-                                class="custom-checkbox"
-                                @click="selectAll"
-                                type="checkbox"
-                                :checked="
-                                    selected.length === recordItems.length
-                                "
-                                :indeterminate="
-                                    selected.length > 0 &&
-                                    selected.length < recordItems.length
-                                "
-                            />
+                            <input class="custom-checkbox" type="checkbox" @click="selectAll"
+                                :checked="selected.length === recordItems.length"
+                                :indeterminate="selected.length > 0 && selected.length < recordItems.length" />
                         </th>
-                        <template
-                            v-for="header in props.schema.fields"
-                            :key="header.name"
-                        >
-                            <th v-if="hideCol(header)">
+                        <template v-for="header in fields">
+                            <th v-if="hideCol(header)" :key="header.name">
                                 {{ snakeToProperCase(header.name) }}
                             </th>
                         </template>
@@ -232,87 +162,39 @@ function editData(item) {
                 </thead>
 
                 <tbody>
-                    <template v-for="item in recordItems">
-                        <tr>
-                            <td>
-                                <input
-                                    v-model="selected"
-                                    :value="item"
-                                    class="custom-checkbox"
-                                    type="checkbox"
-                                />
-                            </td>
-                            <template
-                                v-for="(header, index) in props.schema.fields"
-                            >
-                                <td
-                                    v-if="hideCol(header)"
-                                    @click="editData(item)"
-                                    class="edit-data"
-                                >
-                                    <span v-if="header.type === 'autodate'">
-                                        {{
-                                            convertUtcToLocalDate(
-                                                item[header.name],
-                                            )
-                                        }}
-                                    </span>
-                                    <span v-else-if="header.type === 'bool'">
-                                        <span
-                                            class="tag"
-                                            :class="
-                                                item[header.name] === true
-                                                    ? 'is-info'
-                                                    : 'is-danger'
-                                            "
-                                        >
-                                            {{ item[header.name] }}
-                                        </span>
-                                    </span>
-
-                                    <span
-                                        v-else-if="header.type === 'relation'"
-                                    >
-                                        {{
-                                            item.expand[header.name]?.[
-                                                expandLabel[header.name]
-                                            ]
-                                        }}
-                                    </span>
-
-                                    <!-- for avatar -->
-                                    <span v-else-if="header.name === 'avatar' || header.name === 'logo'">
-                                        <Avatar
-                                            :filename="item[header.name]"
-                                            :record="item"
-                                            size="64x64"
-                                        />
-                                    </span>
-
-                                    <span v-else-if="header.type === 'date'">
-                                        {{ item[header.name].split(" ")[0] }}
-                                    </span>
-
-                                    <span v-else-if="header.name === 'status'">
-                                        <Status :item="item" :header="header" />
-                                    </span>
-
-                                    <span v-else>
+                    <tr v-for="item in recordItems" :key="item.id">
+                        <td><input v-model="selected" :value="item" class="custom-checkbox" type="checkbox" /></td>
+                        <template v-for="header in fields">
+                            <td v-if="hideCol(header)" @click="editData(item)" class="edit-data" :key="header.name">
+                                <span v-if="header.type === 'autodate'">{{ convertUtcToLocalDate(item[header.name])
+                                    }}</span>
+                                <span v-else-if="header.type === 'bool'">
+                                    <span class="tag" :class="item[header.name] ? 'is-info' : 'is-danger'">
                                         {{ item[header.name] }}
                                     </span>
-                                </td>
-                            </template>
-                        </tr>
-                    </template>
+                                </span>
+                                <span v-else-if="header.type === 'relation'">
+                                    {{ item.expand[header.name]?.[expandLabel[header.name]] }}
+                                </span>
+                                <span v-else-if="['avatar', 'logo'].includes(header.name)">
+                                    <Avatar :filename="item[header.name]" :record="item" size="64x64" />
+                                </span>
+                                <span v-else-if="header.type === 'date'">{{ item[header.name].split(" ")[0] }}</span>
+                                <span v-else-if="header.name === 'status'">
+                                    <Status :item="item" :header="header" />
+                                </span>
+                                <span v-else>{{ item[header.name] }}</span>
+                            </td>
+                        </template>
+                    </tr>
                 </tbody>
             </table>
         </div>
 
-        <p class="mt-3 has-text-weight-bold" v-if="post.items.length === 0">
-            no any data to show
-        </p>
+        <p class="mt-3 has-text-weight-bold" v-if="post.items.length === 0">No data to show</p>
     </div>
-    <div v-if="error !== null">
+
+    <div v-if="error">
         <p class="has-text-danger">{{ error }}</p>
     </div>
 </template>
@@ -322,6 +204,7 @@ function editData(item) {
     height: 350px;
     overflow-y: scroll;
 }
+
 .custom-checkbox {
     transform: scale(1.2);
 }
@@ -338,6 +221,7 @@ function editData(item) {
     color: var(--bulma-dark);
     cursor: pointer;
 }
+
 .text-link:hover {
     text-decoration: underline;
 }

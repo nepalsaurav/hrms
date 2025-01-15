@@ -68,7 +68,6 @@ async function fetchData(id) {
     error.value = null;
     data.value = null;
     loading.value = true;
-    console.log(id);
     try {
         const record = await client.collection("employee").getOne(id);
         breadcrumbLink.value.push({
