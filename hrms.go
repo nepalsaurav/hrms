@@ -16,6 +16,9 @@ import (
 	"github.com/pocketbase/pocketbase/plugins/jsvm"
 	"github.com/pocketbase/pocketbase/plugins/migratecmd"
 	"github.com/pocketbase/pocketbase/tools/hook"
+
+	// migration
+	_ "hrms/migrations"
 )
 
 func main() {
@@ -95,9 +98,9 @@ func main() {
 		HooksPoolSize: hooksPool,
 	})
 
-	// migrate command (with js templates)
+	// migrate command (with go templates)
 	migratecmd.MustRegister(app, app.RootCmd, migratecmd.Config{
-		TemplateLang: migratecmd.TemplateLangJS,
+		TemplateLang: migratecmd.TemplateLangGo,
 		Automigrate:  automigrate,
 		Dir:          migrationsDir,
 	})

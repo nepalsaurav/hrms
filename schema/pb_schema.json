@@ -90,7 +90,7 @@
       "CREATE INDEX `idx_mfas_collectionRef_recordRef` ON `_mfas` (collectionRef,recordRef)"
     ],
     "created": "2024-12-22 07:17:35.939Z",
-    "updated": "2024-12-22 07:17:35.939Z",
+    "updated": "2025-01-19 12:05:21.424Z",
     "system": true
   },
   {
@@ -197,7 +197,7 @@
       "CREATE INDEX `idx_otps_collectionRef_recordRef` ON `_otps` (collectionRef, recordRef)"
     ],
     "created": "2024-12-22 07:17:35.942Z",
-    "updated": "2024-12-22 07:17:35.942Z",
+    "updated": "2025-01-19 12:05:21.427Z",
     "system": true
   },
   {
@@ -306,7 +306,7 @@
       "CREATE UNIQUE INDEX `idx_externalAuths_collection_provider` ON `_externalAuths` (collectionRef, provider, providerId)"
     ],
     "created": "2024-12-22 07:17:35.949Z",
-    "updated": "2024-12-22 07:17:35.949Z",
+    "updated": "2025-01-19 12:05:21.430Z",
     "system": true
   },
   {
@@ -400,7 +400,7 @@
       "CREATE UNIQUE INDEX `idx_authOrigins_unique_pairs` ON `_authOrigins` (collectionRef, recordRef, fingerprint)"
     ],
     "created": "2024-12-22 07:17:35.952Z",
-    "updated": "2024-12-22 07:17:35.952Z",
+    "updated": "2025-01-19 12:05:21.432Z",
     "system": true
   },
   {
@@ -509,7 +509,7 @@
       "CREATE UNIQUE INDEX `idx_email_pbc_3142635823` ON `_superusers` (`email`) WHERE `email` != ''"
     ],
     "created": "2024-12-22 07:17:35.954Z",
-    "updated": "2024-12-22 07:17:35.954Z",
+    "updated": "2025-01-19 12:05:21.436Z",
     "system": true,
     "authRule": "",
     "manageRule": null,
@@ -731,7 +731,7 @@
       "CREATE UNIQUE INDEX `idx_email__pb_users_auth_` ON `users` (`email`) WHERE `email` != ''"
     ],
     "created": "2024-12-22 07:17:35.959Z",
-    "updated": "2025-01-12 04:56:46.668Z",
+    "updated": "2025-01-19 12:05:21.438Z",
     "system": false,
     "authRule": "",
     "manageRule": null,
@@ -863,7 +863,7 @@
       "CREATE UNIQUE INDEX `idx_QvYAup4Xo5` ON `department` (`name`)"
     ],
     "created": "2024-12-25 13:55:47.611Z",
-    "updated": "2025-01-10 07:50:57.675Z",
+    "updated": "2025-01-19 12:05:21.441Z",
     "system": false
   },
   {
@@ -1363,7 +1363,7 @@
       "CREATE UNIQUE INDEX `idx_kvg6uXl7YX` ON `employee` (\n  `employee_id`,\n  `first_name`,\n  `last_name`\n)"
     ],
     "created": "2024-12-26 04:18:47.685Z",
-    "updated": "2025-01-19 07:41:17.451Z",
+    "updated": "2025-01-19 12:05:21.443Z",
     "system": false
   },
   {
@@ -1427,7 +1427,7 @@
     ],
     "indexes": [],
     "created": "2024-12-26 05:00:34.795Z",
-    "updated": "2025-01-12 04:52:58.391Z",
+    "updated": "2025-01-19 12:05:21.447Z",
     "system": false
   },
   {
@@ -1552,7 +1552,7 @@
       "CREATE UNIQUE INDEX `idx_QXikUkeBb6` ON `company` (`name`)"
     ],
     "created": "2024-12-29 09:04:02.925Z",
-    "updated": "2025-01-10 07:41:05.999Z",
+    "updated": "2025-01-19 12:05:21.449Z",
     "system": false
   },
   {
@@ -1659,7 +1659,7 @@
       "CREATE UNIQUE INDEX `idx_ePtEowRVpg` ON `branch` (\n  `name`,\n  `company`\n)"
     ],
     "created": "2024-12-29 09:14:06.277Z",
-    "updated": "2025-01-17 10:30:49.745Z",
+    "updated": "2025-01-19 12:05:21.452Z",
     "system": false
   },
   {
@@ -1723,7 +1723,7 @@
     ],
     "indexes": [],
     "created": "2024-12-31 05:35:53.674Z",
-    "updated": "2025-01-10 08:44:26.746Z",
+    "updated": "2025-01-19 12:05:21.455Z",
     "system": false
   },
   {
@@ -1773,7 +1773,7 @@
     ],
     "indexes": [],
     "created": "2024-12-31 05:40:38.363Z",
-    "updated": "2025-01-10 07:06:12.078Z",
+    "updated": "2025-01-19 12:05:21.483Z",
     "system": false,
     "viewQuery": "SELECT id, name, type\nFROM _collections\nWHERE name NOT IN ('_auth', '_mfas', '_otps', '_externalAuths', '_authOrigins', '_superusers');\n"
   },
@@ -1872,7 +1872,7 @@
       "CREATE UNIQUE INDEX `idx_zxiAWytaPh` ON `permissions` (\n  `name`,\n  `roles_name`\n)"
     ],
     "created": "2024-12-31 05:54:37.602Z",
-    "updated": "2025-01-10 07:05:38.662Z",
+    "updated": "2025-01-19 12:05:21.457Z",
     "system": false
   },
   {
@@ -2045,7 +2045,7 @@
     ],
     "indexes": [],
     "created": "2024-12-31 11:15:34.293Z",
-    "updated": "2025-01-13 09:47:39.169Z",
+    "updated": "2025-01-19 12:05:21.460Z",
     "system": false
   },
   {
@@ -2121,7 +2121,7 @@
     ],
     "indexes": [],
     "created": "2025-01-02 09:19:01.473Z",
-    "updated": "2025-01-10 07:53:48.741Z",
+    "updated": "2025-01-19 12:05:21.462Z",
     "system": false
   },
   {
@@ -2274,7 +2274,7 @@
       "CREATE UNIQUE INDEX `idx_ogQSMje9ry` ON `salary_component` (\n  `name`,\n  `abbreviation`\n)"
     ],
     "created": "2025-01-03 05:04:37.136Z",
-    "updated": "2025-01-17 05:49:37.707Z",
+    "updated": "2025-01-19 12:05:21.465Z",
     "system": false
   },
   {
@@ -2350,7 +2350,7 @@
       "CREATE UNIQUE INDEX `idx_cJqiwEzSF0` ON `salary_structure` (`name`)"
     ],
     "created": "2025-01-03 05:22:43.973Z",
-    "updated": "2025-01-12 05:47:14.883Z",
+    "updated": "2025-01-19 12:05:21.467Z",
     "system": false
   },
   {
@@ -2457,7 +2457,7 @@
       "CREATE UNIQUE INDEX `idx_kmOVDi2km7` ON `attendance` (\n  `employee`,\n  `date`\n)"
     ],
     "created": "2025-01-03 10:43:30.032Z",
-    "updated": "2025-01-19 06:54:55.314Z",
+    "updated": "2025-01-19 12:05:21.470Z",
     "system": false
   },
   {
@@ -2576,7 +2576,7 @@
       "CREATE UNIQUE INDEX `idx_sdzRmARrik` ON `check_in` (\n  `employee`,\n  `date`\n)"
     ],
     "created": "2025-01-04 04:00:11.708Z",
-    "updated": "2025-01-10 08:23:12.339Z",
+    "updated": "2025-01-19 12:05:21.473Z",
     "system": false
   },
   {
@@ -2673,7 +2673,7 @@
       "CREATE UNIQUE INDEX `idx_30BMQrG9ap` ON `payroll` (\n  `from_date`,\n  `to_date`,\n  `employee`\n)"
     ],
     "created": "2025-01-09 07:54:52.743Z",
-    "updated": "2025-01-10 07:39:43.579Z",
+    "updated": "2025-01-19 12:05:21.475Z",
     "system": false
   },
   {
@@ -2759,7 +2759,7 @@
     ],
     "indexes": [],
     "created": "2025-01-15 11:17:28.944Z",
-    "updated": "2025-01-15 11:26:29.154Z",
+    "updated": "2025-01-19 12:05:21.478Z",
     "system": false
   },
   {
@@ -2830,11 +2830,25 @@
         "presentable": false,
         "system": false,
         "type": "autodate"
+      },
+      {
+        "autogeneratePattern": "",
+        "hidden": false,
+        "id": "text1915095946",
+        "max": 0,
+        "min": 0,
+        "name": "details",
+        "pattern": "",
+        "presentable": false,
+        "primaryKey": false,
+        "required": false,
+        "system": false,
+        "type": "text"
       }
     ],
     "indexes": [],
     "created": "2025-01-19 11:19:25.963Z",
-    "updated": "2025-01-19 11:19:25.963Z",
+    "updated": "2025-01-19 12:05:21.480Z",
     "system": false
   }
 ]
