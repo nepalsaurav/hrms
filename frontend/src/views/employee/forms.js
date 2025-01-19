@@ -232,12 +232,46 @@ export const formDetails = {
       required: false,
     },
     {
+       name: "hr_allowance",
+       label: "HR Allowance",
+       type: "bool"
+    },
+    {
       name: "pan_account_number",
       label: "Pan Account Number",
       placeholder: "123456789",
       type: "text",
       required: false,
     },
+    {
+      name: "ssf",
+      label: "Is SSF applied",
+      type: "bool"
+    },
+    {
+      name: "is_attendance_exception",
+      label: "Is attendance ignore for salary calculation",
+      type: "bool"
+    }
+  ],
+  insurance_information: [
+      {
+        name: "insured_amount",
+        label: "Insured Amount",
+        placeholder: "Insured Amount",
+        type: "number"
+      },
+      {
+        name: "insurance_premium",
+        label: "Insurance Premium",
+        placeholder: "Insurance Premium",
+        type: "number"
+      },
+      {
+        name: "insurance_document",
+        label: "Insurance Document",
+        type: "file"
+      }
   ],
   additional_information: [
     {

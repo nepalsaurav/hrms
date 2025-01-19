@@ -31,6 +31,8 @@ const defaultCheckboxValue = ref("checkbox_off");
 // Method for updating file
 function updateFile(event) {
     const file = event.target.files[0];
+    // update file to v-model
+    formModel.value[props.form.name] = file
     if (file) {
         filename.value = file.name;
     }
@@ -156,4 +158,10 @@ if(props.form.type === "file") {
 .custom-checkbox:checked {
     accent-color: var(--bulma-dark);
 }
+label small{
+    font-weight: 500 !important;
+}
+
+
+
 </style>

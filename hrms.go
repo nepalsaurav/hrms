@@ -2,6 +2,7 @@ package main
 
 import (
 	"hrms/router"
+	"hrms/schema"
 	"log"
 	"net/http"
 	"os"
@@ -116,11 +117,14 @@ func main() {
 			if !e.Router.HasRoute(http.MethodGet, "/{path...}") {
 				e.Router.GET("/{path...}", apis.Static(os.DirFS(publicDir), indexFallback))
 			}
-
 			return e.Next()
 		},
+
 		Priority: 999, // execute as latest as possible to allow users to provide their own route
 	})
+
+	// schema
+	schema.ListenCollectionEvent(app)
 
 	if err := app.Start(); err != nil {
 		log.Fatal(err)

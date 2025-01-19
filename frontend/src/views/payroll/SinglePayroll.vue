@@ -3,8 +3,8 @@ import LoadingSkeleton from "@/components/LoadingSkeleton.vue";
 import { onMounted } from "vue";
 import { ref, watchEffect, computed } from "vue";
 import { client } from "@/api/pocketbase";
-import { isWeekDay, calculateDays, getDateRange, evalFunction } from "@/utils";
-import { getTotalLeavesTaken, getLeavesDetail } from "./payroll";
+import { isWeekDay, calculateDays, getDateRange, evalFunction, ceilToNearest } from "@/utils";
+import { getLeavesDetail, getUnpaidLeaveDays } from "./payroll";
 
 const props = defineProps({
     employee: String,
@@ -18,7 +18,7 @@ const error = ref([]);
 const salary = ref([]);
 const employee = ref(null);
 const days = ref({});
-const formulaContext = ref({});
+
 
 const grossSalary = computed(() =>
     salary.value
@@ -68,9 +68,11 @@ onMounted(async () => {
     try {
         const employeeRecord = await client.collection("employee").getOne(props.employee, {
             expand: "leave_type,salary_structure",
+            requestKey: null
         });
         employee.value = employeeRecord;
-        formulaContext.value = employeeRecord;
+
+        let formulaContext = employeeRecord;
 
         if (!employeeRecord.expand.leave_type) {
             error.value.push("Leave type is not assigned to employee.");
@@ -79,36 +81,58 @@ onMounted(async () => {
         const [attendanceRecords, leaveRecords] = await Promise.all([
             client.collection("attendance").getFullList({
                 filter: `employee='${props.employee}' && '${props.query.from_date} 00:00:00.000Z' <= date && '${props.query.to_date} 00:00:00.000Z' >= date`,
+                requestKey: null
             }),
             client.collection("leave").getFullList({
-                filter: `employee='${props.employee}' && leave_from >= '${props.query.from_date} 00:00:00.000Z'`,
+                filter: `employee='${props.employee}'`,
+                requestKey: null
             }),
         ]);
 
         const daysRange = getDateRange(props.query.from_date, props.query.to_date);
-        let [workingDays, workedDays, acceptedLeaveDays] = [0, 0, 0];
+        let [workingDays, workedDays, acceptedLeaveDays, holiday] = [0, 0, 0, 0];
 
         for (const day of daysRange) {
             if (isWeekDay(day, props.settings.weekly_off.value)) continue;
 
+
+            if (employee.value.is_attendance_exception) {
+                workedDays++
+                workingDays++;
+                continue
+            }
             const attendance = attendanceRecords.find(e => e.date.split(" ")[0] === day);
             if (attendance) {
                 if (attendance.status === "present") workedDays++;
                 else {
                     const leave = getLeavesDetail(leaveRecords, day);
-                    if (leave.leave && leave.leave.status === "accepted") acceptedLeaveDays += leave.leaveDays;
+                    if (leave.leave) {
+                        if (leave.leave.is_half) workedDays += 0.5;
+                        if (leave.leave.status === "accepted") acceptedLeaveDays += leave.leaveDays;
+                    }
                 }
             }
-            workingDays++;
+            if (attendance.status === "holiday") {
+                holiday++
+            }
+            if (attendance.status !== "holiday") {
+                workingDays++;
+            }
         }
 
         const allowedLeave = employeeRecord.expand.leave_type?.reduce((sum, e) => sum + (e.allowed_paid_leave || 0), 0) || 0;
+
+        const absentDays = workingDays - workedDays
+        const upaidDay = getUnpaidLeaveDays(leaveRecords, props.query, props.settings, allowedLeave, absentDays, acceptedLeaveDays)
+
+
         days.value = {
+            holiday,
             workingDays,
             present: workedDays,
-            absentDays: workingDays - workedDays,
+            absentDays: absentDays,
             acceptedLeave: acceptedLeaveDays,
-            unpaid: Math.max(workingDays - workedDays - Math.min(acceptedLeaveDays, allowedLeave), 0),
+            unpaid: upaidDay
         };
 
         if (!employeeRecord.expand.salary_structure) {
@@ -118,26 +142,62 @@ onMounted(async () => {
 
         const salaryComponents = employeeRecord.expand.salary_structure.components;
         for (const e of salaryComponents) {
-            const component = await client.collection("salary_component").getOne(e.component);
+            const component = await client.collection("salary_component").getOne(e.component, {
+                requestKey: null
+            });
+
+
+            // console.log(formulaContext, e.name)
+
             const amount = e.calculated
-                ? evalFunction(component.formula, formulaContext.value)
+                ? evalFunction(component.formula, formulaContext)
                 : e.amount;
 
-            formulaContext.value[component.abbreviation] = e.calculated ? component.formula : e.amount;
-            salary.value.push({
-                name: e.name,
-                amount,
-                type: component.type,
-            });
+            // console.log(e.name, amount)
+            formulaContext[component.abbreviation] = amount;
+
+
+            if (!component.do_not_include_in_total) {
+                let roundAmount = parseFloat(amount.toFixed(2))
+                if (component.round_to_the_nearest_integer) {
+                    if (roundAmount > 0) {
+                        roundAmount = ceilToNearest(roundAmount, props.settings.round_off.ceiling_rounding.value)
+                    }
+                }
+
+                if (roundAmount > 0) {
+                    salary.value.push({
+                        name: e.name,
+                        amount: roundAmount,
+                        actualAmount: parseFloat(amount.toFixed(2)),
+                        type: component.type,
+                        component: component
+                    });
+                }
+
+            }
+
         }
-        
+
         //calculate advance salary
     } catch (err) {
-        error.value.push("An error occurred while fetching data.");
+        // console.log(err)
+        let errorString = err.toString()
+        switch (errorString) {
+            case "TypeError: attendance is undefined":
+                errorString = "Attendance record for employee not found. You may also ignore attendance from employee record for salary calculation."
+        }
+        error.value.push(errorString);
     } finally {
         loading.value = false;
     }
 });
+
+
+function getFullName(employee) {
+    const fullName = [employee?.first_name, employee?.middle_name, employee?.last_name].filter(name => name !== "").join(" ")
+    return fullName
+}
 </script>
 
 
@@ -148,7 +208,7 @@ onMounted(async () => {
             <div class="columns is-multiline mb-1">
                 <div class="column is-3">
                     <small class="has-text-grey">
-                        Employee: {{ employee?.full_name }}
+                        Employee: {{ getFullName(employee) }}
                     </small>
                 </div>
                 <div class="column is-3">
@@ -175,6 +235,11 @@ onMounted(async () => {
                 <div class="column is-3">
                     <small class="has-text-grey">
                         Present: {{ days?.present }}
+                    </small>
+                </div>
+                <div class="column is-3">
+                    <small class="has-text-grey">
+                        Holiday: {{ days?.holiday }}
                     </small>
                 </div>
                 <div class="column is-3">
@@ -217,7 +282,7 @@ onMounted(async () => {
                         <label for="gross_salary" class="label is-small">Net Salary</label>
                         <input id="gross_salary" type="text" class="input is-small" :value="netSalary" />
                     </div>
-                    
+
                 </div>
             </template>
             <template v-if="error.length > 0">

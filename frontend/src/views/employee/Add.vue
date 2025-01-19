@@ -29,6 +29,10 @@ const tabs = ref([
         label: "Payroll and Benefits",
     },
     {
+        name: "insurance_information",
+        label: "Insurance Information"
+    },
+    {
         name: "additional_information",
         label: "Additional Information",
     },
@@ -71,7 +75,7 @@ async function handleSubmit(event) {
 
     try {
         const record = await client.collection("employee").create(formObject);
-        console.log(record);
+      
         Swal.fire({
             title: "Success!",
             text: "Successfully create employee",

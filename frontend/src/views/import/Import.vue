@@ -15,6 +15,10 @@ const importCollectionList = ref([
         label: "Leave",
         value: "leave",
     },
+    {
+        label: "Advance Salary",
+        value: "advance_salary"
+    }
 ]);
 const formErrors = ref({});
 const router = useRouter();

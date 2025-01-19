@@ -12,6 +12,7 @@ import { getErrorTab } from "./forms";
 import { trimFormObject } from "@/utils";
 import { useRouter } from "vue-router";
 import Swal from "sweetalert2";
+import { useFormModel } from "@/stores/form";
 
 const route = useRoute();
 const router = useRouter();
@@ -20,6 +21,7 @@ const data = ref(null);
 const error = ref(null);
 const activeFormTab = ref("personal_details");
 const formErrors = ref({});
+const { formModel, getForm, trimObject } = useFormModel()
 
 const breadcrumbLink = ref([
     {
@@ -57,6 +59,10 @@ const tabs = ref([
         label: "Payroll and Benefits",
     },
     {
+        name: "insurance_information",
+        label: "Insurance Information"
+    },
+    {
         name: "additional_information",
         label: "Additional Information",
     },
@@ -89,21 +95,8 @@ function changeTab(name) {
 
 async function handleSumbit(event) {
     event.preventDefault();
-    const target = event.target;
-    const form = new FormData(target);
-
-    let formObject = Object.fromEntries(form.entries());
-    const fullName = [
-        formObject.first_name,
-        formObject.middle_name,
-        formObject.last_name,
-    ]
-        .filter((name) => name !== "")
-        .join(" ");
-    form.append("full_name", fullName);
-    formObject = trimFormObject(formObject);
     const validate = await validateForm(
-        Object.fromEntries(formObject.entries()),
+        trimObject(),
         validationSchema,
     );
     if (validate != true) {
@@ -118,8 +111,20 @@ async function handleSumbit(event) {
         }
         return;
     }
+    
+    
+    const form = getForm() 
+    const fullName = [
+        formModel.first_name,
+        formModel.middle_name,
+        formModel.last_name,
+    ].filter((name) => name !== "")
+    .join(" ");
+    form.append("full_name", fullName);
 
     try {
+        console.log(form)
+        console.log(formModel)
         const record = await client
             .collection("employee")
             .update(route.params.id, form);
@@ -163,15 +168,11 @@ async function handleSumbit(event) {
                     <!-- tabs -->
                     <div class="tabs">
                         <ul>
-                            <li
-                                v-for="tab in tabs"
-                                :class="
-                                    tab.name === activeFormTab && 'is-active'
-                                "
-                            >
+                            <li v-for="tab in tabs" :class="tab.name === activeFormTab && 'is-active'
+                                ">
                                 <a v-on:click="changeTab(tab.name)">{{
                                     tab.label
-                                }}</a>
+                                    }}</a>
                             </li>
                         </ul>
                     </div>
@@ -179,22 +180,10 @@ async function handleSumbit(event) {
 
                     <!-- main form content -->
                     <div v-for="tab in tabs">
-                        <div
-                            class="columns is-multiline"
-                            v-show="tab.name === activeFormTab"
-                        >
-                            <div
-                                class="column"
-                                :class="
-                                    form.type === 'rich_text' ? 'is-12' : 'is-4'
-                                "
-                                v-for="form in formDetails[tab.name]"
-                            >
-                                <RenderForms
-                                    :form="form"
-                                    :errors="formErrors"
-                                    :defaultValue="data[form.name]"
-                                />
+                        <div class="columns is-multiline" v-show="tab.name === activeFormTab">
+                            <div class="column" :class="form.type === 'rich_text' ? 'is-12' : 'is-4'
+                                " v-for="form in formDetails[tab.name]">
+                                <RenderForms :form="form" :errors="formErrors" :defaultValue="data[form.name]" />
                             </div>
                         </div>
                     </div>

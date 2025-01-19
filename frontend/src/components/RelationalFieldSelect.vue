@@ -30,8 +30,15 @@ const error = ref(null);
 
 watch(selected, (newValue) => {
 
-    formModel.value[props.name] = newValue;
-}, { immediate: true });
+    if (Array.isArray(newValue)) {
+        if (newValue[0] === "") {
+            formModel.value[props.name] = [];
+        }
+        else {
+            formModel.value[props.name] = newValue;
+        }
+    }
+});
 
 const fetchOptions = async () => {
     try {
@@ -58,9 +65,7 @@ const setSelected = (value) => {
     if (Array.isArray(value)) {
         selected.value = value.map(item => item.id);
     } else {
-        const setSelected = new Set(selected.value)
-        setSelected.add(value.id)
-        selected.value = Array.from(setSelected)
+        selected.value = [value.id]
     }
 };
 

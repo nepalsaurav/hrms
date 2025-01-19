@@ -11,6 +11,9 @@ const props = defineProps({
     <span class="tag is-info" v-if="props.item.status === 'wo'">
         Weekly off
     </span>
+    <span class="tag is-warning" v-if="props.item.status === 'holiday'">
+        Holiday
+    </span>
     <span class="tag is-warning" v-if="props.item.status === 'pending'">
         Pending
     </span>

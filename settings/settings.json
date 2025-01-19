@@ -21,5 +21,11 @@
     "type": "list",
     "value": ["SAT"]
   },
+  "round_off" : {
+      "ceiling_rounding" : {
+        "type": "number",
+        "value": 5
+      }
+  },
   "salary_deduction": "working_days"
 }

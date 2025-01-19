@@ -2,7 +2,7 @@ import * as XLSX from "xlsx";
 import { client } from "@/api/pocketbase";
 import Swal from "sweetalert2";
 
-export async function importExcel(form, resetForm, importError, router, type) {
+export async function importExcel(form, resetForm, importError, router, type, params) {
   const file = form.get("file");
   if (!file) return;
   const reader = new FileReader();
@@ -15,44 +15,54 @@ export async function importExcel(form, resetForm, importError, router, type) {
       header: 1,
       raw: false,
     });
+
     const headerRow = sheetData[1];
+    console.log(headerRow)
     const uploadData = [];
-    const jsonData = sheetData.slice(2).map((row, index) => {
-      const obj = {};
-      row.forEach((e, i) => {
-        const key = headerRow[i].replace(/\*$/, "");
-        obj[key] = e;
-      });
-      Object.keys(obj).length > 0 && uploadData.push(obj);
+    sheetData.slice(2).forEach((row, _) => {
+      if (row.length > 0) {
+        const obj = {};
+        row.forEach((e, i) => {
+          if (params.collection === "attendance") {
+            if (i < 6) {
+              const key = headerRow[i].replace(/\*$/, "");
+              obj[key] = e;
+            }
+          } else {
+            const key = headerRow[i].replace(/\*$/, "");
+            obj[key] = e;
+          }
+        });
+        Object.keys(obj).length > 0 && uploadData.push(obj);
+      }
     });
-    uploadAttendance(uploadData, form, resetForm, importError, router, type);
+
+    uploadDataHelper(uploadData, form, resetForm, importError, router, type, params);
   };
   reader.readAsArrayBuffer(file);
 }
 
-async function uploadAttendance(
+async function uploadDataHelper(
   uploadData,
   form,
   resetForm,
   importError,
-  router,
-  type,
+  _router,
+  _type,
+  params
 ) {
-  const batch = client.createBatch();
   uploadData.forEach((item) => {
-    batch.collection("attendance").create(item);
+
+    try {
+      client.collection(params.collection).create(item, { requestKey: null })
+    } catch (error) {
+      console.log(error)
+    }
   });
-  try {
-    const result = await batch.send();
-    console.log(result);
-    Swal.fire({
-      title: "success",
-      text: "succesfully uploaded",
-      icon: "success",
-    });
-  } catch (err) {
-    importError.value = err.data.message;
-  } finally {
-    resetForm(form);
-  }
+  Swal.fire({
+    title: "success",
+    text: "succesfully uploaded",
+    icon: "success",
+  });
+  resetForm(form)
 }

@@ -1,4 +1,5 @@
 import * as yup from "yup";
+import { utils, write } from "xlsx";
 
 export function trimFormObject(formObject) {
   const removeOption = [
@@ -250,3 +251,23 @@ export function getDateRange(fromDate, toDate) {
   return dateArray;
 }
 
+
+
+export function ceilToNearest(amount, nearest) {
+  return Math.ceil(amount / nearest) * nearest;
+}
+
+
+
+export async function exportToExcel(data, filename="sample") {
+  const worksheet = utils.aoa_to_sheet(data);
+  const workbook = utils.book_new();
+  utils.book_append_sheet(workbook, worksheet, "Sheet1");
+  const excelBuffer = write(workbook, { bookType: "xlsx", type: "array" });
+  const blob = new Blob([excelBuffer], { type: "application/octet-stream" });
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = `${filename}.xlsx`;
+  link.click();
+  URL.revokeObjectURL(link.href);
+}

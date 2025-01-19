@@ -41,6 +41,13 @@ let menus = [
     },
     
     {
+        path: `/settings/collection/designation`,
+        name: "designation",
+        label: "Designation",
+        icon: null,
+        hasChild: false,
+    },
+    {
         name: "leave_setting",
         label: "Leave",
         hasChild: true,

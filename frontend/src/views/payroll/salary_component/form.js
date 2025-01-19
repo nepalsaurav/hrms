@@ -45,6 +45,12 @@ export const formDetails = [
     size: "is-4",
   },
   {
+     name: "is_assumed",
+     label: "Is Assumed",
+     type: "bool",
+     size: "is-4",
+  },
+  {
     name: "round_to_the_nearest_integer",
     label: "Round to the nearest integer",
     type: "bool",

@@ -6,6 +6,8 @@ import { watch, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { client } from "@/api/pocketbase";
 import Swal from "sweetalert2";
+import { useArrayFind, useArrayFindIndex } from '@vueuse/core'
+import { exportToExcel } from "@/utils";
 
 const route = useRoute();
 const router = useRouter();
@@ -13,6 +15,7 @@ const settings = ref(null);
 const error = ref(null);
 const formProcessing = ref(false);
 const formModal = ref({});
+const employeeRecord = ref([])
 
 async function fetchData() {
     settings.value = error.value = null;
@@ -20,10 +23,11 @@ async function fetchData() {
         if (route.query.employee !== "undefined") {
             formModal.value[route.query.employee] = null;
         } else {
-             const employee = await client.collection("employee").getFullList()
-             employee.forEach((e) => {
+            const employee = await client.collection("employee").getFullList()
+            employeeRecord.value = employee
+            employee.forEach((e) => {
                 formModal.value[e.id] = null
-             })
+            })
         }
         const record = await client.send("/api/get_settings/settings.json");
         settings.value = record;
@@ -72,6 +76,35 @@ async function handleSubmit() {
         formProcessing.value = false;
     }
 }
+
+
+
+async function handleExcel(params) {
+    const header = new Set(["Employee"])
+    for (const [key, value] of Object.entries(formModal.value)) {
+        value.component.forEach((e) => {
+            header.add(e.name)
+        })
+    }
+    header.add("Gross Salary")
+    header.add("Net Salary")
+    const data = []
+    data.push([...header])
+    for (const [key, value] of Object.entries(formModal.value)) {
+        const innerData = []
+        const emp = useArrayFind(employeeRecord.value, e => e.id === key)
+        const full_name = [emp.value.first_name, emp.value.middle_name, emp.value.last_name].filter(name => name !== "").join(" ")
+        innerData[useArrayFindIndex(Array.from(header), e => e === "Employee").value] = full_name
+        value.component.forEach((e) => {
+             innerData[useArrayFindIndex(Array.from(header), i => i === e.name).value] = e.amount.toLocaleString()
+        })
+        innerData[useArrayFindIndex(Array.from(header), e => e === "Gross Salary").value] = value.grossSalary.toLocaleString()
+        innerData[useArrayFindIndex(Array.from(header), e => e === "Net Salary").value] = value.netSalary.toLocaleString()
+        data.push(innerData)
+    }
+    exportToExcel(data, `payroll_from_${route.query.from_date}_to_${route.query.to_date}`)
+    console.log(data)
+} 
 </script>
 
 <template>
@@ -98,8 +131,12 @@ async function handleSubmit() {
         <form @submit.prevent="handleSubmit">
             <fieldset :disabled="formProcessing">
                 <div class="is-flex is-flex-direction-row-reverse">
+
                     <button type="submit" class="button is-dark mb-2">
                         Save
+                    </button>
+                    <button type="button" class="button is-light mb-2 mr-2" @click="handleExcel">
+                        Excel
                     </button>
                 </div>
                 <template v-for="(_, key) in formModal">

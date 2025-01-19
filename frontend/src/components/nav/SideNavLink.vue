@@ -10,7 +10,7 @@ const showChild = ref(false);
 function toggleChildNav(item) {
     if (item.hasChild) {
         showChild.value = !showChild.value;
-        console.log(showChild.value);
+        
     }
 }
 </script>

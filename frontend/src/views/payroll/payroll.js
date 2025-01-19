@@ -69,3 +69,18 @@ export function getLeavesDetail(leaves, date) {
   });
   return data;
 }
+
+
+
+export function getUnpaidLeaveDays(leaveRecords, query, settings, allowedLeave, absentDays, acceptedLeaveDays) {
+     
+    const leaveTakenThisMonth = getTotalLeavesTaken(leaveRecords, query.from_date, query.to_date)
+    const leaveTakenThisYear = getTotalLeavesTaken(leaveRecords, settings.fy_year.from_date.value, settings.fy_year.to_date.value)
+
+    const leaveBalance = allowedLeave - (leaveTakenThisYear - leaveTakenThisMonth)
+    const unpaid = (absentDays - acceptedLeaveDays) - leaveBalance
+    if (unpaid < 0) {
+      return 0
+    }
+    return unpaid
+}

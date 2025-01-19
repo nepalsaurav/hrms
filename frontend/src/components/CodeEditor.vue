@@ -5,6 +5,11 @@ import "ace-builds/src-noconflict/mode-javascript";
 import "ace-builds/src-noconflict/theme-chrome";
 import "ace-builds/src-noconflict/ext-language_tools";
 import { client } from "@/api/pocketbase";
+import { watch } from "vue";
+import { useFormModel } from "@/stores/form";
+import { storeToRefs } from "pinia";
+
+const {formModel} = storeToRefs(useFormModel())
 
 const aceRef = ref(null);
 const content = ref("");
@@ -12,6 +17,11 @@ const props = defineProps({
     value: String,
     form: Object,
 });
+
+
+watch(content, () => {
+      formModel.value[props.form.name] = content.value
+}, {immediate: true})
 
 // watchEffect(() => {
 //     console.log(content.value);

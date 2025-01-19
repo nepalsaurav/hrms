@@ -45,7 +45,7 @@ async function getSampleFile() {
 async function handleSubmit(event) {
     formProcessing.value = true;
     const form = new FormData(event.target);
-    importExcel(form, resetForm, formProcessing, importError, route.query.type);
+    importExcel(form, resetForm, formProcessing, importError, route.query.type, route.params);
 }
 
 function handleChangeFile(event) {
