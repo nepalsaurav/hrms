@@ -10,6 +10,8 @@ func init() {
 		settings := app.Settings()
 
 		settings.Meta.AppName = "HRMS"
+		settings.Batch.Enabled = true
+		settings.Batch.MaxRequests = 5000
 		return app.Save(settings)
 	}, nil)
 }

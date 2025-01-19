@@ -2,7 +2,6 @@ package schema
 
 import (
 	"encoding/json"
-	"fmt"
 	"os"
 
 	"github.com/pocketbase/pocketbase"
@@ -37,17 +36,13 @@ func saveCollectionsToFile(app *pocketbase.PocketBase) error {
 func ListenCollectionEvent(app *pocketbase.PocketBase) {
 	// Handle schema export on server start
 	app.OnServe().BindFunc(func(e *core.ServeEvent) error {
-		if err := saveCollectionsToFile(app); err != nil {
-			fmt.Println("Error saving schema:", err)
-		}
+		_ = saveCollectionsToFile(app)
 		return e.Next()
 	})
 
 	// Common handler for collection events
 	handleCollectionEvent := func(e *core.CollectionEvent) error {
-		if err := saveCollectionsToFile(app); err != nil {
-			fmt.Println("Error saving schema:", err)
-		}
+		_ = saveCollectionsToFile(app)
 		return e.Next()
 	}
 

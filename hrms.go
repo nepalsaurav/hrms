@@ -127,7 +127,21 @@ func main() {
 	})
 
 	// schema
-	schema.ListenCollectionEvent(app)
+
+	isDevMode := false
+	for _, arg := range os.Args[1:] {
+		if arg == "--dev" {
+			isDevMode = true
+			break
+		}
+	}
+
+	if isDevMode {
+		schema.ListenCollectionEvent(app)
+	}
+
+	// create intitla record
+	CreateInitialRecord(app)
 
 	if err := app.Start(); err != nil {
 		log.Fatal(err)
